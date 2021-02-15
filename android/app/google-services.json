@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "932814930045",
+    "project_id": "mr-recipe-7e4ed",
+    "storage_bucket": "mr-recipe-7e4ed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932814930045:android:1161eccbb7c77b6665b114",
+        "android_client_info": {
+          "package_name": "com.misael.MrRecipe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "932814930045-64nrek4vh1dfkmu3ak6iemchd58jemil.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.misael.MrRecipe",
+            "certificate_hash": "a10d5f9ef126a36279c58b927643bf4b435b3d1a"
+          }
+        },
+        {
+          "client_id": "932814930045-hfvfv6bpqsnnoq5m5igvljr82gjt0qm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNpY_NdfEEKoAkItHWizsy9NuKbQx8OP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "932814930045-hfvfv6bpqsnnoq5m5igvljr82gjt0qm2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
