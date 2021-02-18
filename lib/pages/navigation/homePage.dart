@@ -1,5 +1,5 @@
 import 'package:MrRecipe/models/category_model.dart';
-import 'package:MrRecipe/models/restaurant_model.dart';
+import 'package:MrRecipe/models/recipe_model.dart';
 import '../../widgets/Category_food_card.dart';
 import 'package:MrRecipe/pages/navigation/restaurantDetails.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,31 +14,36 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  List<RestaurantModel> restaurantList = [];
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
+  List<Recipe> recipeList = [];
   List<FoodCategory> _categories = categories;
 
   @override
   void initState() {
     super.initState();
+
+    debugPrint("initState");
+
     DatabaseReference databaseReference =
-        FirebaseDatabase.instance.reference().child("Restaurants");
+        FirebaseDatabase.instance.reference().child("Recipes");
 
     databaseReference.once().then((DataSnapshot dataSnapShot) {
-      restaurantList.clear();
+      recipeList.clear();
       var keys = dataSnapShot.value.keys;
       var values = dataSnapShot.value;
 
       for (var key in keys) {
-        RestaurantModel restaurantModel = new RestaurantModel(
-          values[key]['nome'],
-          values[key]['img'],
-          values[key]['morada'],
-          values[key]['produtos']['Nome_prod'],
-          values[key]['produtos']['img_prod'],
-          values[key]['produtos']['preço'],
+        Recipe recipeModel = new Recipe(
+          name: values[key]['nome'],
+          img: values[key]['img'],
+          author: values[key]['autor'],
+          quantity: values[key]['quantidade'],
+          calories: values[key]['calorias'],
+          time: values[key]['tempo'],
+          favorite: false,
+          ingredients: [], 
         );
-        restaurantList.add(restaurantModel);
+        recipeList.add(recipeModel);
       }
       setState(() {
         //
@@ -46,17 +51,22 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+
+    super.build(context);
+
+    return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height: 70),
+          SizedBox(height: 65),
           Container(
               margin: EdgeInsets.only(left: 20),
               child: Text("Home",
-                  style: GoogleFonts.lato(
+                  style: GoogleFonts.comfortaa(
                       fontSize: 30, fontWeight: FontWeight.bold))),
           SizedBox(height: 15),
           Container(
@@ -74,26 +84,28 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          SizedBox(height: 15),
-          Container(
-            child: restaurantList.length == 0
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: restaurantList.length,
-                      itemBuilder: (context, index) {
-                        return restaurantPage(
-                            context,
-                            restaurantList[index].name,
-                            restaurantList[index].morada,
-                            restaurantList[index].img);
-                      },
-                    ),
-                  ),
-          ),
+      //     SizedBox(height: 15),
+      //     Container(
+      //       child: restaurantList.length == 0
+      //           ? Center(
+      //               child: CircularProgressIndicator(),
+      //             )
+      //           : Expanded(
+      //               child: ListView.builder(
+      //                 shrinkWrap: true,
+      //                 itemCount: restaurantList.length,
+      //                 itemBuilder: (context, index) {
+      //                   return restaurantPage(
+      //                       context,
+      //                       restaurantList[index].name,
+      //                       restaurantList[index].morada,
+      //                       restaurantList[index].img);
+      //                 },
+      //               ),
+      //             ),
+      //     ),
+      //   ],
+      // ),
         ],
       ),
     );

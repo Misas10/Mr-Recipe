@@ -5,11 +5,21 @@ import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget{
+  @override
+  _SettingsState createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> with AutomaticKeepAliveClientMixin{
   //final FirebaseAuth auth = FirebaseAuth.instance;
+
+bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
+
+    super.build(context);
+
     return Container(
       padding: appHorizontalPadding(),
       child: Column(

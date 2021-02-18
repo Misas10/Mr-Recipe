@@ -34,7 +34,9 @@ class _LoginState extends State<Login> {
   //Permite Apagar o texto do campo "password"
   @override
   void dispose() {
+    emailController.dispose();
     passwordController.dispose();
+    
     super.dispose();
   }
 

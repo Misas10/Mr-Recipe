@@ -26,7 +26,7 @@ class _RegistarState extends State<Registar> {
   bool _showPassword = true;
   final databaseReference = FirebaseDatabase.instance.reference();
 
-  //Permite Apagar o texto do campo "password"
+  //Permite Apagar o campo "password"
   @override
   void dispose() {
     emailController.dispose();
