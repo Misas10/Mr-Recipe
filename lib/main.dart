@@ -27,6 +27,11 @@ class MyApp extends StatelessWidget {
               create: (context) => context.read<AuthService>().authStateChanges)
         ],
         child: MaterialApp(
+            // darkTheme: ThemeData(
+            //   primaryColor: Colors.blue,
+            //   brightness: Brightness.dark
+            // ),
+            
             initialRoute: "/",
             routes: {
               '/login': (context) => Login(),
