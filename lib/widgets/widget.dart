@@ -12,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 */
 
 EdgeInsets appHorizontalPadding() {
-  return EdgeInsets.symmetric(horizontal: 24);
+  return EdgeInsets.symmetric(horizontal: 20);
 }
 
 InputDecoration inputTextDecoration(String labelText, var icon) {

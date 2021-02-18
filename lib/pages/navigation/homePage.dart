@@ -1,5 +1,6 @@
 import 'package:MrRecipe/models/category_model.dart';
 import 'package:MrRecipe/models/recipe_model.dart';
+import 'package:MrRecipe/widgets/widget.dart';
 import '../../widgets/Category_food_card.dart';
 import 'package:MrRecipe/pages/navigation/restaurantDetails.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -58,17 +59,17 @@ bool get wantKeepAlive => true;
 
     super.build(context);
 
-    return Center(
+    return Container(
+      padding: appHorizontalPadding(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height: 65),
-          Container(
-              margin: EdgeInsets.only(left: 20),
+          const SizedBox(height: 65),
+            Container(
               child: Text("Home",
                   style: GoogleFonts.comfortaa(
                       fontSize: 30, fontWeight: FontWeight.bold))),
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Container(
             height: 80,
             // color: Colors.black,

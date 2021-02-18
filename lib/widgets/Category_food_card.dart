@@ -11,7 +11,7 @@ class FoodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Container(
-        margin: EdgeInsets.only(right: 10),
+        margin: const EdgeInsets.only(right: 10),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 7.5),
           child: Row(
@@ -20,7 +20,7 @@ class FoodCard extends StatelessWidget {
               Container(
                 child: categoryIcon == null
                     ? Text('')
-                    : Image.asset(categoryIcon)
+                    : Image.asset(categoryIcon, height: 30, width: 30)
               ),
               SizedBox(width: 10),
               Center(

@@ -5,11 +5,11 @@ class FoodCategory {
 }
 
 final categories = [
-  FoodCategory(categoryName: "Carne", categoryIcon: "assets/images/frutas.png"),
-  FoodCategory(categoryName: "Peixe", categoryIcon: "assets/images/frutas.png"),
+  FoodCategory(categoryName: "Carne", categoryIcon: "assets/icons/meat.png"),
+  FoodCategory(categoryName: "Peixe", categoryIcon: "assets/icons/fish.png"),
   FoodCategory(
-      categoryName: "Sobremesas", categoryIcon: "assets/images/frutas.png"),
-  FoodCategory(categoryName: "Vegan", categoryIcon: "assets/images/frutas.png"),
-  FoodCategory(categoryName: "Sushi", categoryIcon: "assets/images/frutas.png"),
+      categoryName: "Sobremesas", categoryIcon: "assets/icons/cupcake.png"),
+  FoodCategory(categoryName: "Vegan", categoryIcon: "assets/icons/vegan.png"),
+  FoodCategory(categoryName: "Sushi", categoryIcon: "assets/icons/sushi.png"),
   FoodCategory(categoryName: "Ver Mais", categoryIcon: null)
 ];
