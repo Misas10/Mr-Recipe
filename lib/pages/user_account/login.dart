@@ -25,11 +25,11 @@ class _LoginState extends State<Login> {
   bool _showPassword = true;
   // final dataabseReference = FirebaseDatabase.instance.reference();
 
-  void readData() {
-    databaseReference.once().then((DataSnapshot snapshot) {
-      print('Data : ${snapshot.value}');
-    });
-  }
+  // void readData() {
+  //   databaseReference.once().then((DataSnapshot snapshot) {
+  //     print('Data : ${snapshot.value}');
+  //   });
+  // }
 
   //Permite Apagar o texto do campo "password"
   @override

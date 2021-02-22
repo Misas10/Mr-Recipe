@@ -20,7 +20,7 @@ class AuthService {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       debugPrint("Logged Succefully");
-      return "Logged In";
+      return "Logado";
     } on FirebaseAuthException catch (e) {
       debugPrint(e.message);
       return e.message;
@@ -32,9 +32,9 @@ class AuthService {
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
+      debugPrint("Registered Succefully");
       return "Registado";
     } on FirebaseAuthException catch (e) {
-      //print(e.message);
       return e.message;
     }
   }

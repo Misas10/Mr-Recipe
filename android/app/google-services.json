@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "932814930045",
-    "project_id": "mr-recipe-7e4ed",
-    "storage_bucket": "mr-recipe-7e4ed.appspot.com"
+    "project_number": "310574462936",
+    "project_id": "mr-recipe-e766c",
+    "storage_bucket": "mr-recipe-e766c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:932814930045:android:1161eccbb7c77b6665b114",
+        "mobilesdk_app_id": "1:310574462936:android:e28647f48443dc729124ad",
         "android_client_info": {
           "package_name": "com.misael.MrRecipe"
         }
       },
       "oauth_client": [
         {
-          "client_id": "932814930045-64nrek4vh1dfkmu3ak6iemchd58jemil.apps.googleusercontent.com",
+          "client_id": "310574462936-ard6l05f4m94okll81qumc7blro88ppb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.misael.MrRecipe",
-            "certificate_hash": "a10d5f9ef126a36279c58b927643bf4b435b3d1a"
+            "certificate_hash": "6cd8dc9a73d6db1e53c4470c7bc20d28e1f755c7"
           }
         },
         {
-          "client_id": "932814930045-hfvfv6bpqsnnoq5m5igvljr82gjt0qm2.apps.googleusercontent.com",
+          "client_id": "310574462936-u6431ivneoamijftgrt37kkbc2kvnegh.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCNpY_NdfEEKoAkItHWizsy9NuKbQx8OP8"
+          "current_key": "AIzaSyBTjxgsRwHz6rROywKsHEVcIyFzr1zHFes"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "932814930045-hfvfv6bpqsnnoq5m5igvljr82gjt0qm2.apps.googleusercontent.com",
+              "client_id": "310574462936-u6431ivneoamijftgrt37kkbc2kvnegh.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

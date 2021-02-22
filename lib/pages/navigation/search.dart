@@ -17,29 +17,11 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin{
     super.build(context);
 
     return GestureDetector(
-      // appBar: AppBar(
-        // title: TextField(
-        //   decoration: InputDecoration(
-        //     icon: Icon(Icons.search),
-        //   ),
-        // ),
-        // centerTitle: true,
-        // actions: [
-        //   Column(
-        //     children: [
-        //       Container(
-        //         child: ButtonBar(),
-        //       )
-        //     ],
-        //   )
-        // ],
-      // ),
-
       child: Scaffold(
         body: Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 80),//,
           child: Column( 
-            //mainAxisAlignment: MainAxisAlignment.center,
+            
             children: <Widget>[
               Form(
                 key: _formKey,
@@ -52,11 +34,8 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin{
         ),
       ),
         onTap: () {
+          // TIRA O FOCO DO INPUT 'Pesquisar'
           FocusScope.of(context).requestFocus(new FocusNode());
-          // FocusScopeNode currentFocus = FocusScope.of(context);
-          // if(!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null){
-          //   currentFocus.focusedChild.unfocus();
-          // }
         }
     );
   }

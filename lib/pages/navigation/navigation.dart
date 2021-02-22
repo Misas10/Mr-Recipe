@@ -2,7 +2,6 @@ import 'package:MrRecipe/pages/navigation/favorites.dart';
 import 'package:MrRecipe/pages/navigation/homePage.dart';
 import 'package:MrRecipe/pages/navigation/search.dart';
 import 'package:MrRecipe/pages/navigation/settings.dart';
-import 'package:MrRecipe/widgets/widget.dart';
 import 'package:flutter/material.dart';
 
 class NavBar extends StatefulWidget {
@@ -20,8 +19,6 @@ class _NavBarState extends State<NavBar> with TickerProviderStateMixin {
       Tab(icon: Icon(Icons.settings), text: "Definições")
   ];
 
-  int _selectedIndex = 0;
-
   List <Widget> _pageOptions = <Widget>[
     HomePage(),
     Search(),
@@ -34,12 +31,6 @@ void initState() {
   // _tabs = getTabs(_startingTabCount);
   _tabController = getTabController();
   super.initState();
-}
-
-void _onItemTap(int index){
-  setState(() {
-    _selectedIndex = index;
-  });
 }
 
 TabController getTabController(){

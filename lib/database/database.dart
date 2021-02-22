@@ -1,28 +1,26 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-final databaseReference = FirebaseDatabase.instance.reference();
+final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // ADICIONAR DADOS DAS RECEITAS
-DatabaseReference saveRestaurants(String name, String img, String morada,
+Future<void> addRecipe(String name, String img, String morada,
   String prodName, String prodImg, double prodPrice) {
-  var id = databaseReference.child('Receitas').push();
-  id.set({
 
-    //TODO: MUDAR 
-    "nome": name,
-    "img": img,
-    "morada": morada,
-    "produtos": {"Nome_prod": prodName, "img_prod": prodImg, "preço": prodPrice}
-  });
-  print("DADOS ENVIADOS PARA A BASE DE DADOS");
-  return id;
+  return firestore.collection('Recipes')
+        .add({})
+        .then((value) => "Receita adicionada")
+        .catchError((error) => "Falha ao adicionar a Receita: $error");
 }
 
 // ADICIONAR DADOS DOS CLIENTES
-DatabaseReference saveUsers(String email, String pass) {
-  var id = databaseReference.child('Users').push();
-  id.set({"email": email, "password": pass});
-  
-  print("DADOS ENVIADOS PARA A BASE DE DADOS");
-  return id;
+Future<void> addUsers(String email, String pass) {
+
+  return firestore.collection("Users")
+        .add({
+          'email': email,
+          'password': pass
+        })
+        .then((value) => debugPrint("User adicionado"))
+        .catchError((error) => debugPrint("Falha ao adicionar o User: $error"));
 }

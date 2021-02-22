@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../database/database.dart';
 
 class Favorites extends StatefulWidget {
   @override
@@ -15,7 +16,10 @@ class _FavoritesState extends State<Favorites> with AutomaticKeepAliveClientMixi
     super.build(context);
 
     return Container(
-      
+      child: Center(
+        child: FlatButton(child: Text("Adicionar Receita teste"), onPressed: (){
+        },),
+      ),
     );
   }
 }

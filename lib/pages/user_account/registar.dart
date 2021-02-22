@@ -99,11 +99,11 @@ class _RegistarState extends State<Registar> {
                                   context.read<AuthService>().register(
                                       email: emailController.text.trim(),
                                       password: passwordController.text.trim());
-                                  saveUsers(emailController.text,
+                                  addUsers(emailController.text,
                                       passwordController.text);
                                   // databaseReference.child("Users").set({
-                                  //   'email': emailController.text,
-                                  //   'password': passwordController.text
+                                  //   'email': "EmailTest",
+                                  //   'password': "passwordTeste"
                                   // });
                                   Navigator.pop(context);
                                 }),
