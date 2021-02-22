@@ -7,6 +7,13 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> with AutomaticKeepAliveClientMixin{
+  List<String> ingredients = [
+    "tomate", 
+    "cebola", 
+    "salsicha",
+    "arroz",
+    "feijão"
+  ];
 
   bool get wantKeepAlive => true;
 
@@ -18,7 +25,9 @@ class _FavoritesState extends State<Favorites> with AutomaticKeepAliveClientMixi
     return Container(
       child: Center(
         child: FlatButton(child: Text("Adicionar Receita teste"), onPressed: (){
-        },),
+          addRecipe(name: "Teste", imgUrl: "assets/images/frutas.png", tempo: 30,
+            author: "Mr. Recipe", quantity: 6, ingredients: ingredients, calories: 600);
+        }),
       ),
     );
   }

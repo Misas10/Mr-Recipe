@@ -4,11 +4,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // ADICIONAR DADOS DAS RECEITAS
-Future<void> addRecipe(String name, String img, String morada,
-  String prodName, String prodImg, double prodPrice) {
+Future<void> addRecipe({String name, String imgUrl, String author,
+  bool favorito = false, int quantity, int calories, int tempo, List<String> ingredients}) {
 
   return firestore.collection('Recipes')
-        .add({})
+        .add({
+          "nome": name, 
+          "autor": author,
+          "calorias": calories,
+          "img_url": imgUrl,
+          "quantidade": quantity,
+          "ingredientes": ingredients,
+          "tempo_total": tempo,
+          "IsFavotiro": favorito
+        })
         .then((value) => "Receita adicionada")
         .catchError((error) => "Falha ao adicionar a Receita: $error");
 }
