@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-// ADICIONAR DADOS DAS RECEITAS
+// adiciona receitas novas a base de dados
 Future<void> addRecipe({String name, String imgUrl, String author,
   bool favorito = false, int quantity, int calories, int tempo, List<String> ingredients}) {
 
@@ -22,7 +22,7 @@ Future<void> addRecipe({String name, String imgUrl, String author,
         .catchError((error) => "Falha ao adicionar a Receita: $error");
 }
 
-// ADICIONAR DADOS DOS CLIENTES
+// adiciona clientes novos a base de dados
 Future<void> addUsers(String email, String pass) {
 
   return firestore.collection("Users")

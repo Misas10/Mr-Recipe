@@ -10,9 +10,9 @@ class _FavoritesState extends State<Favorites> with AutomaticKeepAliveClientMixi
   List<String> ingredients = [
     "tomate", 
     "cebola", 
-    "salsicha",
-    "arroz",
-    "feijão"
+    "cenoura",
+    "alface",
+    "beterraba"
   ];
 
   bool get wantKeepAlive => true;
@@ -25,7 +25,7 @@ class _FavoritesState extends State<Favorites> with AutomaticKeepAliveClientMixi
     return Container(
       child: Center(
         child: FlatButton(child: Text("Adicionar Receita teste"), onPressed: (){
-          addRecipe(name: "Teste", imgUrl: "assets/images/frutas.png", tempo: 30,
+          addRecipe(name: "Teste1", imgUrl: "assets/images/vegetais.jpg", tempo: 30,
             author: "Mr. Recipe", quantity: 6, ingredients: ingredients, calories: 600);
         }),
       ),

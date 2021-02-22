@@ -1,46 +1,20 @@
-import 'package:MrRecipe/models/restaurant_model.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantDetails extends StatefulWidget {
   final String name;
+  final List id;
 
-  RestaurantDetails(this.name);
+  RestaurantDetails(this.name, this.id);
 
   @override
   _RestaurantDetailsState createState() => _RestaurantDetailsState();
 }
 
 class _RestaurantDetailsState extends State<RestaurantDetails> {
-  // List<FoodModel> foodList = FoodModel.list;
-  List<RestaurantModel> restaurantList = [];
 
   @override
   void initState() {
     super.initState();
-    DatabaseReference databaseReference =
-        FirebaseDatabase.instance.reference().child("Restaurants");
-
-    databaseReference.once().then((DataSnapshot dataSnapShot) {
-      restaurantList.clear();
-      var keys = dataSnapShot.value.keys;
-      var values = dataSnapShot.value;
-
-      for (var key in keys) {
-        RestaurantModel restaurantModel = new RestaurantModel(
-          values[key]['nome'],
-          values[key]['img'],
-          values[key]['morada'],
-          values[key]['produtos']['Nome_prod'],
-          values[key]['produtos']['img_prod'],
-          values[key]['produtos']['preço'],
-        );
-        restaurantList.add(restaurantModel);
-      }
-      setState(() {
-        //
-      });
-    });
   }
 
   @override
@@ -66,12 +40,14 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                   )),
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: restaurantList.length,
+                itemCount: widget.id.length,
                 itemBuilder: (context, index) {
+                  int i = index+1;
+
                   return buildItemRow(
-                    name: restaurantList[index].prodName,
-                    url: restaurantList[index].prodImg,
-                    price: restaurantList[index].prodPrice,
+                    name: "$i. ${widget.id[index]}",
+                    url: "assets/images/frutas.png",
+                    price: 20,
                   );
                 },
               ),

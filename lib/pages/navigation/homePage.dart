@@ -1,9 +1,9 @@
 import 'package:MrRecipe/models/category_model.dart';
 import 'package:MrRecipe/models/recipe_model.dart';
 import 'package:MrRecipe/widgets/widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/Category_food_card.dart';
 import 'package:MrRecipe/pages/navigation/restaurantDetails.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
+  CollectionReference recipes = FirebaseFirestore.instance.collection('Recipes');
   List<Recipe> recipeList = [];
   List<FoodCategory> _categories = categories;
 
@@ -24,32 +25,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     super.initState();
 
     debugPrint("initState");
-
-    DatabaseReference databaseReference =
-        FirebaseDatabase.instance.reference().child("Recipes");
-
-    databaseReference.once().then((DataSnapshot dataSnapShot) {
-      recipeList.clear();
-      var keys = dataSnapShot.value.keys;
-      var values = dataSnapShot.value;
-
-      for (var key in keys) {
-        Recipe recipeModel = new Recipe(
-          name: values[key]['nome'],
-          img: values[key]['img'],
-          author: values[key]['autor'],
-          quantity: values[key]['quantidade'],
-          calories: values[key]['calorias'],
-          time: values[key]['tempo'],
-          favorite: false,
-          ingredients: [], 
-        );
-        recipeList.add(recipeModel);
-      }
-      setState(() {
-        //
-      });
-    });
   }
 
 bool get wantKeepAlive => true;
@@ -61,59 +36,75 @@ bool get wantKeepAlive => true;
 
     return Container(
       padding: appHorizontalPadding(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          const SizedBox(height: 65),
+          child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(height: 65),
+              Container(
+                child: Text("Home",
+                    style: GoogleFonts.comfortaa(
+                        fontSize: 30, fontWeight: FontWeight.bold))),
+            const SizedBox(height: 15),
             Container(
-              child: Text("Home",
-                  style: GoogleFonts.comfortaa(
-                      fontSize: 30, fontWeight: FontWeight.bold))),
-          const SizedBox(height: 15),
-          Container(
-            height: 80,
-            // color: Colors.black,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: _categories.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return FoodCard(
-                  categoryName: _categories[index].categoryName,
-                  categoryIcon: _categories[index].categoryIcon,
+              height: 80,
+              // color: Colors.black,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _categories.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return FoodCard(
+                    categoryName: _categories[index].categoryName,
+                    categoryIcon: _categories[index].categoryIcon,
+                  );
+                },
+              ),
+            ),
+            Container(
+
+              // mostra os dados de uma certa collection 
+              // neste caso a 'Recipes'
+              child: StreamBuilder<QuerySnapshot>(
+                stream: recipes.snapshots(),
+                builder: (BuildContext context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Container(
+                        padding: EdgeInsets.only(top: 15),
+                        child: CircularProgressIndicator()
+                      )
+                    );
+                  }
+
+                  return new ListView.builder(
+                    itemCount: snapshot.data.docs.length,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemBuilder:(context, index){
+                      return restaurantPage(
+                            context,
+                            snapshot.data.docs[index]['ingredientes'],
+                            snapshot.data.docs[index]['ingredientes'][index],
+                            snapshot.data.docs[index]['autor'],
+                            snapshot.data.docs[index]['img_url'],
+                    );
+                  },
                 );
               },
-            ),
+            )
           ),
-      //     SizedBox(height: 15),
-      //     Container(
-      //       child: restaurantList.length == 0
-      //           ? Center(
-      //               child: CircularProgressIndicator(),
-      //             )
-      //           : Expanded(
-      //               child: ListView.builder(
-      //                 shrinkWrap: true,
-      //                 itemCount: restaurantList.length,
-      //                 itemBuilder: (context, index) {
-      //                   return restaurantPage(
-      //                       context,
-      //                       restaurantList[index].name,
-      //                       restaurantList[index].morada,
-      //                       restaurantList[index].img);
-      //                 },
-      //               ),
-      //             ),
-      //     ),
-      //   ],
-      // ),
         ],
       ),
     );
   }
 }
 
-Widget restaurantPage(var context, String title, subTitle, String url) {
+// Mostra as receitas em perquenos quadrados
+Widget restaurantPage(var context, List id, String title, subTitle, String url) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 25),
     child: GestureDetector(
@@ -165,7 +156,7 @@ Widget restaurantPage(var context, String title, subTitle, String url) {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => RestaurantDetails(title)));
+                  builder: (context) => RestaurantDetails(title, id)));
         }),
   );
 }
