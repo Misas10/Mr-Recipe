@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
       child: Scaffold(
         backgroundColor: primarycolor(),
         body: Center(
-          child: Text("Dinaty",
+          child: Text("Mr. Recipe",
               style: GoogleFonts.lato(fontSize: 80, color: Colors.white)),
         ),
       ),
