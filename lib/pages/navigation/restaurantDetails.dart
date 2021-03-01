@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RestaurantDetails extends StatefulWidget {
-  final String name;
-  final List id;
+  final String recipeName;
+  final List ingredientes;
 
-  RestaurantDetails(this.name, this.id);
+  RestaurantDetails(this.recipeName, this.ingredientes);
 
   @override
   _RestaurantDetailsState createState() => _RestaurantDetailsState();
@@ -27,7 +27,7 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text(widget.name),
+            Text(widget.recipeName),
             Container(
               padding: EdgeInsets.only(right: 20, left: 20, top: 25),
               width: MediaQuery.of(context).size.width,
@@ -40,14 +40,13 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
                   )),
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: widget.id.length,
+                itemCount: widget.ingredientes.length,
                 itemBuilder: (context, index) {
                   int i = index+1;
 
                   return buildItemRow(
-                    name: "$i. ${widget.id[index]}",
+                    name: "$i. ${widget.ingredientes[index]}",
                     url: "assets/images/frutas.png",
-                    price: 20,
                   );
                 },
               ),
@@ -63,12 +62,10 @@ class _RestaurantDetailsState extends State<RestaurantDetails> {
 class buildItemRow extends StatelessWidget {
   final String name;
   final String url;
-  final double price;
 
   const buildItemRow({
     this.name,
     this.url,
-    this.price,
     Key key,
   }) : super(key: key);
 
@@ -95,7 +92,6 @@ class buildItemRow extends StatelessWidget {
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey)),
-                Text("$price€"),
                 SizedBox(height: 15),
               ],
             ),

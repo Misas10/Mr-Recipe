@@ -1,6 +1,5 @@
 import 'package:MrRecipe/models/category_model.dart';
 import 'package:MrRecipe/models/recipe_model.dart';
-import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/Category_food_card.dart';
 import 'package:MrRecipe/pages/navigation/restaurantDetails.dart';
@@ -19,9 +18,7 @@ class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   CollectionReference recipes =
       FirebaseFirestore.instance.collection('Recipes');
-  List<Recipe> recipeList = [];
   List<FoodCategory> _categories = categories;
-  ScrollController _controller = new ScrollController();
 
   @override
   void initState() {
@@ -80,17 +77,37 @@ class _HomePageState extends State<HomePage>
             return Text('Sem dados');
           }
 
-          return new ListView.builder(
+          return new GridView.builder(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200,
+                childAspectRatio: 1,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20),
             physics: const NeverScrollableScrollPhysics(),
             itemCount: snapshot.data.docs.length,
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return recipesView(
-                context,
-                snapshot.data.docs[index]['ingredientes'],
-                snapshot.data.docs[index]['ingredientes'][index],
-                snapshot.data.docs[index]['autor'],
-                snapshot.data.docs[index]['img_url'],
+              var recipes = snapshot.data.docs;
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RestaurantDetails(
+                              recipes[index]['nome'],
+                              recipes[index]['ingredientes'])));
+                },
+                child: AspectRatio(
+                  aspectRatio: 1 / 1,
+                  child: ClipRRect(
+                    child: Image.asset(
+                      recipes[index]['img_url'],
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               );
             },
           );
@@ -100,84 +117,63 @@ class _HomePageState extends State<HomePage>
     //]);
   }
 
-  Widget recipeBuild() {
-    return new ListView(shrinkWrap: true, children: <Widget>[
-      new Container(
-        height: 200.0,
-        color: Colors.blue,
-      ),
-      const SizedBox(
-        height: 20,
-      ),
-      new Container(
-        height: 200.0,
-        color: Colors.red,
-      ),
-      const SizedBox(
-        height: 20,
-      ),
-      new Container(
-        height: 200.0,
-        color: Colors.green,
-      ),
-    ]);
-  }
-}
-
 // Mostra as receitas em perquenos quadrados
-Widget recipesView(var context, List id, String title, subTitle, String url) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 25),
-    child: GestureDetector(
-        child: Column(
-          children: [
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage(url), fit: BoxFit.cover),
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10))),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        blurRadius: 3, spreadRadius: 1, color: Colors.grey)
-                  ],
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10))),
-              padding: const EdgeInsets.all(25),
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+  Widget recipesView(var context, List id, String title, subTitle, String url) {
+    return
+        //padding: const EdgeInsets.symmetric(horizontal: 70),
+        GestureDetector(
+            child: Column(children: [
+              Expanded(
+                child: Container(
+                  //height: 600,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage(url), fit: BoxFit.cover),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10))),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 3, spreadRadius: 1, color: Colors.grey)
+                      ],
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10))),
+                  // padding: const EdgeInsets.all(5),
+                  child: Row(
                     children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                      Column(
+                        //mainAxisSize: MainAxisSize.min,
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          Text(
+                            subTitle,
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.grey),
+                          )
+                        ],
                       ),
-                      Text(
-                        subTitle,
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      )
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => RestaurantDetails(title, id)));
-        }),
-  );
+            ]),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => RestaurantDetails(title, id)));
+            });
+  }
 }

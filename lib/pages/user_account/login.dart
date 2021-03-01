@@ -1,6 +1,4 @@
-import 'package:MrRecipe/database/database.dart';
 import 'package:MrRecipe/pages/navigation/navigation.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'registar.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:MrRecipe/widgets/form_errors.dart';
@@ -116,7 +114,7 @@ class _LoginState extends State<Login> {
                                       email: emailController.text.trim(),
                                       password: passwordController.text.trim());
                                   NavBar();
-                                  
+
                                 }),
                           ),
                         ],
