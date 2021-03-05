@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-// import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FoodCard extends StatelessWidget {
   final String categoryName, categoryIcon;
@@ -27,15 +27,14 @@ class FoodCard extends StatelessWidget {
                 Center(
                     child: Text(
                   categoryName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: GoogleFonts.roboto(),
                 )),
                 SizedBox(width: 10),
               ],
             ),
           ),
         ),
-        onTap: () {
-        },
+        onTap: () {},
       ),
     );
   }

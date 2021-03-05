@@ -21,20 +21,12 @@ class _LoginState extends State<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _showPassword = true;
-  // final dataabseReference = FirebaseDatabase.instance.reference();
 
-  // void readData() {
-  //   databaseReference.once().then((DataSnapshot snapshot) {
-  //     print('Data : ${snapshot.value}');
-  //   });
-  // }
-
-  //Permite Apagar o texto do campo "password"
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    
+
     super.dispose();
   }
 
@@ -50,101 +42,101 @@ class _LoginState extends State<Login> {
       };
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        body: SingleChildScrollView(
-          child: Column(children: [
-            //logo(),
-            titleText("Entrar"),
-            SizedBox(height: 30),
-            Container(
-              //height: MediaQuery.of(context).size.height - 350,
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding: appHorizontalPadding(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          emailFormField(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          passwordFormField(
-                            passwordController,
-                            "Password",
-                          ),
-                          SizedBox(height: 20),
-                          Container(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              "Esqueceu-se da palavra-passe?",
-                              style: TextStyle(
-                                  //color: Colors.white,
-                                  fontSize: 15,
-                                  decoration: TextDecoration.underline),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          FormError(errors: errors),
-                          SizedBox(height: 20),
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 40,
-                            child: MaterialButton(
-                                color: primarycolor(),
-                                //alignment: Alignment.center,
-                                //width: MediaQuery.of(context).size.width,
-                                //padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30)),
-                                child: Text("Login",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 17)),
-                                onPressed: () {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-                                  }
-                                  context.read<AuthService>().logIn(
-                                      email: emailController.text.trim(),
-                                      password: passwordController.text.trim());
-                                  NavBar();
-
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Center(
-                      child: RichText(
-                        text: TextSpan(
-                          text: "Não tem conta? ",
-                          style: smallTextSyle(),
+        appBar: buildAppBar(context, "Login"),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(children: [
+              SizedBox(
+                height: 10,
+              ),
+              SizedBox(height: 30),
+              Container(
+                //height: MediaQuery.of(context).size.height - 350,
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: appHorizontalPadding(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Form(
+                        key: _formKey,
+                        child: Column(
                           children: [
-                            TextSpan(
-                                text: "Registe-se",
+                            emailFormField(),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            passwordFormField(
+                              passwordController,
+                              "Password",
+                            ),
+                            const SizedBox(height: 20),
+                            Container(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                "Esqueceu-se da palavra-passe?",
                                 style: TextStyle(
                                     //color: Colors.white,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
                                     fontSize: 15,
                                     decoration: TextDecoration.underline),
-                                recognizer: _gestureRecognizer),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            FormError(errors: errors),
+                            SizedBox(height: 20),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 40,
+                              child: MaterialButton(
+                                  color: primarycolor(),
+                                  //alignment: Alignment.center,
+                                  //width: MediaQuery.of(context).size.width,
+                                  //padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Text("Login",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 17)),
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+                                    }
+                                    context.read<AuthService>().logIn(
+                                        email: emailController.text.trim(),
+                                        password:
+                                            passwordController.text.trim());
+                                    NavBar();
+                                  }),
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 20),
+                      Center(
+                        child: RichText(
+                          text: TextSpan(
+                            text: "Não tem conta? ",
+                            style: simpleTextStyle(12),
+                            children: [
+                              TextSpan(
+                                  text: "Registe-se",
+                                  style: TextStyle(
+                                      //color: Colors.white,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                      decoration: TextDecoration.underline),
+                                  recognizer: _gestureRecognizer),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ]),
+            ]),
+          ),
         ));
   }
 
@@ -180,7 +172,7 @@ class _LoginState extends State<Login> {
           return null;
         },
         controller: emailController,
-        style: simpleTextSyle(),
+        style: simpleTextStyle(14),
         decoration: inputTextDecoration("Email", Icons.email));
   }
 

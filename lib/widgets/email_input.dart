@@ -32,7 +32,7 @@ class _EmailFormFieldState extends State<EmailFormField> {
         return null;
         },
         controller: widget.emailController,
-        style: simpleTextSyle(),
+        style: simpleTextStyle(12),
         decoration: inputTextDecoration("Email", Icons.email));
   }
 }

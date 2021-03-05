@@ -44,96 +44,93 @@ class _RegistarState extends State<Registar> {
       };
 
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        body: SingleChildScrollView(
-          child: Column(children: [
-            //logo(),
-            titleText("Registar-se"),
-            SizedBox(height: 30),
-            Container(
-              //height: MediaQuery.of(context).size.height - 350,
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding: appHorizontalPadding(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Form(
-                      key: _formKey,
-                      child: Column(
+        body: SafeArea(
+      child: SingleChildScrollView(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          buildAppBar(context, "Registar-se"),
+          SizedBox(height: 30),
+          Container(
+            //height: MediaQuery.of(context).size.height - 350,
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              padding: appHorizontalPadding(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 10),
+                        emailFormField(),
+
+                        SizedBox(height: 10),
+                        passwordFormField("Password", passwordController),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        passwordFormField(
+                            "Confirme a Password", confirmPasswordController),
+                        SizedBox(height: 20),
+
+                        FormError(errors: errors),
+
+                        SizedBox(height: 20),
+
+                        // BOTÃO
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 40,
+                          child: MaterialButton(
+                              color: primarycolor(),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Text("Registar",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 17)),
+                              onPressed: () {
+                                if (_formKey.currentState.validate()) {
+                                  _formKey.currentState.save();
+                                }
+                                context.read<AuthService>().register(
+                                    email: emailController.text.trim(),
+                                    password: passwordController.text.trim());
+                                addUsers(emailController.text,
+                                    passwordController.text);
+                                // databaseReference.child("Users").set({
+                                //   'email': "EmailTest",
+                                //   'password': "passwordTeste"
+                                // });
+                                Navigator.pop(context);
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: RichText(
+                      text: TextSpan(
+                        text: "Já tem uma conta? ",
+                        style: simpleTextStyle(12),
                         children: [
-                          SizedBox(height: 10),
-                          emailFormField(),
-
-                          SizedBox(height: 10),
-                          passwordFormField("Password", passwordController),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          passwordFormField(
-                              "Confirme a Password", confirmPasswordController),
-                          SizedBox(height: 20),
-
-                          FormError(errors: errors),
-
-                          SizedBox(height: 20),
-
-                          // BOTÃO
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 40,
-                            child: MaterialButton(
-                                color: primarycolor(),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30)),
-                                child: Text("Registar",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 17)),
-                                onPressed: () {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-                                  }
-                                  context.read<AuthService>().register(
-                                      email: emailController.text.trim(),
-                                      password: passwordController.text.trim());
-                                  addUsers(emailController.text,
-                                      passwordController.text);
-                                  // databaseReference.child("Users").set({
-                                  //   'email': "EmailTest",
-                                  //   'password': "passwordTeste"
-                                  // });
-                                  Navigator.pop(context);
-                                }),
-                          ),
+                          TextSpan(
+                              text: "Faça Login",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline),
+                              recognizer: _gestureRecognizer),
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Center(
-                      child: RichText(
-                        text: TextSpan(
-                          text: "Já tem uma conta? ",
-                          style: smallTextSyle(),
-                          children: [
-                            TextSpan(
-                                text: "Faça Login",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.underline),
-                                recognizer: _gestureRecognizer),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ]),
-        ));
+          ),
+        ]),
+      ),
+    ));
   }
 
   // EMAIL FORM FIELD
@@ -168,7 +165,7 @@ class _RegistarState extends State<Registar> {
           return null;
         },
         controller: emailController,
-        style: simpleTextSyle(),
+        style: simpleTextStyle(16),
         decoration: inputTextDecoration("Email", Icons.email));
   }
 
@@ -242,11 +239,3 @@ class _RegistarState extends State<Registar> {
     );
   }
 }
-
-// TextFormField passwordFormField() {
-//   return TextFormField(
-//     decoration: PasswordFormField(
-//         labeltext: "Password",
-//         controller: passwordController),
-//   );
-// }

@@ -1,23 +1,24 @@
 import 'package:MrRecipe/services/auth.dart';
 import 'package:MrRecipe/widgets/widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatefulWidget{
+class Settings extends StatefulWidget {
   @override
   _SettingsState createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> with AutomaticKeepAliveClientMixin{
-  //final FirebaseAuth auth = FirebaseAuth.instance;
+class _SettingsState extends State<Settings>
+    with AutomaticKeepAliveClientMixin {
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-bool get wantKeepAlive => true;
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-
     super.build(context);
 
     return Container(
@@ -25,7 +26,6 @@ bool get wantKeepAlive => true;
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           SizedBox(height: 100),
           Center(
               child: Text("Definições", style: GoogleFonts.lato(fontSize: 30))),

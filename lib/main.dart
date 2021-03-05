@@ -1,4 +1,5 @@
 import 'package:MrRecipe/pages/Splash_screen.dart';
+import 'package:MrRecipe/pages/navigation/home_screen.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/navigation/navigation.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
@@ -17,6 +18,8 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    precacheImage(AssetImage("assets/images/starter-image.jpg"), context);
+    
     return MultiProvider(
         providers: [
           Provider<AuthService>(
@@ -25,20 +28,17 @@ class MyApp extends StatelessWidget {
               create: (context) => context.read<AuthService>().authStateChanges)
         ],
         child: MaterialApp(
-            // darkTheme: ThemeData(
-            //   primaryColor: Colors.blue,
-            //   brightness: Brightness.dark
-            // ),
-            
             initialRoute: "/",
             routes: {
+              '/home': (context) => HomePage(),
               '/login': (context) => Login(),
               '/registar': (context) => Registar(),
               '/navbar': (context) => NavBar()
-            }, 
+            },
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               primaryColor: Colors.white,
+              backgroundColor: Colors.white
               //scaffoldBackgroundColor: Color.fromARGB(225, 245, 244, 242)
             ),
             home: SplashScreen()));

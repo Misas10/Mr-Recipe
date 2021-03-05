@@ -16,7 +16,7 @@ Future<void> addRecipe(
   return firestore
       .collection('Recipes')
       .add({
-        "nomer_receita": name,
+        "nome_receita": name,
         "autor": author,
         "calorias": calories,
         "img_url": imgUrl,

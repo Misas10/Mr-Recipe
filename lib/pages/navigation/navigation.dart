@@ -1,5 +1,5 @@
 import 'package:MrRecipe/pages/navigation/favorites.dart';
-import 'package:MrRecipe/pages/navigation/homePage.dart';
+import 'package:MrRecipe/pages/navigation/home_screen.dart';
 import 'package:MrRecipe/pages/navigation/search.dart';
 import 'package:MrRecipe/pages/navigation/settings.dart';
 import 'package:MrRecipe/widgets/widget.dart';

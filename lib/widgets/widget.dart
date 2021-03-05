@@ -1,16 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/*Widget appBarMain(BuildContext context) {
-  return AppBar(
-    title: Image.asset(
-      "assets/images/flooop.png",
-      height: 120,
-    ),
-  );
-}
-*/
-
 EdgeInsets appHorizontalPadding() {
   return EdgeInsets.symmetric(horizontal: 10);
 }
@@ -40,40 +30,30 @@ OutlineInputBorder outlineInputBorder() => OutlineInputBorder(
     gapPadding: 10,
     borderSide: BorderSide(color: Colors.grey));
 
-Center titleText(String text) {
-  return Center(
-    child: Text(text,
-        style: GoogleFonts.lato(fontSize: 35, color: Colors.black54)),
-  );
+Text titleText(String text, double fontSize) {
+  return Text(text,
+      style: GoogleFonts.lato(fontSize: fontSize, color: Colors.black54));
 }
 
-TextStyle simpleTextSyle() {
-  return TextStyle(color: Colors.black, fontSize: 16);
-}
-
-TextStyle smallTextSyle() {
-  return TextStyle(color: Colors.black, fontSize: 15);
-}
-
-logo() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[
-      Image.asset(
-        "assets/images/logo_slogan.png",
-        height: 100,
-      )
-    ],
-  );
+TextStyle simpleTextStyle(double fontSize) {
+  return GoogleFonts.roboto(color: Colors.black, fontSize: 16);
 }
 
 Color primarycolor() {
   return Color.fromARGB(255, 254, 92, 25);
 }
 
-// buttonText() {
-//   return TextStyle(fontSize: 18, color: Colors.white);
-// }
+AppBar buildAppBar(BuildContext context, String text) {
+    return AppBar(
+        elevation: 0,
+        centerTitle: true,
+        title: Text(text),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      );
+  }
 
 buildButton(var context, String texto, String routeName) {
   return Container(
