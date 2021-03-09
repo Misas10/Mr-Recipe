@@ -41,7 +41,9 @@ class _LoginState extends State<Login> {
         );
       };
 
-    return Scaffold(
+    return GestureDetector(
+      child: Scaffold(
+        backgroundColor: BgColor,
         appBar: buildAppBar(context, "Login"),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -88,7 +90,7 @@ class _LoginState extends State<Login> {
                               width: MediaQuery.of(context).size.width,
                               height: 40,
                               child: MaterialButton(
-                                  color: primarycolor(),
+                                  color: PrimaryColor,
                                   //alignment: Alignment.center,
                                   //width: MediaQuery.of(context).size.width,
                                   //padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
@@ -116,7 +118,8 @@ class _LoginState extends State<Login> {
                         child: RichText(
                           text: TextSpan(
                             text: "Não tem conta? ",
-                            style: simpleTextStyle(12),
+                            style: simpleTextStyle(
+                                color: Colors.black, fontSize: 12),
                             children: [
                               TextSpan(
                                   text: "Registe-se",
@@ -137,7 +140,10 @@ class _LoginState extends State<Login> {
               ),
             ]),
           ),
-        ));
+        ),
+      ),
+      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+    );
   }
 
   // EMAIL FORM FIELD
@@ -172,7 +178,7 @@ class _LoginState extends State<Login> {
           return null;
         },
         controller: emailController,
-        style: simpleTextStyle(14),
+        style: simpleTextStyle(color: Colors.black, fontSize: 14),
         decoration: inputTextDecoration("Email", Icons.email));
   }
 

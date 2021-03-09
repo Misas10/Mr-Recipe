@@ -1,14 +1,10 @@
-import 'dart:async';
 import 'dart:ui';
 import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/services/auth.dart';
-import 'package:MrRecipe/widgets/widget.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -23,13 +19,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void setValue() async {
-    final prefs = await SharedPreferences.getInstance();
-    int launchCount = prefs.getInt('counter') ?? 0;
-    prefs.setInt('counter', launchCount + 1);
-    if (launchCount == 0) {
-      print("first launch"); //setState to refresh or move to some other page
-    } else {
-      print("Not first launch");
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    debugPrint(connectivityResult.toString());
+    if (connectivityResult == ConnectivityResult.mobile) {
+       // I am connected to a mobile network.
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      // I am connected to a wifi network.
     }
   }
 
@@ -74,19 +69,22 @@ class _SplashScreenState extends State<SplashScreen> {
                     Text(
                       // Título
                       "Seja Bem-vindo ao Mr. Recipe",
-                      style: GoogleFonts.lato(
-                        color: Colors.white,
-                        fontSize: 50,
-                      ),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 50,
+                          fontFamily: 'Lato'),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
                     Text(
-                        // Corpo
-                        "Veja já as suas receitas favoritas!",
-                        style: GoogleFonts.roboto(
-                            color: Colors.white, fontSize: 20)),
+                      // Corpo
+                      "Veja já as suas receitas favoritas!",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontFamily: 'Roboto'),
+                    ),
                     const SizedBox(
                       height: 80,
                     ),

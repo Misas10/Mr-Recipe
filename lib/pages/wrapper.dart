@@ -1,11 +1,11 @@
 import 'package:MrRecipe/pages/Splash_screen.dart';
-import 'package:MrRecipe/pages/navigation/home_screen.dart';
 import 'package:MrRecipe/pages/navigation/navigation.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Verifica se há ou não utilizador 'logado' na app
 // Se ouver vai para a página inicial
@@ -21,12 +21,27 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
+  bool isFirstTime;
+  int launchCount;
+
+  void setValue() async {
+    final prefs = await SharedPreferences.getInstance();
+    launchCount = prefs.getInt('counter') ?? 0;
+    prefs.setInt('counter', launchCount + 1);
+    debugPrint(launchCount.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
 
+    setValue();
+
     if (firebaseUser != null) {
       return NavBar();
+    }
+    if (launchCount == null) {
+      return SplashScreen();
     }
     return wrapperLoginRegister();
   }

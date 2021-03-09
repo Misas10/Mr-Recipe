@@ -9,7 +9,6 @@ class _LoadingState extends State<Loading> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 

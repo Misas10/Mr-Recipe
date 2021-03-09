@@ -14,17 +14,17 @@ class _NavBarState extends State<NavBar> with TickerProviderStateMixin {
   TabController _tabController;
 
   List<Tab> _tabs = <Tab>[
-    Tab(icon: Icon(Icons.home), text: "Home"),
-    Tab(icon: Icon(Icons.search), text: "Busca"),
-    Tab(icon: Icon(Icons.favorite_border_outlined), text: "Favoritos"),
-    Tab(icon: Icon(Icons.settings), text: "Definições")
+    Tab(icon: Icon(Icons.home), text: null),
+    Tab(icon: Icon(Icons.search), text: null),
+    Tab(icon: Icon(Icons.favorite_border_outlined), text: null),
+    Tab(icon: Icon(Icons.settings), text: null)
   ];
 
   List<Widget> _pageOptions = <Widget>[
-    Padding(padding: appHorizontalPadding(), child: HomePage()),
-    Padding(padding: appHorizontalPadding(), child: Search()),
-    Padding(padding: appHorizontalPadding(), child: Favorites()),
-    Padding(padding: appHorizontalPadding(), child: Settings()),
+    HomePage(),
+    Search(),
+    Favorites(),
+    Settings(),
   ];
 
   @override
@@ -42,14 +42,18 @@ class _NavBarState extends State<NavBar> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       body: TabBarView(controller: _tabController, children: _pageOptions),
-      bottomNavigationBar: TabBar(
+      bottomNavigationBar: Material(
+        color: Colors.white,
+        child: TabBar(
           isScrollable: false,
-          labelPadding: EdgeInsets.zero,
           controller: _tabController,
-          tabs: _tabs),
-      // unselectedItemColor: Colors.grey,
-      // selectedItemColor: primarycolor(),
-      // currentIndex: _selectedIndex,  // onTap: _onItemTap,
+          tabs: _tabs,
+          labelPadding: EdgeInsets.only(bottom: 5),
+          indicatorColor: PrimaryColor,
+          labelColor: PrimaryColor,
+          unselectedLabelColor: Colors.black,
+        ),
+      ),
     );
   }
 }

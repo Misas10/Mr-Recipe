@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 EdgeInsets appHorizontalPadding() {
   return EdgeInsets.symmetric(horizontal: 10);
@@ -30,37 +29,44 @@ OutlineInputBorder outlineInputBorder() => OutlineInputBorder(
     gapPadding: 10,
     borderSide: BorderSide(color: Colors.grey));
 
-Text titleText(String text, double fontSize) {
-  return Text(text,
-      style: GoogleFonts.lato(fontSize: fontSize, color: Colors.black54));
+TextStyle titleTextStyle(
+    {Color color, double fontSize, FontWeight fontWeight = FontWeight.normal}) {
+  return TextStyle(
+      color: color,
+      fontSize: fontSize,
+      fontFamily: 'Lato',
+      fontWeight: fontWeight);
 }
 
-TextStyle simpleTextStyle(double fontSize) {
-  return GoogleFonts.roboto(color: Colors.black, fontSize: 16);
-}
-
-Color primarycolor() {
-  return Color.fromARGB(255, 254, 92, 25);
+TextStyle simpleTextStyle(
+    {Color color = Colors.black,
+    double fontSize,
+    FontWeight fontWeight = FontWeight.normal}) {
+  return TextStyle(
+      color: color,
+      fontSize: fontSize,
+      fontFamily: 'Roboto',
+      fontWeight: fontWeight);
 }
 
 AppBar buildAppBar(BuildContext context, String text) {
-    return AppBar(
-        elevation: 0,
-        centerTitle: true,
-        title: Text(text),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      );
-  }
+  return AppBar(
+    elevation: 0,
+    centerTitle: true,
+    title: Text(text),
+    leading: IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () => Navigator.pop(context),
+    ),
+  );
+}
 
 buildButton(var context, String texto, String routeName) {
   return Container(
     width: MediaQuery.of(context).size.width,
     height: 40,
     child: MaterialButton(
-        color: primarycolor(),
+        color: PrimaryColor,
         //alignment: Alignment.center,
         //width: MediaQuery.of(context).size.width,
         //padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
@@ -71,6 +77,10 @@ buildButton(var context, String texto, String routeName) {
         }),
   );
 }
+
+// Colors
+const Color BgColor = Colors.white;
+const Color PrimaryColor = Color.fromARGB(255, 43, 137, 139);
 
 // LOGIN/REGISTAR VALIDATION
 final RegExp emailValidatorRegExp = RegExp(

@@ -1,6 +1,6 @@
+import 'package:MrRecipe/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class FoodCard extends StatelessWidget {
   final String categoryName, categoryIcon;
@@ -27,7 +27,7 @@ class FoodCard extends StatelessWidget {
                 Center(
                     child: Text(
                   categoryName,
-                  style: GoogleFonts.roboto(),
+                  style: simpleTextStyle(),
                 )),
                 SizedBox(width: 10),
               ],

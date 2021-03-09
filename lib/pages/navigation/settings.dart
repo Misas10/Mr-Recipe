@@ -3,7 +3,6 @@ import 'package:MrRecipe/widgets/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
@@ -22,13 +21,14 @@ class _SettingsState extends State<Settings>
     super.build(context);
 
     return Container(
+      color: BgColor,
       padding: appHorizontalPadding(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 100),
           Center(
-              child: Text("Definições", style: GoogleFonts.lato(fontSize: 30))),
+              child: Text("Definições", style: titleTextStyle(fontSize: 30))),
           SizedBox(height: 80),
           FutureBuilder(
             future: context.read<AuthService>().getCurrentUser(),
@@ -45,10 +45,10 @@ class _SettingsState extends State<Settings>
             height: 40,
             //margin: ,
             child: MaterialButton(
-                color: primarycolor(),
-                //alignment: Alignment.center,
-                //width: MediaQuery.of(context).size.width,
-                //padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                color: PrimaryColor,
+                // alignment: Alignment.center,
+                // width: MediaQuery.of(context).size.width,
+                // padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30)),
                 child: Text("Logout",
@@ -69,7 +69,7 @@ Widget displayUserInfo(context, snapshot) {
     child: Column(
       children: [
         Text("Nome: null \nEmail: ${user.email}",
-            style: GoogleFonts.lato(fontSize: 18)),
+            style: simpleTextStyle(fontSize: 18)),
       ],
     ),
   );

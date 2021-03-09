@@ -1,3 +1,4 @@
+import 'package:MrRecipe/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import '../../database/database.dart';
 
@@ -6,10 +7,11 @@ class Favorites extends StatefulWidget {
   _FavoritesState createState() => _FavoritesState();
 }
 
-class _FavoritesState extends State<Favorites> with AutomaticKeepAliveClientMixin{
+class _FavoritesState extends State<Favorites>
+    with AutomaticKeepAliveClientMixin {
   List<String> ingredients = [
-    "tomate", 
-    "cebola", 
+    "tomate",
+    "cebola",
     "cenoura",
     "alface",
     "beterraba"
@@ -19,15 +21,24 @@ class _FavoritesState extends State<Favorites> with AutomaticKeepAliveClientMixi
 
   @override
   Widget build(BuildContext context) {
-
     super.build(context);
 
     return Container(
+      padding: appHorizontalPadding(),
+      color: BgColor,
       child: Center(
-        child: FlatButton(child: Text("Adicionar Receita teste"), onPressed: (){
-          addRecipe(name: "Teste1", imgUrl: "assets/images/vegetais.jpg", tempo: 30,
-            author: "Mr. Recipe", quantity: 6, ingredients: ingredients, calories: 600);
-        }),
+        child: OutlinedButton(
+            child: Text("Adicionar Receita teste"),
+            onPressed: () {
+              addRecipe(
+                  name: "Teste1",
+                  imgUrl: "assets/images/vegetais.jpg",
+                  tempo: 30,
+                  author: "Mr. Recipe",
+                  quantity: 6,
+                  ingredients: ingredients,
+                  calories: 600);
+            }),
       ),
     );
   }

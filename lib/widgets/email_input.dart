@@ -2,7 +2,6 @@ import 'package:MrRecipe/widgets/widget.dart';
 import 'package:flutter/material.dart';
 
 // EMAIL FIELD
-
 class EmailFormField extends StatefulWidget {
   const EmailFormField({
     Key key,
@@ -32,7 +31,7 @@ class _EmailFormFieldState extends State<EmailFormField> {
         return null;
         },
         controller: widget.emailController,
-        style: simpleTextStyle(12),
+        style: simpleTextStyle(color: Colors.black, fontSize: 12),
         decoration: inputTextDecoration("Email", Icons.email));
   }
 }

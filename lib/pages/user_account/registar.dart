@@ -26,7 +26,7 @@ class _RegistarState extends State<Registar> {
   bool _showPassword = true;
   final databaseReference = FirebaseDatabase.instance.reference();
 
-  //Permite Apagar o campo "password"
+  // Permite Apagar o campo "password"
   @override
   void dispose() {
     emailController.dispose();
@@ -43,94 +43,105 @@ class _RegistarState extends State<Registar> {
         Navigator.pop(context);
       };
 
-    return Scaffold(
+    return GestureDetector(
+      child: Scaffold(
+        backgroundColor: BgColor,
         body: SafeArea(
-      child: SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          buildAppBar(context, "Registar-se"),
-          SizedBox(height: 30),
-          Container(
-            //height: MediaQuery.of(context).size.height - 350,
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              padding: appHorizontalPadding(),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        SizedBox(height: 10),
-                        emailFormField(),
+          child: SingleChildScrollView(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              buildAppBar(context, "Registar-se"),
+              SizedBox(height: 30),
+              Container(
+                //height: MediaQuery.of(context).size.height - 350,
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: appHorizontalPadding(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 10),
+                            emailFormField(),
 
-                        SizedBox(height: 10),
-                        passwordFormField("Password", passwordController),
-                        SizedBox(
-                          height: 10,
+                            SizedBox(height: 10),
+                            emailFormField(),
+
+                            SizedBox(height: 10),
+                            passwordFormField("Password", passwordController),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            passwordFormField("Confirme a Password",
+                                confirmPasswordController),
+                            SizedBox(height: 20),
+
+                            FormError(errors: errors),
+
+                            SizedBox(height: 20),
+
+                            // BOTÃO
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 40,
+                              child: MaterialButton(
+                                  color: PrimaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Text("Registar",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 17)),
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      _formKey.currentState.save();
+                                    }
+                                    context.read<AuthService>().register(
+                                        email: emailController.text.trim(),
+                                        password:
+                                            passwordController.text.trim());
+                                    addUsers(emailController.text,
+                                        passwordController.text);
+                                    // databaseReference.child("Users").set({
+                                    //   'email': "EmailTest",
+                                    //   'password': "passwordTeste"
+                                    // });
+                                    Navigator.pop(context);
+                                  }),
+                            ),
+                          ],
                         ),
-                        passwordFormField(
-                            "Confirme a Password", confirmPasswordController),
-                        SizedBox(height: 20),
-
-                        FormError(errors: errors),
-
-                        SizedBox(height: 20),
-
-                        // BOTÃO
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          child: MaterialButton(
-                              color: primarycolor(),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Text("Registar",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 17)),
-                              onPressed: () {
-                                if (_formKey.currentState.validate()) {
-                                  _formKey.currentState.save();
-                                }
-                                context.read<AuthService>().register(
-                                    email: emailController.text.trim(),
-                                    password: passwordController.text.trim());
-                                addUsers(emailController.text,
-                                    passwordController.text);
-                                // databaseReference.child("Users").set({
-                                //   'email': "EmailTest",
-                                //   'password': "passwordTeste"
-                                // });
-                                Navigator.pop(context);
-                              }),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: RichText(
-                      text: TextSpan(
-                        text: "Já tem uma conta? ",
-                        style: simpleTextStyle(12),
-                        children: [
-                          TextSpan(
-                              text: "Faça Login",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline),
-                              recognizer: _gestureRecognizer),
-                        ],
                       ),
-                    ),
+                      SizedBox(height: 20),
+                      Center(
+                        child: RichText(
+                          text: TextSpan(
+                            text: "Já tem uma conta? ",
+                            style: simpleTextStyle(
+                                color: Colors.black, fontSize: 12),
+                            children: [
+                              TextSpan(
+                                  text: "Faça Login",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline),
+                                  recognizer: _gestureRecognizer),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ]),
           ),
-        ]),
+        ),
       ),
-    ));
+      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+    );
   }
 
   // EMAIL FORM FIELD
@@ -165,7 +176,7 @@ class _RegistarState extends State<Registar> {
           return null;
         },
         controller: emailController,
-        style: simpleTextStyle(16),
+        style: simpleTextStyle(color: Colors.black, fontSize: 16),
         decoration: inputTextDecoration("Email", Icons.email));
   }
 
