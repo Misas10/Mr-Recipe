@@ -17,25 +17,24 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
 
     return SafeArea(
       child: GestureDetector(
-        child: Scaffold(
-          backgroundColor: BgColor,
-          body: Container(
-            padding: appHorizontalPadding(),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: Column(
-                children: <Widget>[
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [searchInput()],
-                    ),
+        child: Container(
+          color: BgColor,
+          padding: appHorizontalPadding(),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: Column(
+              children: <Widget>[
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [searchInput()],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+
         // TIRA O FOCO DO INPUT 'Pesquisar'
         onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       ),

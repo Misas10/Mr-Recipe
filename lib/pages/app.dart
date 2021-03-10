@@ -15,6 +15,8 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
+        backgroundColor: Colors.white,
+        inactiveColor: Colors.black,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -38,17 +40,17 @@ class _AppState extends State<App> {
         switch (index) {
           case 0:
             return CupertinoTabView(builder: (context) {
-              return CupertinoPageScaffold(child: HomePage());
+              return Scaffold(body: HomePage());
             });
             break;
           case 1:
             return CupertinoTabView(builder: (context) {
-              return CupertinoPageScaffold(child: Search());
+              return Scaffold(body: Search());
             });
             break;
           case 2:
             return CupertinoTabView(builder: (context) {
-              return CupertinoPageScaffold(child: Favorites());
+              return Scaffold(body: Favorites());
             });
             break;
           case 3:
