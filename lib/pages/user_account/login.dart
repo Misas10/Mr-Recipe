@@ -1,4 +1,4 @@
-import 'package:MrRecipe/pages/navigation/navigation.dart';
+import 'package:MrRecipe/pages/app.dart';
 import 'registar.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:MrRecipe/widgets/form_errors.dart';
@@ -41,11 +41,11 @@ class _LoginState extends State<Login> {
         );
       };
 
-    return GestureDetector(
-      child: Scaffold(
-        backgroundColor: BgColor,
-        appBar: buildAppBar(context, "Login"),
-        body: SafeArea(
+    return Scaffold(
+      backgroundColor: BgColor,
+      appBar: buildAppBar(context, "Login"),
+      body: GestureDetector(
+        child: SafeArea(
           child: SingleChildScrollView(
             child: Column(children: [
               SizedBox(
@@ -107,7 +107,7 @@ class _LoginState extends State<Login> {
                                         email: emailController.text.trim(),
                                         password:
                                             passwordController.text.trim());
-                                    NavBar();
+                                    App();
                                   }),
                             ),
                           ],
@@ -141,8 +141,8 @@ class _LoginState extends State<Login> {
             ]),
           ),
         ),
+        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       ),
-      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
     );
   }
 

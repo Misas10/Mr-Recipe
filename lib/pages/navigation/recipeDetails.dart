@@ -12,6 +12,10 @@ class RecipeDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: BgColor,
+        appBar: AppBar(
+          elevation: 0,
+        ),
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -44,8 +48,8 @@ class RecipeDetails extends StatelessWidget {
                         child: ListView.separated(
                           separatorBuilder: (BuildContext context, int index) =>
                               Divider(
-                            height: 50,
-                            //thickness: 1,
+                            height: 30,
+                            thickness: 1,
                           ),
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -57,6 +61,7 @@ class RecipeDetails extends StatelessWidget {
                           },
                         ),
                       ),
+                      SizedBox(height: 10,)
                     ],
                   ),
                 ),

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:MrRecipe/pages/navigation/home_screen.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
-import 'package:MrRecipe/pages/navigation/navigation.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
 import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/services/auth.dart';
@@ -85,7 +84,6 @@ class _MyAppState extends State<MyApp> {
               '/home': (context) => HomePage(),
               '/login': (context) => Login(),
               '/registar': (context) => Registar(),
-              '/navbar': (context) => NavBar()
             },
             debugShowCheckedModeBanner: false,
             theme: ThemeData(

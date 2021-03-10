@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
+  //int _currentBarIndex;
   CollectionReference recipes =
       FirebaseFirestore.instance.collection('Recipes');
   List<FoodCategory> _categories = categories;
@@ -32,10 +33,11 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Container(
-      padding: appHorizontalPadding(),
-      color: BgColor,
-      child: ListView(physics: BouncingScrollPhysics(), children: [
+    return Scaffold(
+      body: Container(
+        padding: appHorizontalPadding(),
+        color: BgColor,
+        child: ListView(physics: BouncingScrollPhysics(), children: [
           const SizedBox(height: 30),
           Container(
             child: Text(
@@ -74,10 +76,11 @@ class _HomePageState extends State<HomePage>
               child: buildRecipes()),
           SizedBox(height: 10)
         ]),
+      ),
     );
   }
 
-// Mostra as receitas em perquenos quadrados
+//Mostra as receitas em perquenos quadrados
   buildRecipes() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 2),
@@ -122,7 +125,8 @@ class _HomePageState extends State<HomePage>
                       ));
                 },
                 child: Container(
-                  padding: EdgeInsets.only(bottom: 10, top: 5, right: 5, left: 5),
+                  padding:
+                      EdgeInsets.only(bottom: 10, top: 5, right: 5, left: 5),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
@@ -152,8 +156,7 @@ class _HomePageState extends State<HomePage>
                         ),
                         SizedBox(height: 8),
                         Text("${recipes[index]['nome']}",
-                            style:
-                                simpleTextStyle(fontWeight: FontWeight.bold))
+                            style: simpleTextStyle(fontWeight: FontWeight.bold))
                       ],
                     ),
                   ),

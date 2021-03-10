@@ -1,5 +1,5 @@
 import 'package:MrRecipe/pages/Splash_screen.dart';
-import 'package:MrRecipe/pages/navigation/navigation.dart';
+import 'package:MrRecipe/pages/app.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,9 +38,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
     setValue();
 
     if (firebaseUser != null) {
-      return NavBar();
-    }
-    if (launchCount == null) {
+      return App();
+    } else if (launchCount == null) {
       return SplashScreen();
     }
     return wrapperLoginRegister();
