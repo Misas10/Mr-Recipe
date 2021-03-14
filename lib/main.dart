@@ -26,7 +26,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    //setValue();
     super.initState();
 
     // Verifica a conexão à internet do smartphone
@@ -72,22 +71,23 @@ class _MyAppState extends State<MyApp> {
     precacheImage(AssetImage("assets/images/starter-image.jpg"), context);
 
     return MultiProvider(
-        providers: [
-          Provider<AuthService>(
-              create: (_) => AuthService(FirebaseAuth.instance)),
-          StreamProvider(
-              create: (context) => context.read<AuthService>().authStateChanges)
-        ],
-        child: MaterialApp(
-            initialRoute: "/",
-            routes: {
-              '/home': (context) => HomePage(),
-              '/login': (context) => Login(),
-              '/registar': (context) => Registar(),
-            },
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-                primaryColor: Colors.white, accentColor: Colors.white),
-            home: AuthWrapper()));
+      providers: [
+        Provider<AuthService>(
+            create: (_) => AuthService(FirebaseAuth.instance)),
+        StreamProvider(
+            create: (context) => context.read<AuthService>().authStateChanges)
+      ],
+      child: MaterialApp(
+        initialRoute: "/",
+        routes: {
+          '/home': (context) => HomePage(),
+          '/login': (context) => Login(),
+          '/registar': (context) => Registar(),
+        },
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(primaryColor: Colors.white, accentColor: Colors.white),
+        home: AuthWrapper(),
+      ),
+    );
   }
 }

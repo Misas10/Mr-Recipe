@@ -9,13 +9,14 @@ import 'package:flutter/rendering.dart';
 import '../../models/category_model.dart';
 
 class HomePage extends StatefulWidget {
+  HomePage({Key key}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  //int _currentBarIndex;
   CollectionReference recipes =
       FirebaseFirestore.instance.collection('Recipes');
   List<FoodCategory> _categories = categories;
@@ -24,7 +25,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
 
-    debugPrint("initState");
+    debugPrint("homePage");
   }
 
   bool get wantKeepAlive => true;
@@ -53,6 +54,7 @@ class _HomePageState extends State<HomePage>
           height: 80,
           // color: Colors.black,
           child: ListView.builder(
+            cacheExtent: 1000,
             shrinkWrap: true,
             itemCount: _categories.length,
             scrollDirection: Axis.horizontal,
@@ -91,13 +93,20 @@ class _HomePageState extends State<HomePage>
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-                child: Container(
-                    padding: EdgeInsets.only(top: 15),
-                    child: CircularProgressIndicator()));
+              child: Container(
+                padding: EdgeInsets.only(top: 15),
+                child: CircularProgressIndicator(backgroundColor: PrimaryColor),
+              ),
+            );
           }
 
           if (!snapshot.hasData) {
-            return Text('Sem dados');
+            return Center(
+              child: Text(
+                'Sem dados',
+                style: titleTextStyle(color: Colors.red, fontSize: 25),
+              ),
+            );
           }
 
           return new ListView.separated(

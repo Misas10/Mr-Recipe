@@ -21,14 +21,17 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  bool isFirstTime;
   int launchCount;
+  bool newUser;
 
   void setValue() async {
     final prefs = await SharedPreferences.getInstance();
     launchCount = prefs.getInt('counter') ?? 0;
+    newUser = prefs.getBool("newUser") ?? true;
+
     prefs.setInt('counter', launchCount + 1);
-    debugPrint(launchCount.toString());
+    prefs.setBool('newUser', false);
+    debugPrint(newUser.toString());
   }
 
   @override
@@ -36,10 +39,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
     final firebaseUser = context.watch<User>();
 
     setValue();
+    debugPrint(newUser.toString());
+
+    
 
     if (firebaseUser != null) {
       return App();
-    } else if (launchCount == null) {
+    } else if (newUser == null || newUser == false) {
       return SplashScreen();
     }
     return wrapperLoginRegister();

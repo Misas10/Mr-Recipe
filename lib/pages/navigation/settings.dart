@@ -36,7 +36,7 @@ class _SettingsState extends State<Settings>
               if (snapshot.connectionState == ConnectionState.done) {
                 return displayUserInfo(context, snapshot);
               } else
-                return CircularProgressIndicator();
+                return CircularProgressIndicator(backgroundColor: PrimaryColor,);
             },
           ),
           SizedBox(height: 60),

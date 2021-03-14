@@ -1,7 +1,5 @@
-import 'package:MrRecipe/pages/navigation/favorites.dart';
-import 'package:MrRecipe/pages/navigation/home_screen.dart';
-import 'package:MrRecipe/pages/navigation/search.dart';
-import 'package:MrRecipe/pages/navigation/settings.dart';
+import 'package:MrRecipe/pages/navigation/tab_navigator.dart';
+import 'package:MrRecipe/widgets/widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,58 +8,91 @@ class App extends StatefulWidget {
   _AppState createState() => _AppState();
 }
 
-class _AppState extends State<App> {
+class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
+  int currentIndex = 0;
+  String currentPage = "Page1";
+  List<String> pageKeys = ["Page1", "Page2", "Page3", "Page4"];
+  Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
+    "Page1": GlobalKey<NavigatorState>(),
+    "Page2": GlobalKey<NavigatorState>(),
+    "Page3": GlobalKey<NavigatorState>(),
+    "Page4": GlobalKey<NavigatorState>(),
+  };
+  bool get wantKeepAlive => true;
+
+  void initState() {
+    super.initState();
+  }
+
+  void _selectTab(String tabItem, int index) {
+    if (tabItem == currentPage) {
+      _navigatorKeys[tabItem].currentState.popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        currentPage = pageKeys[index];
+        currentIndex = index;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CupertinoTabScaffold(
-      tabBar: CupertinoTabBar(
-        backgroundColor: Colors.white,
-        inactiveColor: Colors.black,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Pesquisa',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favoritos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'conta',
-          ),
-        ],
-      ),
-      tabBuilder: (context, index) {
-        switch (index) {
-          case 0:
-            return CupertinoTabView(builder: (context) {
-              return Scaffold(body: HomePage());
-            });
-            break;
-          case 1:
-            return CupertinoTabView(builder: (context) {
-              return Scaffold(body: Search());
-            });
-            break;
-          case 2:
-            return CupertinoTabView(builder: (context) {
-              return Scaffold(body: Favorites());
-            });
-            break;
-          case 3:
-            return CupertinoTabView(builder: (context) {
-              return Scaffold(body: Settings());
-            });
-            break;
-          default:
-            return const CupertinoTabView();
+    super.build(context);
+    return WillPopScope(
+      onWillPop: () async {
+        final isFirstRoutInCurrentTab =
+            !await _navigatorKeys[currentPage].currentState.maybePop();
+        if (isFirstRoutInCurrentTab) {
+          if (currentPage != "Page1") _selectTab("Page1", 1);
+          return false;
         }
+        return isFirstRoutInCurrentTab;
       },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            _buildOffstageNavigator("Page1"),
+            _buildOffstageNavigator("Page2"),
+            _buildOffstageNavigator("Page3"),
+            _buildOffstageNavigator("Page4"),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: PrimaryColor,
+          unselectedItemColor: Colors.black,
+          backgroundColor: Colors.white,
+          currentIndex: currentIndex,
+          onTap: (int index) => _selectTab(pageKeys[index], index),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Pesquisa',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Favoritos',
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.account_circle_outlined), label: 'Conta')
+          ],
+          type: BottomNavigationBarType.fixed,
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+    );
+  }
+
+  Widget _buildOffstageNavigator(String tabItem) {
+    return Offstage(
+      offstage: currentPage != tabItem,
+      child: TabNavigator(
+        navigatorKey: _navigatorKeys[tabItem],
+        tabItem: tabItem,
+      ),
     );
   }
 }
