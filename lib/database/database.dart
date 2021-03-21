@@ -1,33 +1,46 @@
+import 'package:MrRecipe/models/recipe_model.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // adiciona receitas novas a base de dados
-Future<void> addRecipe(
-    {String name,
-    String imgUrl,
-    String author,
-    bool favorito = false,
-    int quantity,
-    int calories,
-    int tempo,
-    List<String> ingredients}) {
-  return firestore
+Future<void> addRecipe({
+  String name,
+  String author,
+  int calories,
+  String imgUrl,
+  int quantity, 
+  List ingredients,
+  int time,
+  List usersFavorites
+}) {
+  // recipe.setId(id);
+  var id = firestore.collection("Recipes").doc().id;
+  final docRef = FirebaseFirestore.instance
       .collection('Recipes')
-      .add({
+      .doc(id)
+      .set({
+        "id": id,
         "nome_receita": name,
         "autor": author,
         "calorias": calories,
         "img_url": imgUrl,
         "quantidade": quantity,
         "ingredientes": ingredients,
-        "tempo_total": tempo,
-        "IsFavotiro": favorito
+        "tempo_total": time,
+        "utilizadores_que_deram_likes": [],
       })
-      .then((value) => "Receita adicionada")
+      .then((value) => debugPrint("Receita adicionada id: $id"))
       .catchError((error) => "Falha ao adicionar a Receita: $error");
+
+  return docRef;
 }
+
+// void updateRecipe(Recipe recipe, DocumentReference id) {
+//   id.update(recipe.toJson());
+// }
 
 // adiciona clientes novos a base de dados
 Future<void> addUsers(String email, String pass) {
@@ -44,5 +57,19 @@ Future<void> addCategories(String categoryName, String categoryIcon) {
       .collection("Categories")
       .add({'nome': categoryName, 'Icon': categoryIcon})
       .then((value) => debugPrint("Categoria adicionada!"))
-      .catchError((error) => debugPrint('Falha ao adicionar a receita: $error'));
+      .catchError(
+          (error) => debugPrint('Falha ao adicionar a receita: $error'));
+}
+
+// adiciona utilizadores que deram 'likes' nas receitas
+Future<void> addFavorites(String uid) {
+  String favoritesRef = firestore.collection("Favoritos").doc().id;
+  return firestore
+      .collection('Favoritos')
+      .add({
+        "id": favoritesRef,
+        "uids": uid,
+      })
+      .then((value) => debugPrint("Utilizador deu like"))
+      .catchError((error) => debugPrint("Falha ao dar o like"));
 }

@@ -1,6 +1,7 @@
 import 'package:MrRecipe/models/category_model.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:page_transition/page_transition.dart';
 import '../../widgets/Category_food_card.dart';
 import 'package:MrRecipe/pages/navigation/recipeDetails.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,7 +55,6 @@ class _HomePageState extends State<HomePage>
           height: 80,
           // color: Colors.black,
           child: ListView.builder(
-            cacheExtent: 1000,
             shrinkWrap: true,
             itemCount: _categories.length,
             scrollDirection: Axis.horizontal,
@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage>
         Container(
             // mostra os dados de uma certa collection
             // neste caso a 'Recipes'
-            //height: 100,
+            // height: 100,
             width: 100,
             child: buildRecipes()),
         SizedBox(height: 10)
@@ -123,13 +123,15 @@ class _HomePageState extends State<HomePage>
                 onTap: () {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => RecipeDetails(
-                          recipeName: recipes[index]['nome'],
-                          ingredientes: recipes[index]['ingredientes'],
-                          image: recipes[index]['img_url'],
-                        ),
-                      ));
+                      PageTransition(
+                          child: RecipeDetails(
+                            recipeName: recipes[index]['nome_receita'],
+                            ingredientes: recipes[index]['ingredientes'],
+                            image: recipes[index]['img_url'],
+                            calories: recipes[index]['calorias'],
+                            id: recipes[index]['id'],
+                          ),
+                          type: PageTransitionType.rightToLeft));
                 },
                 child: Container(
                   padding:
@@ -162,7 +164,7 @@ class _HomePageState extends State<HomePage>
                           ),
                         ),
                         SizedBox(height: 8),
-                        Text("${recipes[index]['nome']}",
+                        Text("${recipes[index]['nome_receita']}",
                             style: simpleTextStyle(fontWeight: FontWeight.bold))
                       ],
                     ),

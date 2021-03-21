@@ -29,35 +29,35 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     // Verifica a conexão à internet do smartphone
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      debugPrint(result.toString());
-      if (result == ConnectivityResult.none) {
-        // Texto para quando não ouver conexão à internet
-        return showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Ooops!'),
-                content: SingleChildScrollView(
-                  child: ListBody(
-                    children: <Widget>[
-                      Text("Vôce não tem uma conexão á internet."),
-                      Text(
-                          "Para uma melhor experiência estabeleça uma conexão.")
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                      onPressed: () => Navigator.of(context).pop,
-                      child: Text("Ok"))
-                ],
-              );
-            });
-      }
-    });
+    // subscription = Connectivity()
+    //     .onConnectivityChanged
+    //     .listen((ConnectivityResult result) {
+    //   debugPrint(result.toString());
+    //   if (result == ConnectivityResult.none) {
+    //     // Texto para quando não ouver conexão à internet
+    //     return showDialog(
+    //         context: context,
+    //         builder: (BuildContext context) {
+    //           return AlertDialog(
+    //             title: Text('Ooops!'),
+    //             content: SingleChildScrollView(
+    //               child: ListBody(
+    //                 children: <Widget>[
+    //                   Text("Vôce não tem uma conexão á internet."),
+    //                   Text(
+    //                       "Para uma melhor experiência estabeleça uma conexão.")
+    //                 ],
+    //               ),
+    //             ),
+    //             actions: <Widget>[
+    //               TextButton(
+    //                   onPressed: () => Navigator.of(context).pop,
+    //                   child: Text("Ok"))
+    //             ],
+    //           );
+    //         });
+    //   }
+    // });
   }
 
   @override

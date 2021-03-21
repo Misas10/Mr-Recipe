@@ -53,7 +53,7 @@ class _LoginState extends State<Login> {
               ),
               SizedBox(height: 30),
               Container(
-                //height: MediaQuery.of(context).size.height - 350,
+                // height: MediaQuery.of(context).size.height - 350,
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   padding: appHorizontalPadding(),

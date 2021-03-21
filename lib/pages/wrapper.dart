@@ -38,16 +38,16 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
 
-    setValue();
+    // setValue();
     debugPrint(newUser.toString());
 
     
 
     if (firebaseUser != null) {
       return App();
-    } else if (newUser == null || newUser == false) {
-      return SplashScreen();
-    }
+    } // else if (newUser == null || newUser == false) {
+      // return SplashScreen();
+    // }
     return wrapperLoginRegister();
   }
 

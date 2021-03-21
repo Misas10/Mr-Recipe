@@ -36,7 +36,9 @@ class _SettingsState extends State<Settings>
               if (snapshot.connectionState == ConnectionState.done) {
                 return displayUserInfo(context, snapshot);
               } else
-                return CircularProgressIndicator(backgroundColor: PrimaryColor,);
+                return CircularProgressIndicator(
+                  backgroundColor: PrimaryColor,
+                );
             },
           ),
           SizedBox(height: 60),
@@ -65,10 +67,13 @@ class _SettingsState extends State<Settings>
 
 Widget displayUserInfo(context, snapshot) {
   final user = snapshot.data;
+  var userName = user.displayName ?? "null"; 
+  var userEmail = user.email;
+  
   return Container(
     child: Column(
       children: [
-        Text("Nome: null \nEmail: ${user.email}",
+        Text("Nome: $userName \nEmail: $userEmail",
             style: simpleTextStyle(fontSize: 18)),
       ],
     ),
