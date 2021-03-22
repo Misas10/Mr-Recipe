@@ -9,14 +9,15 @@ class RecipeDetails extends StatefulWidget {
   final String image; // mostra a imagem principal
   final String id;
   final int calories;
+  final List recipeUids;
 
-  RecipeDetails({
-    @required this.recipeName,
-    @required this.ingredientes,
-    @required this.image,
-    @required this.id,
-    @required this.calories,
-  });
+  RecipeDetails(
+      {@required this.recipeName,
+      @required this.ingredientes,
+      @required this.image,
+      @required this.id,
+      @required this.calories,
+      @required this.recipeUids});
 
   @override
   _RecipeDetailsState createState() => _RecipeDetailsState();
@@ -33,33 +34,49 @@ class _RecipeDetailsState extends State<RecipeDetails> {
 
   void initState() {
     super.initState();
-    debugPrint("InitState RecipeDetails");
-    getCurrentUser();
-    recipesRef.get().then((QuerySnapshot querySnapshot) => {
-          querySnapshot.docs.forEach((doc) {
-            setState(() {
-              recipe = doc.data();
-              recipeUids = recipe['utilizadores_que_deram_likes'];
-              id = widget.id;
-            });
-            debugPrint("${recipe['nome_receita']} ${recipeUids.toString()}");
-          })
-        });
+    debugPrint("\n---- InitState RecipeDetails ----");
+    setState(() {
+      // Guarda o utilizador atual na variável 'currentUser'
+      currentUser = auth.currentUser;
+      recipeUids = widget.recipeUids;
+      getRecipe();
+    });
+
+    debugPrint("${recipeUids.toString()}");
+
+    debugPrint("---- End InitState ---- \n");
   }
 
+  getRecipe() async {
+    recipesRef
+        .where("id", isEqualTo: widget.id)
+        .get()
+        .then((QuerySnapshot querySnapshot) => {
+              querySnapshot.docs.forEach((doc) {
+                setState(() {
+                  recipe = doc.data();
+                  id = widget.id;
+                });
+              })
+            });
+  }
+
+  // Permite dar Like/dislike à receita
   void likeRecipe() {
     debugPrint("\n----- Recipe Liked -----");
     debugPrint("id: $id");
     debugPrint("${recipeUids.toString()}");
-    
-    // adiciona ou retira os utilizadores que deram/retiraram o like
+
+    // adiciona ou retira os utilizadores que deram/retiraram da BD
+
     if (recipeUids.contains(currentUser.uid)) {
       debugPrint("Existe");
       setState(() {
         recipeUids.remove(currentUser.uid);
       });
 
-      // recipesRef.doc(id).update({"utilizadores_que_deram_likes": recipeUids});
+      // Atualiza os dados na BD
+      recipesRef.doc(id).update({"utilizadores_que_deram_likes": recipeUids});
     } else {
       debugPrint("Não existe");
 
@@ -68,21 +85,22 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       });
       debugPrint(recipeUids.toString());
 
-      // recipesRef.doc(id).update({"utilizadores_que_deram_likes": recipeUids});
+      // Atualiza os dados na BD
+      recipesRef.doc(id).update({"utilizadores_que_deram_likes": recipeUids});
     }
   }
 
-  getCurrentUser() async {
-    setState(() {
-      currentUser = auth.currentUser;
-    });
-  }
+  final _insertedSnackBar = SnackBar(
+    content: Text("Receita adicionada aos favoritos"),
+    backgroundColor: Colors.green,
+    duration: const Duration(seconds: 2),
+  );
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
+  final _removedSnackBar = SnackBar(
+    content: Text("Receita removida dos favoritos"),
+    backgroundColor: Colors.red,
+    duration: const Duration(seconds: 2),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -95,17 +113,22 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               Text(widget.recipeName, style: simpleTextStyle()),
               Spacer(),
               GestureDetector(
-                child: Icon(
-                  Icons.favorite_border_outlined,
-                  size: 30,
-                ),
-                // : Icon(
-                //     Icons.favorite,
-                //     color: Colors.red,
-                //     size: 30,
-                //   ),
+                child: recipeUids.contains(currentUser.uid)
+                    ? Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                        size: 30,
+                      )
+                    : Icon(Icons.favorite_border_outlined,
+                        color: Colors.black, size: 30),
                 onTap: () {
                   likeRecipe();
+                  if (recipeUids.contains(currentUser.uid))
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(_insertedSnackBar);
+                  else
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(_removedSnackBar);
                 },
               ),
             ],
@@ -117,124 +140,122 @@ class _RecipeDetailsState extends State<RecipeDetails> {
           height: double.infinity,
           child: SingleChildScrollView(
             physics: BouncingScrollPhysics(),
-            child: streamBuilder(),
-            // Column(
-            //   children: [
-            //     Container(
-            //       height: MediaQuery.of(context).size.height * .4,
-            //       child: Image.asset(
-            //         widget.image,
-            //         fit: BoxFit.cover,
-            //       ),
-            //     ),
-            //     Container(
-            //       padding: appHorizontalPadding(),
-            //       child: Column(
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: [
-            //           const SizedBox(height: 15),
-            //           Text(
-            //             "Ingredientes",
-            //             style: simpleTextStyle(
-            //               fontSize: 20,
-            //               fontWeight: FontWeight.bold,
-            //             ),
-            //           ),
-            //           const SizedBox(height: 2),
-            //           Text("Para até 4 pessoas",
-            //               style: simpleTextStyle(fontSize: 16)),
-            //           const SizedBox(height: 20),
-            //           Container(),
-            //           const SizedBox(height: 20),
-            //           Container(
-            //             child: Text(
-            //               "Preparação",
-            //               style: simpleTextStyle(
-            //                   fontSize: 20, fontWeight: FontWeight.bold),
-            //             ),
-            //           ),
-            //           SizedBox(height: 15)
-            //         ],
-            //       ),
-            //     ),
-            //   ],
+            child: Column(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * .4,
+                  child: Image.asset(
+                    widget.image,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Container(
+                  padding: appHorizontalPadding(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 15),
+                      Text(
+                        "Ingredientes",
+                        style: simpleTextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text("Para até 4 pessoas",
+                          style: simpleTextStyle(fontSize: 16)),
+                      const SizedBox(height: 20),
+                      Container(
+                        child: ListView.separated(
+                          separatorBuilder: (BuildContext context, int index) =>
+                              const Divider(
+                            height: 30,
+                            thickness: 1,
+                          ),
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: widget.ingredientes.length,
+                          itemBuilder: (context, index) {
+                            return BuildItemRow(
+                              name: "${widget.ingredientes[index]}",
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        child: Text(
+                          "Preparação",
+                          style: simpleTextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: 15)
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  StreamBuilder streamBuilder() {
-    return StreamBuilder<QuerySnapshot>(
-        stream: recipesRef.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Text("Ouve um erro");
-          }
+  // StreamBuilder streamBuilder() {
+  //   return StreamBuilder<QuerySnapshot>(
+  //       stream: recipesRef.snapshots(),
+  //       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+  //         if (snapshot.hasError) {
+  //           return Text("Ouve um erro");
+  //         }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
+  //         if (snapshot.connectionState == ConnectionState.waiting) {
+  //           return CircularProgressIndicator();
+  //         }
 
-          return new Column(children: [
-            Container(
-              height: MediaQuery.of(context).size.height * .4,
-              child: Image.asset(
-                widget.image,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Container(
-              padding: appHorizontalPadding(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 15),
-                  Text(
-                    "Ingredientes",
-                    style: simpleTextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text("Para até 4 pessoas",
-                      style: simpleTextStyle(fontSize: 16)),
-                  const SizedBox(height: 20),
-                  Container(
-                    child: ListView.separated(
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(
-                        height: 30,
-                        thickness: 1,
-                      ),
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: 4,
-                      itemBuilder: (context, index) {
-                        var recipes = snapshot.data.docs;
+  //         return new Column(children: [
+  //           Container(
+  //             height: MediaQuery.of(context).size.height * .4,
+  //             child: Image.asset(
+  //               widget.image,
+  //               fit: BoxFit.cover,
+  //             ),
+  //           ),
+  //           Container(
+  //             padding: appHorizontalPadding(),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 const SizedBox(height: 15),
+  //                 Text(
+  //                   "Ingredientes",
+  //                   style: simpleTextStyle(
+  //                     fontSize: 20,
+  //                     fontWeight: FontWeight.bold,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 2),
+  //                 Text("Para até 4 pessoas",
+  //                     style: simpleTextStyle(fontSize: 16)),
+  //                 const SizedBox(height: 20),
 
-                        return BuildItemRow(
-                          name: "ola",
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    child: Text(
-                      "Preparação",
-                      style: simpleTextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  SizedBox(height: 15)
-                ],
-              ),
-            ),
-          ]);
-        });
-  }
+  //                 const SizedBox(height: 20),
+  //                 Container(
+  //                   child: Text(
+  //                     "Preparação",
+  //                     style: simpleTextStyle(
+  //                         fontSize: 20, fontWeight: FontWeight.bold),
+  //                   ),
+  //                 ),
+  //                 SizedBox(height: 15)
+  //               ],
+  //             ),
+  //           ),
+  //         ]);
+  //       });
+  // }
 }
 
 class BuildItemRow extends StatelessWidget {

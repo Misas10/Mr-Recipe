@@ -125,12 +125,13 @@ class _HomePageState extends State<HomePage>
                       context,
                       PageTransition(
                           child: RecipeDetails(
-                            recipeName: recipes[index]['nome_receita'],
-                            ingredientes: recipes[index]['ingredientes'],
-                            image: recipes[index]['img_url'],
-                            calories: recipes[index]['calorias'],
-                            id: recipes[index]['id'],
-                          ),
+                              recipeName: recipes[index]['nome_receita'],
+                              ingredientes: recipes[index]['ingredientes'],
+                              image: recipes[index]['img_url'],
+                              calories: recipes[index]['calorias'],
+                              id: recipes[index]['id'],
+                              recipeUids: recipes[index]
+                                  ['utilizadores_que_deram_likes']),
                           type: PageTransitionType.rightToLeft));
                 },
                 child: Container(
