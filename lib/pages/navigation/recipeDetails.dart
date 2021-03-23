@@ -10,6 +10,7 @@ class RecipeDetails extends StatefulWidget {
   final String id;
   final int calories;
   final List recipeUids;
+  final User user;
 
   RecipeDetails(
       {@required this.recipeName,
@@ -17,15 +18,14 @@ class RecipeDetails extends StatefulWidget {
       @required this.image,
       @required this.id,
       @required this.calories,
-      @required this.recipeUids});
+      @required this.recipeUids,
+      @required this.user});
 
   @override
   _RecipeDetailsState createState() => _RecipeDetailsState();
 }
 
 class _RecipeDetailsState extends State<RecipeDetails> {
-  User currentUser;
-  FirebaseAuth auth = FirebaseAuth.instance;
   final CollectionReference recipesRef =
       FirebaseFirestore.instance.collection("Recipes");
   Map recipe;
@@ -36,8 +36,6 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     super.initState();
     debugPrint("\n---- InitState RecipeDetails ----");
     setState(() {
-      // Guarda o utilizador atual na variável 'currentUser'
-      currentUser = auth.currentUser;
       recipeUids = widget.recipeUids;
       getRecipe();
     });
@@ -68,11 +66,10 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     debugPrint("${recipeUids.toString()}");
 
     // adiciona ou retira os utilizadores que deram/retiraram da BD
-
-    if (recipeUids.contains(currentUser.uid)) {
+    if (recipeUids.contains(widget.user.uid)) {
       debugPrint("Existe");
       setState(() {
-        recipeUids.remove(currentUser.uid);
+        recipeUids.remove(widget.user.uid);
       });
 
       // Atualiza os dados na BD
@@ -81,7 +78,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       debugPrint("Não existe");
 
       setState(() {
-        recipeUids.add(currentUser.uid);
+        recipeUids.add(widget.user.uid);
       });
       debugPrint(recipeUids.toString());
 
@@ -91,13 +88,19 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   }
 
   final _insertedSnackBar = SnackBar(
-    content: Text("Receita adicionada aos favoritos"),
-    backgroundColor: Colors.green,
+    content: Text(
+      "Receita adicionada aos favoritos",
+      style: simpleTextStyle(color: Colors.white),
+    ),
+    backgroundColor: PrimaryColor,
     duration: const Duration(seconds: 2),
   );
 
   final _removedSnackBar = SnackBar(
-    content: Text("Receita removida dos favoritos"),
+    content: Text(
+      "Receita removida dos favoritos",
+      style: simpleTextStyle(color: Colors.white),
+    ),
     backgroundColor: Colors.red,
     duration: const Duration(seconds: 2),
   );
@@ -113,7 +116,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               Text(widget.recipeName, style: simpleTextStyle()),
               Spacer(),
               GestureDetector(
-                child: recipeUids.contains(currentUser.uid)
+                child: recipeUids.contains(widget.user.uid)
                     ? Icon(
                         Icons.favorite,
                         color: Colors.red,
@@ -123,7 +126,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                         color: Colors.black, size: 30),
                 onTap: () {
                   likeRecipe();
-                  if (recipeUids.contains(currentUser.uid))
+                  if (recipeUids.contains(widget.user.uid))
                     ScaffoldMessenger.of(context)
                         .showSnackBar(_insertedSnackBar);
                   else

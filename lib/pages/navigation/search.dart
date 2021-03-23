@@ -1,7 +1,11 @@
 import 'package:MrRecipe/widgets/widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Search extends StatefulWidget {
+  final User user;
+
+  const Search({Key key, this.user});
   @override
   _SearchState createState() => _SearchState();
 }

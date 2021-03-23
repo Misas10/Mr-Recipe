@@ -1,25 +1,26 @@
+import 'package:MrRecipe/pages/navigation/recipeDetails.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import '../../database/database.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 class Favorites extends StatefulWidget {
+  final User user;
+
+  const Favorites({Key key, this.user}) : super(key: key);
+
   @override
   _FavoritesState createState() => _FavoritesState();
 }
 
 class _FavoritesState extends State<Favorites>
     with AutomaticKeepAliveClientMixin {
-  var id;
-  int nIds = 0;
+  // var id;
 
-  Map recipe;
-  User currentUser;
-  FirebaseAuth auth = FirebaseAuth.instance;
   CollectionReference recipesRef =
-      FirebaseFirestore.instance.collection('Recipes');
+      FirebaseFirestore.instance.collection("Recipes");
   List<String> ingredients = [
     "tomate",
     "cebola",
@@ -35,29 +36,17 @@ class _FavoritesState extends State<Favorites>
   void initState() {
     super.initState();
     debugPrint("---- Favorites ----\n");
-    getCurrentUser();
 
     recipesRef
-        .where("utilizadores_que_deram_like", arrayContains: currentUser.uid)
+        .where("utilizadores_que_deram_likes", arrayContains: widget.user.uid)
         .get()
         .then((QuerySnapshot querySnapshot) => {
               querySnapshot.docs.forEach((doc) {
                 setState(() {
-                  recipe = doc.data();
-                  id = doc['id'];
-
                   recipeUids = doc["utilizadores_que_deram_likes"];
-                  nIds += 1;
-                  debugPrint("recipe: ${recipe.toString()}");
                 });
               })
             });
-  }
-
-  getCurrentUser() async {
-    setState(() {
-      currentUser = auth.currentUser;
-    });
   }
 
   void newRecipe() {
@@ -72,7 +61,7 @@ class _FavoritesState extends State<Favorites>
   }
 
   deleteRecipe() {
-    recipeUids.remove(currentUser.uid);
+    recipeUids.remove(widget.user.uid);
   }
 
   final _removedSnackBar = SnackBar(
@@ -91,7 +80,7 @@ class _FavoritesState extends State<Favorites>
         color: BgColor,
         child: Column(
           children: [
-            Text("Favorites"),
+            streamBuilder(),
             OutlinedButton(
                 child: Text("Adicionar Receita teste"),
                 onPressed: () {
@@ -105,7 +94,10 @@ class _FavoritesState extends State<Favorites>
 
   StreamBuilder streamBuilder() {
     return StreamBuilder<QuerySnapshot>(
-        stream: recipesRef.snapshots(),
+        stream: recipesRef
+            .where("utilizadores_que_deram_likes",
+                arrayContains: widget.user.uid)
+            .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return Text("Ouve um erro");
@@ -117,29 +109,52 @@ class _FavoritesState extends State<Favorites>
 
           return new ListView.separated(
             shrinkWrap: true,
-            itemCount: recipe.length,
+            itemCount: snapshot.data.docs.length,
             separatorBuilder: (BuildContext context, int index) =>
                 const Divider(height: 30, thickness: 1),
             itemBuilder: (context, index) {
-              return Slidable(
-                actionPane: SlidableScrollActionPane(),
-                secondaryActions: [
-                  IconSlideAction(
-                      caption: 'Apagar', color: Colors.red, icon: Icons.delete)
-                ],
-                child: new Dismissible(
-                  key: Key(recipeUids[index]),
-                  onDismissed: (direction) {
-                    recipeUids.removeAt(index);
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(_removedSnackBar);
-                  },
-                  background: new Container(color: Colors.red),
-                  child: new ListTile(
-                      title: Text('${currentUser.uid}'),
-                      onTap: () {} // => addFavorites(currentUser.uid),
-                      ),
+              var recipes = snapshot.data.docs;
+              var usersLiked = recipes[index]['utilizadores_que_deram_likes'];
+              debugPrint("\n\n ---- ListView ----\n" +
+                  "${recipes[index]['utilizadores_que_deram_likes'][index]}\n\n");
+              return Dismissible(
+                direction: DismissDirection.endToStart,
+                key: Key(usersLiked[index]),
+                onDismissed: (direction) {
+                  debugPrint("$index");
+                  recipes.removeWhere((element) =>
+                      element.data()['utilizadores_que_deram_likes'] == index);
+                  debugPrint(
+                      "receitasUids: ${recipes[index]['utilizadores_que_deram_likes'][index]}");
+
+                  ScaffoldMessenger.of(context).showSnackBar(_removedSnackBar);
+                },
+                background: new Container(
+                  alignment: Alignment.centerRight,
+                  color: Colors.red,
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
                 ),
+                child: new ListTile(
+                    title: Text('${recipes[index]['nome_receita']}'),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              child: RecipeDetails(
+                                recipeName: recipes[index]['nome_receita'],
+                                ingredientes: recipes[index]['ingredientes'],
+                                image: recipes[index]['img_url'],
+                                calories: recipes[index]['calorias'],
+                                id: recipes[index]['id'],
+                                recipeUids: recipes[index]
+                                    ['utilizadores_que_deram_likes'],
+                                user: widget.user,
+                              ),
+                              type: PageTransitionType.rightToLeft));
+                    }),
               );
             },
           );

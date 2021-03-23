@@ -6,6 +6,10 @@ import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
+  final User user;
+
+  const Settings({Key key, this.user}) : super(key: key);
+
   @override
   _SettingsState createState() => _SettingsState();
 }
@@ -30,27 +34,18 @@ class _SettingsState extends State<Settings>
           Center(
               child: Text("Definições", style: titleTextStyle(fontSize: 30))),
           SizedBox(height: 80),
-          FutureBuilder(
-            future: context.read<AuthService>().getCurrentUser(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return displayUserInfo(context, snapshot);
-              } else
-                return CircularProgressIndicator(
-                  backgroundColor: PrimaryColor,
-                );
-            },
+          Text(
+            "Nome: ${widget.user.displayName}",
+            style: simpleTextStyle(fontSize: 18),
           ),
+          Text("Email: ${widget.user.email}",
+              style: simpleTextStyle(fontSize: 18)),
           SizedBox(height: 60),
           Container(
             width: MediaQuery.of(context).size.width,
             height: 40,
-            //margin: ,
             child: MaterialButton(
                 color: PrimaryColor,
-                // alignment: Alignment.center,
-                // width: MediaQuery.of(context).size.width,
-                // padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30)),
                 child: Text("Logout",
@@ -63,19 +58,4 @@ class _SettingsState extends State<Settings>
       ),
     );
   }
-}
-
-Widget displayUserInfo(context, snapshot) {
-  final user = snapshot.data;
-  var userName = user.displayName ?? "null"; 
-  var userEmail = user.email;
-  
-  return Container(
-    child: Column(
-      children: [
-        Text("Nome: $userName \nEmail: $userEmail",
-            style: simpleTextStyle(fontSize: 18)),
-      ],
-    ),
-  );
 }

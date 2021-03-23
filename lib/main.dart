@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         initialRoute: "/",
         routes: {
-          '/home': (context) => HomePage(),
+          // '/home': (context) => HomePage(),
           '/login': (context) => Login(),
           '/registar': (context) => Registar(),
         },
