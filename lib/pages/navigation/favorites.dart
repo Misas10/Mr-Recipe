@@ -17,7 +17,6 @@ class Favorites extends StatefulWidget {
 
 class _FavoritesState extends State<Favorites>
     with AutomaticKeepAliveClientMixin {
-  // var id;
 
   CollectionReference recipesRef =
       FirebaseFirestore.instance.collection("Recipes");
@@ -35,7 +34,7 @@ class _FavoritesState extends State<Favorites>
   @override
   void initState() {
     super.initState();
-    debugPrint("---- Favorites ----\n");
+    debugPrint("---- Favorites ----\n UserId: ${widget.user.uid}");
 
     recipesRef
         .where("utilizadores_que_deram_likes", arrayContains: widget.user.uid)
@@ -76,7 +75,6 @@ class _FavoritesState extends State<Favorites>
 
     return SafeArea(
       child: Container(
-        // padding: appHorizontalPadding(),
         color: BgColor,
         child: Column(
           children: [
@@ -92,6 +90,7 @@ class _FavoritesState extends State<Favorites>
     );
   }
 
+  // mostra todos os documentes em que o utilizador atual deu like
   StreamBuilder streamBuilder() {
     return StreamBuilder<QuerySnapshot>(
         stream: recipesRef
@@ -115,49 +114,57 @@ class _FavoritesState extends State<Favorites>
             itemBuilder: (context, index) {
               var recipes = snapshot.data.docs;
               var usersLiked = recipes[index]['utilizadores_que_deram_likes'];
-              debugPrint("\n\n ---- ListView ----\n" +
-                  "${recipes[index]['utilizadores_que_deram_likes'][index]}\n\n");
-              return Dismissible(
-                direction: DismissDirection.endToStart,
-                key: Key(usersLiked[index]),
-                onDismissed: (direction) {
-                  debugPrint("$index");
-                  recipes.removeWhere((element) =>
-                      element.data()['utilizadores_que_deram_likes'] == index);
-                  debugPrint(
-                      "receitasUids: ${recipes[index]['utilizadores_que_deram_likes'][index]}");
+              debugPrint("\n\n ---- ListView ----\n receitasUids: $usersLiked");
 
-                  ScaffoldMessenger.of(context).showSnackBar(_removedSnackBar);
-                },
-                background: new Container(
-                  alignment: Alignment.centerRight,
-                  color: Colors.red,
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                ),
-                child: new ListTile(
-                    title: Text('${recipes[index]['nome_receita']}'),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                              child: RecipeDetails(
-                                recipeName: recipes[index]['nome_receita'],
-                                ingredientes: recipes[index]['ingredientes'],
-                                image: recipes[index]['img_url'],
-                                calories: recipes[index]['calorias'],
-                                id: recipes[index]['id'],
-                                recipeUids: recipes[index]
-                                    ['utilizadores_que_deram_likes'],
-                                user: widget.user,
-                              ),
-                              type: PageTransitionType.rightToLeft));
-                    }),
-              );
+              return createCard(
+                  recipes[index]['id'], usersLiked, index, context, recipes);
             },
           );
         });
+  }
+
+  // cria cards e ao clicar neles vai para o RecipeDetais
+  Dismissible createCard(String id, usersLiked, int index, BuildContext context,
+      List<QueryDocumentSnapshot> recipes) {
+    return Dismissible(
+      direction: DismissDirection.endToStart,
+      key: Key(recipes[index]['id']),
+      onDismissed: (direction) {
+        usersLiked.remove(widget.user.uid);
+        debugPrint("receitasUids: $usersLiked");
+        setState(() {
+          recipesRef
+              .doc(id)
+              .update({"utilizadores_que_deram_likes": usersLiked});
+        });
+        ScaffoldMessenger.of(context).showSnackBar(_removedSnackBar);
+      },
+      background: new Container(
+        alignment: Alignment.centerRight,
+        color: Colors.red,
+        child: Icon(
+          Icons.delete,
+          color: Colors.white,
+        ),
+      ),
+      child: new ListTile(
+          title: Text('${recipes[index]['nome_receita']}'),
+          onTap: () {
+            Navigator.push(
+                context,
+                PageTransition(
+                    child: RecipeDetails(
+                      recipeName: recipes[index]['nome_receita'],
+                      ingredientes: recipes[index]['ingredientes'],
+                      image: recipes[index]['img_url'],
+                      calories: recipes[index]['calorias'],
+                      id: recipes[index]['id'],
+                      recipeUids: recipes[index]
+                          ['utilizadores_que_deram_likes'],
+                      user: widget.user,
+                    ),
+                    type: PageTransitionType.rightToLeft));
+          }),
+    );
   }
 }

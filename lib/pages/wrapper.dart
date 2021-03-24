@@ -45,9 +45,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
     if (firebaseUser != null) {
       return App();
-    } // else if (newUser == null || newUser == false) {
-      // return SplashScreen();
-    // }
+    }
     return wrapperLoginRegister();
   }
 
