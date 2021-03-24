@@ -14,7 +14,7 @@ Future<void> addRecipe({
   int time,
   List usersFavorites
 }) {
-  // recipe.setId(id);
+
   var id = firestore.collection("Recipes").doc().id;
   final docRef = FirebaseFirestore.instance
       .collection('Recipes')
@@ -36,9 +36,6 @@ Future<void> addRecipe({
   return docRef;
 }
 
-// void updateRecipe(Recipe recipe, DocumentReference id) {
-//   id.update(recipe.toJson());
-// }
 
 // adiciona clientes novos a base de dados
 Future<void> addUsers(String email, String pass) {

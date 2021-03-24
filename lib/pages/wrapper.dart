@@ -1,4 +1,3 @@
-import 'package:MrRecipe/pages/Splash_screen.dart';
 import 'package:MrRecipe/pages/app.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
