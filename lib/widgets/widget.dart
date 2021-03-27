@@ -1,31 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 
 EdgeInsets appHorizontalPadding() {
   return EdgeInsets.symmetric(horizontal: 10);
 }
 
-InputDecoration inputTextDecoration(String labelText, var icon) {
+InputDecoration inputTextDecoration(String labelText) {
   return InputDecoration(
+    fillColor: Colors.grey.shade100,
+    filled: true,
     labelText: labelText,
     labelStyle: TextStyle(color: Colors.black54, fontSize: 17),
-    //hintText: hintText,
-    //floatingLabelBehavior: FloatingLabelBehavior.always,
     focusedBorder: outlineInputBorder(),
-    contentPadding: EdgeInsets.symmetric(horizontal: 42, vertical: 20),
+    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
     enabledBorder: outlineInputBorder(),
-    suffixIcon: Padding(
-        padding: EdgeInsets.fromLTRB(0, 20, 20, 20),
-        child: Icon(icon, color: Colors.grey)),
   );
 }
 
+
+  TextFormField emailFormField(TextEditingController controller) {
+    return TextFormField(
+      keyboardType: TextInputType.emailAddress,
+      validator: MultiValidator(
+        [
+          RequiredValidator(errorText: "Campo Obrigatório *"),
+          EmailValidator(errorText: "Insira um email válido"),
+        ],
+      ),
+      controller: controller,
+      style: simpleTextStyle(color: Colors.black, fontSize: 17),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: "Email",
+      ),
+    );
+  }
+
 OutlineInputBorder outlineInputBorderError() => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(28),
+    borderRadius: BorderRadius.circular(8),
     gapPadding: 10,
     borderSide: BorderSide(color: Colors.red, width: 1.5));
 
 OutlineInputBorder outlineInputBorder() => OutlineInputBorder(
-    borderRadius: BorderRadius.circular(28),
+    borderRadius: BorderRadius.circular(8),
     gapPadding: 10,
     borderSide: BorderSide(color: Colors.grey));
 
@@ -34,7 +51,7 @@ TextStyle titleTextStyle(
   return TextStyle(
       color: color,
       fontSize: fontSize,
-      fontFamily: 'Lato',
+      fontFamily: 'Roboto',
       fontWeight: fontWeight);
 }
 
@@ -49,11 +66,32 @@ TextStyle simpleTextStyle(
       fontWeight: fontWeight);
 }
 
-AppBar buildAppBar(BuildContext context, String text) {
+AppBar buildAppBar(BuildContext context, String text, String nextPageText) {
   return AppBar(
+    toolbarHeight: 100,
     elevation: 0,
     centerTitle: true,
-    title: Text(text),
+    title: Row(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          child: Text(
+            text,
+            style: titleTextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Spacer(),
+        GestureDetector(
+          child: Text(
+            nextPageText,
+            style: titleTextStyle(color: PrimaryColor),
+          ),
+          onTap: () {},
+        ),
+      ],
+    ),
     leading: IconButton(
       icon: Icon(Icons.arrow_back),
       onPressed: () => Navigator.pop(context),
@@ -80,7 +118,7 @@ buildButton(var context, String texto, String routeName) {
 
 // Colors
 const Color BgColor = Colors.white;
-const Color PrimaryColor = Color.fromARGB(255, 43, 137, 139);
+const Color PrimaryColor = Color.fromRGBO(255, 102, 196, 1);
 
 // LOGIN/REGISTAR VALIDATION
 final RegExp emailValidatorRegExp = RegExp(

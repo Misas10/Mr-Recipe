@@ -1,14 +1,12 @@
 import 'package:MrRecipe/database/database.dart';
 import 'package:MrRecipe/widgets/form_errors.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:flutter/widgets.dart';
-import '../../models/user_model.dart';
 
 class Registar extends StatefulWidget {
   @override
@@ -18,13 +16,13 @@ class Registar extends StatefulWidget {
 class _RegistarState extends State<Registar> {
   final _formKey = GlobalKey<FormState>();
 
+  TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   List<String> errors = [];
-  List<User> users = [];
+  // List<User> users = [];
   bool _showPassword = true;
-  final databaseReference = FirebaseDatabase.instance.reference();
 
   // Permite Apagar o campo "password"
   @override
@@ -32,6 +30,7 @@ class _RegistarState extends State<Registar> {
     emailController.dispose();
     confirmPasswordController.dispose();
     passwordController.dispose();
+    nameController.dispose();
 
     super.dispose();
   }
@@ -50,10 +49,8 @@ class _RegistarState extends State<Registar> {
           child: SingleChildScrollView(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              buildAppBar(context, "Registar-se"),
-              SizedBox(height: 30),
+              buildAppBar(context, "Registar-se", "Login"),
               Container(
-                //height: MediaQuery.of(context).size.height - 350,
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   padding: appHorizontalPadding(),
@@ -64,29 +61,43 @@ class _RegistarState extends State<Registar> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            SizedBox(height: 10),
+                            // TextFormField(
+                            //     // keyboardType: KeyBoardT,
+                            //     ),
+                            const SizedBox(height: 30),
+                            TextFormField(
+                              controller: nameController,
+                              decoration: inputTextDecoration("Nome"),
+                            ),
+                            const SizedBox(height: 10),
                             emailFormField(),
 
-                            SizedBox(height: 10),
-                            emailFormField(),
-
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             passwordFormField("Password", passwordController),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             passwordFormField("Confirme a Password",
                                 confirmPasswordController),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
+
+                            Container(
+                              padding: EdgeInsets.only(left: 20, right: 10),
+                              child: Text(
+                                "Ao criar uma conta automaticamente aceita os nossos termos",
+                                style: simpleTextStyle(
+                                    color: Color.fromRGBO(102, 102, 102, 1)),
+                              ),
+                            ),
 
                             FormError(errors: errors),
 
-                            SizedBox(height: 20),
+                            const SizedBox(height: 30),
 
                             // BOTÃO
                             Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: 40,
+                              width: MediaQuery.of(context).size.width / 1.2,
+                              height: 50,
                               child: MaterialButton(
                                   color: PrimaryColor,
                                   shape: RoundedRectangleBorder(
@@ -104,34 +115,30 @@ class _RegistarState extends State<Registar> {
                                             passwordController.text.trim());
                                     addUsers(emailController.text,
                                         passwordController.text);
-                                    // databaseReference.child("Users").set({
-                                    //   'email': "EmailTest",
-                                    //   'password': "passwordTeste"
-                                    // });
                                     Navigator.pop(context);
                                   }),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 20),
-                      Center(
-                        child: RichText(
-                          text: TextSpan(
-                            text: "Já tem uma conta? ",
-                            style: simpleTextStyle(
-                                color: Colors.black, fontSize: 12),
-                            children: [
-                              TextSpan(
-                                  text: "Faça Login",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline),
-                                  recognizer: _gestureRecognizer),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // SizedBox(height: 20),
+                      // Center(
+                      //   child: RichText(
+                      //     text: TextSpan(
+                      //       text: "Já tem uma conta? ",
+                      //       style: simpleTextStyle(
+                      //           color: Colors.black, fontSize: 12),
+                      //       children: [
+                      //         TextSpan(
+                      //             text: "Faça Login",
+                      //             style: TextStyle(
+                      //                 fontWeight: FontWeight.bold,
+                      //                 decoration: TextDecoration.underline),
+                      //             recognizer: _gestureRecognizer),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -177,7 +184,7 @@ class _RegistarState extends State<Registar> {
         },
         controller: emailController,
         style: simpleTextStyle(color: Colors.black, fontSize: 16),
-        decoration: inputTextDecoration("Email", Icons.email));
+        decoration: inputTextDecoration("Email"));
   }
 
   // PASSWORD FORM FIELD
@@ -235,13 +242,14 @@ class _RegistarState extends State<Registar> {
                 _showPassword = !_showPassword;
               });
             },
-            child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 20, 20, 20),
-                child: Icon(
-                    _showPassword ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.grey)),
+            child: Container(
+                padding: EdgeInsets.only(top: 17, right: 15),
+                child: Text(
+                  "mostrar",
+                  style: simpleTextStyle(color: PrimaryColor),
+                )),
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 42, vertical: 20),
+          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           labelStyle: TextStyle(color: Colors.black54, fontSize: 17),
           labelText: labeltext,
           focusedBorder: outlineInputBorder(),

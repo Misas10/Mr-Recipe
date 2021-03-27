@@ -1,5 +1,6 @@
 import 'package:MrRecipe/pages/navigation/tab_navigator.dart';
 import 'package:MrRecipe/widgets/widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
+  User user;
   int currentIndex = 0;
   String currentPage = "Page1";
   List<String> pageKeys = ["Page1", "Page2", "Page3", "Page4"];
@@ -22,6 +24,9 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
 
   void initState() {
     super.initState();
+    setState(() {
+      user = FirebaseAuth.instance.currentUser;
+    });
   }
 
   void _selectTab(String tabItem, int index) {
@@ -92,6 +97,7 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
       child: TabNavigator(
         navigatorKey: _navigatorKeys[tabItem],
         tabItem: tabItem,
+        user: user,
       ),
     );
   }

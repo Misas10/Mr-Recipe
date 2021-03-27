@@ -1,6 +1,8 @@
-import 'package:MrRecipe/pages/app.dart';
-import 'package:MrRecipe/pages/user_account/login.dart';
-import 'package:MrRecipe/pages/user_account/registar.dart';
+import 'package:MrRecipe/services/auth.dart';
+
+import '../pages/app.dart';
+import '../pages/user_account/login.dart';
+import '../pages/user_account/registar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,10 +39,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
 
-    // setValue();
     debugPrint(newUser.toString());
-
-    
 
     if (firebaseUser != null) {
       return App();
@@ -105,7 +104,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
               padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width * .03),
               child: OutlinedButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.read<AuthService>().signInWithGoogle().then((value) =>
+                      {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => App()))
+                      });
+                },
                 child: Container(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

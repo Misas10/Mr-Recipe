@@ -1,7 +1,6 @@
-import 'package:firebase_database/firebase_database.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  DatabaseReference userId;
   String email;
   String password;
 

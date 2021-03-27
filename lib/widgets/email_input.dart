@@ -32,6 +32,6 @@ class _EmailFormFieldState extends State<EmailFormField> {
         },
         controller: widget.emailController,
         style: simpleTextStyle(color: Colors.black, fontSize: 12),
-        decoration: inputTextDecoration("Email", Icons.email));
+        decoration: inputTextDecoration("Email"));
   }
 }

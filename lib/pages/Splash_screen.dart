@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/services/auth.dart';
+import 'package:MrRecipe/widgets/widget.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +42,6 @@ class _SplashScreenState extends State<SplashScreen> {
       child: SafeArea(
         child: Scaffold(
           body: Container(
-            //height: 400,
-            //constraints: BoxConstraints.expand(height: 300),
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: ResizeImage(logo, width: 500, height: 750),
@@ -90,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                          color: Colors.amber,
+                          color: PrimaryColor,
                           borderRadius: BorderRadius.circular(10)),
                       child: MaterialButton(
                         minWidth: double.infinity,

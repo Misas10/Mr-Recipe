@@ -1,14 +1,13 @@
 import 'package:MrRecipe/pages/app.dart';
 import 'registar.dart';
 import 'package:MrRecipe/services/auth.dart';
-import 'package:MrRecipe/widgets/form_errors.dart';
 import 'package:flutter/gestures.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -43,7 +42,7 @@ class _LoginState extends State<Login> {
 
     return Scaffold(
       backgroundColor: BgColor,
-      appBar: buildAppBar(context, "Login"),
+      appBar: buildAppBar(context, "Login", "Registar-se"),
       body: GestureDetector(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -61,10 +60,11 @@ class _LoginState extends State<Login> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Form(
+                        autovalidateMode: AutovalidateMode.always,
                         key: _formKey,
                         child: Column(
                           children: [
-                            emailFormField(),
+                            emailFormField(emailController),
                             SizedBox(
                               height: 10,
                             ),
@@ -84,36 +84,39 @@ class _LoginState extends State<Login> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            FormError(errors: errors),
+                            // FormError(errors: errors),
                             SizedBox(height: 20),
                             Container(
                               width: MediaQuery.of(context).size.width,
                               height: 40,
                               child: MaterialButton(
                                   color: PrimaryColor,
-                                  //alignment: Alignment.center,
-                                  //width: MediaQuery.of(context).size.width,
-                                  //padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30)),
                                   child: Text("Login",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 17)),
                                   onPressed: () {
+                                    debugPrint(emailController.text +
+                                        passwordController.text);
                                     if (_formKey.currentState.validate()) {
                                       _formKey.currentState.save();
+                                      context.read<AuthService>().logIn(
+                                          email: emailController.text.trim(),
+                                          password:
+                                              passwordController.text.trim());
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => App(),
+                                          ));
                                     }
-                                    context.read<AuthService>().logIn(
-                                        email: emailController.text.trim(),
-                                        password:
-                                            passwordController.text.trim());
-                                    App();
                                   }),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Center(
                         child: RichText(
                           text: TextSpan(
@@ -124,7 +127,6 @@ class _LoginState extends State<Login> {
                               TextSpan(
                                   text: "Registe-se",
                                   style: TextStyle(
-                                      //color: Colors.white,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
@@ -146,92 +148,32 @@ class _LoginState extends State<Login> {
     );
   }
 
-  // EMAIL FORM FIELD
-  TextFormField emailFormField() {
-    return TextFormField(
-        keyboardType: TextInputType.emailAddress,
-        onChanged: (val) {
-          if (val.isNotEmpty && errors.contains(EmailNullError)) {
-            setState(() {
-              errors.remove(EmailNullError);
-            });
-          } else if (EmailValidator.validate(val) &&
-              val.isEmpty &&
-              errors.contains(InvalidEmailError)) {
-            setState(() {
-              errors.remove(InvalidEmailError);
-            });
-          }
-        },
-        validator: (val) {
-          if (val.isEmpty && !errors.contains(EmailNullError)) {
-            setState(() {
-              errors.add(EmailNullError);
-            });
-          } else if (!EmailValidator.validate(val) &&
-              !errors.contains(InvalidEmailError) &&
-              val.isNotEmpty) {
-            setState(() {
-              errors.add(InvalidEmailError);
-            });
-          }
-          return null;
-        },
-        controller: emailController,
-        style: simpleTextStyle(color: Colors.black, fontSize: 14),
-        decoration: inputTextDecoration("Email", Icons.email));
-  }
-
   // PASSWORD FORM FIELD
   TextFormField passwordFormField(
       TextEditingController controller, String labeltext) {
     return TextFormField(
       keyboardType: TextInputType.visiblePassword,
-      onChanged: (val) {
-        if (val.isNotEmpty && errors.contains(PassNullError)) {
-          setState(() {
-            errors.remove(PassNullError);
-          });
-        } else if (val.length >= 6 && errors.contains(ShortPassError)) {
-          setState(() {
-            errors.remove(ShortPassError);
-          });
-        }
-      },
-      validator: (val) {
-        if (val.isEmpty && !errors.contains(PassNullError)) {
-          setState(() {
-            errors.add(PassNullError);
-          });
-        } else if (val.length < 6 &&
-            !errors.contains(ShortPassError) &&
-            val.isNotEmpty) {
-          setState(() {
-            errors.add(ShortPassError);
-          });
-        }
-        return null;
-      },
+      validator: MultiValidator(
+          [RequiredValidator(errorText: "Campo Obrigratório *")]),
       controller: controller,
       decoration: InputDecoration(
-          suffixIcon: GestureDetector(
-            onTap: () {
-              setState(() {
-                _showPassword = !_showPassword;
-              });
-            },
-            child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 20, 20, 20),
-                child: Icon(
-                    _showPassword ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.grey)),
-          ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 42, vertical: 20),
-          labelStyle: TextStyle(color: Colors.black54, fontSize: 17),
-          labelText: labeltext,
-          focusedBorder: outlineInputBorder(),
-          enabledBorder: outlineInputBorder()),
+        labelText: "Password",
+        suffixIcon: GestureDetector(
+          onTap: () {
+            setState(() {
+              _showPassword = !_showPassword;
+            });
+          },
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(0, 20, 20, 20),
+              child: Icon(
+                  _showPassword ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey)),
+        ),
+        border: OutlineInputBorder(),
+      ),
       obscureText: _showPassword,
+      style: simpleTextStyle(fontSize: 17),
     );
   }
 }

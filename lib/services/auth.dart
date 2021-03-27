@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth;
+  final googleSignIn = GoogleSignIn();
+  bool isSigningIn;
 
   AuthService(this._firebaseAuth);
 
@@ -35,12 +37,30 @@ class AuthService {
       debugPrint("Registered Succefully");
       return "Registado";
     } on FirebaseAuthException catch (e) {
+      debugPrint(e.message);
       return e.message;
     }
   }
 
-  // Desconeta a conta atual logada
+  Future signInWithGoogle() async {
+    isSigningIn = true;
+
+    final user = await googleSignIn.signIn();
+    if (user == null) {
+      isSigningIn = false;
+    } else {
+      final googleAuth = await user.authentication;
+      final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+      await _firebaseAuth.signInWithCredential(credential);
+
+      isSigningIn = false;
+    }
+  }
+
+  // Desconeta a conta atual 'logada'
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+    await googleSignIn.disconnect();
   }
 }

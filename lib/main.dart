@@ -3,6 +3,7 @@ import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
 import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/services/auth.dart';
+import 'package:MrRecipe/widgets/widget.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -84,7 +85,7 @@ class _MyAppState extends State<MyApp> {
           '/registar': (context) => Registar(),
         },
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(primaryColor: Colors.white, accentColor: Colors.white),
+        theme: ThemeData(primaryColor: PrimaryColor, accentColor: Colors.white),
         home: AuthWrapper(),
       ),
     );
