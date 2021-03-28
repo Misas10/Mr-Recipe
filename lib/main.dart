@@ -64,6 +64,7 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     super.dispose();
     subscription.cancel();
+    //
   }
 
   @override
