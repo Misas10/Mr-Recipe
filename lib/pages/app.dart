@@ -10,7 +10,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
-  User user;
+  var user;
   int currentIndex = 0;
   String currentPage = "Page1";
   List<String> pageKeys = ["Page1", "Page2", "Page3", "Page4"];
@@ -26,7 +26,9 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
     super.initState();
     setState(() {
       user = FirebaseAuth.instance.currentUser;
+      // if (user == null) user = "null";
     });
+    debugPrint("App user: $user");
   }
 
   void _selectTab(String tabItem, int index) {
@@ -42,6 +44,8 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    // context.watch<AuthService>().signOut();
+
     super.build(context);
     return WillPopScope(
       onWillPop: () async {

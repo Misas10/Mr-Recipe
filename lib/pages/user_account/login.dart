@@ -101,15 +101,29 @@ class _LoginState extends State<Login> {
                                         passwordController.text);
                                     if (_formKey.currentState.validate()) {
                                       _formKey.currentState.save();
-                                      context.read<AuthService>().logIn(
-                                          email: emailController.text.trim(),
-                                          password:
-                                              passwordController.text.trim());
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => App(),
-                                          ));
+                                      //
+                                      // if (emailController.text != "" &&
+                                      //     passwordController.text != "") {
+                                      //   debugPrint(
+                                      //       "A senha ou o email estão incorretos");
+                                      // } else {
+                                        context
+                                            .read<AuthService>()
+                                            .logIn(
+                                                email:
+                                                    emailController.text.trim(),
+                                                password: passwordController
+                                                    .text
+                                                    .trim())
+                                            .whenComplete(
+                                              () => Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => App(),
+                                                ),
+                                              ),
+                                            );
+                                      //}
                                     }
                                   }),
                             ),

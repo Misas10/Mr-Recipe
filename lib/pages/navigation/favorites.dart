@@ -1,4 +1,6 @@
 import 'package:MrRecipe/pages/navigation/recipeDetails.dart';
+import 'package:MrRecipe/pages/user_account/login.dart';
+import 'package:MrRecipe/pages/user_account/registar.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,7 +19,6 @@ class Favorites extends StatefulWidget {
 
 class _FavoritesState extends State<Favorites>
     with AutomaticKeepAliveClientMixin {
-
   CollectionReference recipesRef =
       FirebaseFirestore.instance.collection("Recipes");
   List<String> ingredients = [
@@ -34,18 +35,19 @@ class _FavoritesState extends State<Favorites>
   @override
   void initState() {
     super.initState();
-    debugPrint("---- Favorites ----\n UserId: ${widget.user.uid}");
-
-    recipesRef
-        .where("utilizadores_que_deram_likes", arrayContains: widget.user.uid)
-        .get()
-        .then((QuerySnapshot querySnapshot) => {
-              querySnapshot.docs.forEach((doc) {
-                setState(() {
-                  recipeUids = doc["utilizadores_que_deram_likes"];
-                });
-              })
-            });
+    // debugPrint("---- Favorites ----\n UserId: ${widget.user.uid}");
+    if (widget.user != null) {
+      recipesRef
+          .where("utilizadores_que_deram_likes", arrayContains: widget.user.uid)
+          .get()
+          .then((QuerySnapshot querySnapshot) => {
+                querySnapshot.docs.forEach((doc) {
+                  setState(() {
+                    recipeUids = doc["utilizadores_que_deram_likes"];
+                  });
+                })
+              });
+    }
   }
 
   void newRecipe() {
@@ -75,17 +77,30 @@ class _FavoritesState extends State<Favorites>
 
     return SafeArea(
       child: Container(
-        color: BgColor,
-        child: Column(
-          children: [
-            streamBuilder(),
-            OutlinedButton(
-                child: Text("Adicionar Receita teste"),
-                onPressed: () {
-                  newRecipe();
-                }),
-          ],
-        ),
+          color: BgColor,
+          child: widget.user == null ? container() : streamBuilder()),
+    );
+  }
+
+  Container container() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Não nenhum utilizador logado",
+            style: titleTextStyle(fontSize: 20),
+          ),
+          TextButton(
+              onPressed: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Login())),
+              child: Text("Login")),
+          TextButton(
+              onPressed: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Registar())),
+              child: Text("Registar")),
+          TextButton(onPressed: () {}, child: Text("Google"))
+        ],
       ),
     );
   }
@@ -113,17 +128,18 @@ class _FavoritesState extends State<Favorites>
                 const Divider(height: 30, thickness: 1),
             itemBuilder: (context, index) {
               var recipes = snapshot.data.docs;
-              var usersLiked = recipes[index]['utilizadores_que_deram_likes'];
+              List usersLiked = recipes[index]['utilizadores_que_deram_likes'];
               debugPrint("\n\n ---- ListView ----\n receitasUids: $usersLiked");
 
-              return createCard(
-                  recipes[index]['id'], usersLiked, index, context, recipes);
+              return createCard(recipes[index]['id'],
+                  usersLiked.reversed.toList(), index, context, recipes);
             },
           );
         });
   }
 
   // cria cards e ao clicar neles vai para o RecipeDetais
+  // permintindo apagá-los ao deslizar para a esquerda
   Dismissible createCard(String id, usersLiked, int index, BuildContext context,
       List<QueryDocumentSnapshot> recipes) {
     return Dismissible(

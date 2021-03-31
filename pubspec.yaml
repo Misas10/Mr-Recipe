@@ -39,6 +39,7 @@ dependencies:
   flutter_slidable: ^0.5.7
   google_sign_in: ^5.0.1
   form_field_validator: ^1.1.0
+  share: ^2.0.1
 
 dev_dependencies:
   flutter_test:

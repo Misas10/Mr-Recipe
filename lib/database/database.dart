@@ -1,20 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // adiciona receitas novas a base de dados
-Future<void> addRecipe({
-  String name,
-  String author,
-  int calories,
-  String imgUrl,
-  int quantity, 
-  List ingredients,
-  int time,
-  List usersFavorites
-}) {
-
+Future<void> addRecipe(
+    {String name,
+    String author,
+    int calories,
+    String imgUrl,
+    int quantity,
+    List ingredients,
+    int time,
+    List usersFavorites}) {
   var id = firestore.collection("Recipes").doc().id;
   final docRef = FirebaseFirestore.instance
       .collection('Recipes')
@@ -38,11 +37,16 @@ Future<void> addRecipe({
 
 
 // adiciona clientes novos a base de dados
-Future<void> addUsers(String email, String pass) {
+Future<void> addUsers(String name, String email, String pass) async {
+  var user = FirebaseAuth.instance.currentUser;
+  user.updateProfile(displayName: name);
+  await user.reload();
+  user = FirebaseAuth.instance.currentUser;
   return firestore
       .collection("Users")
-      .add({'email': email, 'password': pass})
-      .then((value) => debugPrint("User adicionado"))
+      .doc(user.uid)
+      .set({'nome': name, 'email': email, 'password': pass})
+      .then((value) => debugPrint("User adicionado: ${user.displayName}"))
       .catchError((error) => debugPrint("Falha ao adicionar o User: $error"));
 }
 

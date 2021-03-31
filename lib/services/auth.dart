@@ -61,6 +61,6 @@ class AuthService {
   // Desconeta a conta atual 'logada'
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
-    await googleSignIn.disconnect();
+    // await googleSignIn.disconnect();
   }
 }

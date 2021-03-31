@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:flutter/widgets.dart';
 
+import '../app.dart';
+
 class Registar extends StatefulWidget {
   @override
   _RegistarState createState() => _RegistarState();
@@ -61,9 +63,6 @@ class _RegistarState extends State<Registar> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            // TextFormField(
-                            //     // keyboardType: KeyBoardT,
-                            //     ),
                             const SizedBox(height: 30),
                             TextFormField(
                               controller: nameController,
@@ -108,14 +107,26 @@ class _RegistarState extends State<Registar> {
                                   onPressed: () {
                                     if (_formKey.currentState.validate()) {
                                       _formKey.currentState.save();
+                                      context
+                                          .read<AuthService>()
+                                          .register(
+                                              email:
+                                                  emailController.text.trim(),
+                                              password: passwordController.text
+                                                  .trim())
+                                          .whenComplete(() => addUsers(
+                                                      nameController.text,
+                                                      emailController.text,
+                                                      passwordController.text)
+                                                  .whenComplete(
+                                                () => Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          App()),
+                                                ),
+                                              ));
                                     }
-                                    context.read<AuthService>().register(
-                                        email: emailController.text.trim(),
-                                        password:
-                                            passwordController.text.trim());
-                                    addUsers(emailController.text,
-                                        passwordController.text);
-                                    Navigator.pop(context);
                                   }),
                             ),
                           ],

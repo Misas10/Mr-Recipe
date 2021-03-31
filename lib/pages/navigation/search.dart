@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Search extends StatefulWidget {
-  final User user;
+  final user;
 
   const Search({Key key, this.user});
   @override

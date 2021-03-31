@@ -2,6 +2,7 @@ import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 
 class RecipeDetails extends StatefulWidget {
   final String recipeName;
@@ -58,14 +59,14 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               })
             });
   }
-
+  // Ativada quando o utilizado clica no ícone do coração
   // Permite dar Like/dislike à receita
   void likeRecipe() {
     debugPrint("\n----- Recipe Liked -----");
     debugPrint("id: $id");
     debugPrint("${recipeUids.toString()}");
 
-    // adiciona ou retira os utilizadores que deram/retiraram da BD
+    // Adiciona ou retira os utilizadores que deram/retiraram da BD
     if (recipeUids.contains(widget.user.uid)) {
       debugPrint("Existe");
       setState(() {
@@ -87,6 +88,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     }
   }
 
+  // Resulta
   final _insertedSnackBar = SnackBar(
     content: Text(
       "Receita adicionada aos favoritos",
@@ -105,39 +107,70 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     duration: const Duration(seconds: 2),
   );
 
+  // Contrói um ícone baseado na base de dado da receita 
+  // Caso o utilizador esteja na base de dados/deu like
+  // Mostra o coração vermelho, caso contrário, o coração fica vazio
+  Icon heartIcon() {
+    if (recipeUids.contains(widget.user.uid)) {
+      return Icon(
+        Icons.favorite,
+        color: Colors.red,
+        size: 30,
+      );
+    } else {
+      return Icon(Icons.favorite_border_outlined,
+          color: Colors.black, size: 30);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: BgColor,
         appBar: AppBar(
+          backgroundColor: Colors.white,
           title: Row(
             children: [
               Text(widget.recipeName, style: simpleTextStyle()),
               Spacer(),
-              GestureDetector(
-                child: recipeUids.contains(widget.user.uid)
-                    ? Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                        size: 30,
-                      )
-                    : Icon(Icons.favorite_border_outlined,
-                        color: Colors.black, size: 30),
-                onTap: () {
-                  likeRecipe();
-                  if (recipeUids.contains(widget.user.uid))
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(_insertedSnackBar);
-                  else
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(_removedSnackBar);
-                },
-              ),
+              IconButton(
+                  icon: widget.user == null
+                      ? Icon(Icons.favorite_border_outlined,
+                          color: Colors.black, size: 30)
+                      : heartIcon(),
+                  onPressed: () {
+                    if (widget.user != null) {
+                      likeRecipe();
+                      if (recipeUids.contains(widget.user.uid))
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(_insertedSnackBar);
+                      else
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(_removedSnackBar);
+                    }
+                  }),
+              IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {
+                    // formata a lista dos ingredientes
+                    var ingredients = widget.ingredientes
+                        .map((value) => "\t - ${value.toString().trim()}")
+                        .join('\n');
+                    // formata a lista da preração
+                    var preparation;
+                    // Partilha a receita formata
+                    Share.share("${widget.recipeName}\n\n" +
+                        "Ingredientes: \n" +
+                        "$ingredients \n\n" +
+                        "Preparação: \n");
+                  })
             ],
           ),
           elevation: 0,
         ),
+        // A parte principal do widget
+        // Onde mostra todas as informações da receita para o utilizador
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -260,7 +293,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   //       });
   // }
 }
-
+// 'AppBar' onde está o títulos e botões
 class BuildItemRow extends StatelessWidget {
   final String name;
 

@@ -38,48 +38,50 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Container(
-      padding: appHorizontalPadding(),
-      color: BgColor,
-      child: ListView(physics: BouncingScrollPhysics(), children: [
-        const SizedBox(height: 30),
-        Container(
-          child: Text(
-            "O que vai desejar hoje?",
-            style: titleTextStyle(
-              fontSize: 30,
+    return SafeArea(
+      child: Container(
+        padding: appHorizontalPadding(),
+        color: BgColor,
+        child: ListView(physics: BouncingScrollPhysics(), children: [
+          const SizedBox(height: 30),
+          Container(
+            child: Text(
+              "O que vai desejar hoje?",
+              style: titleTextStyle(
+                fontSize: 30,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 22),
-        Text("Categorias", style: titleTextStyle(fontSize: 20)),
-        const SizedBox(height: 10),
-        Container(
-          height: 80,
-          // color: Colors.black,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: _categories.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return FoodCard(
-                categoryName: _categories[index].categoryName,
-                categoryIcon: _categories[index].categoryIcon,
-              );
-            },
+          const SizedBox(height: 22),
+          Text("Categorias", style: titleTextStyle(fontSize: 20)),
+          const SizedBox(height: 10),
+          Container(
+            height: 80,
+            // color: Colors.black,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _categories.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return FoodCard(
+                  categoryName: _categories[index].categoryName,
+                  categoryIcon: _categories[index].categoryIcon,
+                );
+              },
+            ),
           ),
-        ),
-        const SizedBox(height: 22),
-        Text("Receitas em destaque", style: titleTextStyle(fontSize: 25)),
-        const SizedBox(height: 12),
-        Container(
-            // mostra os dados de uma certa collection
-            // neste caso a 'Recipes'
-            // height: 100,
-            width: 100,
-            child: buildRecipes()),
-        SizedBox(height: 10)
-      ]),
+          const SizedBox(height: 22),
+          Text("Receitas em destaque", style: titleTextStyle(fontSize: 25)),
+          const SizedBox(height: 12),
+          Container(
+              // mostra os dados de uma certa collection
+              // neste caso a 'Recipes'
+              // height: 100,
+              width: 100,
+              child: buildRecipes()),
+          SizedBox(height: 10)
+        ]),
+      ),
     );
   }
 
