@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class RecipeDetails extends StatefulWidget {
   final String recipeName;
@@ -59,6 +60,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               })
             });
   }
+
   // Ativada quando o utilizado clica no ícone do coração
   // Permite dar Like/dislike à receita
   void likeRecipe() {
@@ -107,7 +109,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     duration: const Duration(seconds: 2),
   );
 
-  // Contrói um ícone baseado na base de dado da receita 
+  // Contrói um ícone baseado na base de dado da receita
   // Caso o utilizador esteja na base de dados/deu like
   // Mostra o coração vermelho, caso contrário, o coração fica vazio
   Icon heartIcon() {
@@ -125,6 +127,8 @@ class _RecipeDetailsState extends State<RecipeDetails> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         backgroundColor: BgColor,
@@ -171,68 +175,64 @@ class _RecipeDetailsState extends State<RecipeDetails> {
         ),
         // A parte principal do widget
         // Onde mostra todas as informações da receita para o utilizador
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * .4,
-                  child: Image.asset(
-                    widget.image,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Container(
-                  padding: appHorizontalPadding(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 15),
-                      Text(
-                        "Ingredientes",
-                        style: simpleTextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text("Para até 4 pessoas",
-                          style: simpleTextStyle(fontSize: 16)),
-                      const SizedBox(height: 20),
-                      Container(
-                        child: ListView.separated(
-                          separatorBuilder: (BuildContext context, int index) =>
-                              const Divider(
-                            height: 30,
-                            thickness: 1,
-                          ),
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: widget.ingredientes.length,
-                          itemBuilder: (context, index) {
-                            return BuildItemRow(
-                              name: "${widget.ingredientes[index]}",
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Container(
-                        child: Text(
-                          "Preparação",
-                          style: simpleTextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SizedBox(height: 15)
-                    ],
-                  ),
-                ),
-              ],
+        body: SlidingUpPanel(
+          body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: Image.asset(
+              widget.image,
+              fit: BoxFit.cover,
             ),
+          ),
+          panel: Column(
+            children: [
+              Container(
+                padding: appHorizontalPadding(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 15),
+                    Text(
+                      "Ingredientes",
+                      style: simpleTextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text("Para até 4 pessoas",
+                        style: simpleTextStyle(fontSize: 16)),
+                    const SizedBox(height: 20),
+                    Container(
+                      child: ListView.separated(
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const Divider(
+                          height: 30,
+                          thickness: 1,
+                        ),
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: widget.ingredientes.length,
+                        itemBuilder: (context, index) {
+                          return BuildItemRow(
+                            name: "${widget.ingredientes[index]}",
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      child: Text(
+                        "Preparação",
+                        style: simpleTextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(height: 15)
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -293,6 +293,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   //       });
   // }
 }
+
 // 'AppBar' onde está o títulos e botões
 class BuildItemRow extends StatelessWidget {
   final String name;

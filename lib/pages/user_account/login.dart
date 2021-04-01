@@ -1,4 +1,6 @@
 import 'package:MrRecipe/pages/app.dart';
+import 'package:MrRecipe/widgets/form_errors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'registar.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:flutter/gestures.dart';
@@ -20,12 +22,33 @@ class _LoginState extends State<Login> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _showPassword = true;
+  Map userData = {};
+  Map map = {};
+  bool userExists = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // setState(() {});
+
+    FirebaseFirestore.instance
+        .collection("Users")
+        .get()
+        .then((QuerySnapshot querySnapshot) => {
+              querySnapshot.docs.forEach((doc) {
+                map = {doc.data()['email']: doc.data()['password']};
+                userData.addAll(map);
+              }),
+            });
+    setState(() {});
+    debugPrint("userData: ${userData.toString()}");
+  }
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-
     super.dispose();
   }
 
@@ -42,7 +65,7 @@ class _LoginState extends State<Login> {
 
     return Scaffold(
       backgroundColor: BgColor,
-      appBar: buildAppBar(context, "Login", "Registar-se"),
+      appBar: buildAppBar(context, "Login"),
       body: GestureDetector(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -78,14 +101,20 @@ class _LoginState extends State<Login> {
                               child: Text(
                                 "Esqueceu-se da palavra-passe?",
                                 style: TextStyle(
-                                    //color: Colors.white,
+                                    // color: Colors.white,
                                     fontSize: 15,
                                     decoration: TextDecoration.underline),
                               ),
                             ),
                             const SizedBox(height: 20),
-                            // FormError(errors: errors),
-                            SizedBox(height: 20),
+                            Container(
+                              child: userExists
+                                  ? Container()
+                                  : FormError(
+                                      errorLabel:
+                                          "O email ou password estão incorretos"),
+                            ),
+                            const SizedBox(height: 20),
                             Container(
                               width: MediaQuery.of(context).size.width,
                               height: 40,
@@ -101,12 +130,14 @@ class _LoginState extends State<Login> {
                                         passwordController.text);
                                     if (_formKey.currentState.validate()) {
                                       _formKey.currentState.save();
-                                      //
-                                      // if (emailController.text != "" &&
-                                      //     passwordController.text != "") {
-                                      //   debugPrint(
-                                      //       "A senha ou o email estão incorretos");
-                                      // } else {
+                                      if (userData[emailController.text] !=
+                                          passwordController.text) {
+                                        debugPrint("O utilizador não existe");
+                                        setState(() {
+                                          userExists = false;
+                                        });
+                                      } else {
+                                        debugPrint("O utilizador existe");
                                         context
                                             .read<AuthService>()
                                             .logIn(
@@ -123,7 +154,20 @@ class _LoginState extends State<Login> {
                                                 ),
                                               ),
                                             );
-                                      //}
+                                      }
+                                      // debugPrint("$email");
+                                      // if (users == null) {
+                                      //   debugPrint(
+                                      //       "A senha ou o email estão incorretos");
+                                      // } else {
+                                      //   debugPrint(
+                                      //       "A senha ou o email estão corretos");
+                                      // try {
+
+                                      // } on Exception catch (e) {
+                                      //   debugPrint("$e");
+                                      // }
+                                      // }
                                     }
                                   }),
                             ),

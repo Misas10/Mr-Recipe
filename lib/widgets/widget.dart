@@ -66,29 +66,19 @@ TextStyle simpleTextStyle(
       fontWeight: fontWeight);
 }
 
-AppBar buildAppBar(BuildContext context, String text, String nextPageText) {
+AppBar buildAppBar(BuildContext context, String text) {
   return AppBar(
+    backgroundColor: Colors.white,
     toolbarHeight: 100,
     elevation: 0,
     centerTitle: true,
     title: Row(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
           child: Text(
             text,
             style: titleTextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
-        ),
-        Spacer(),
-        GestureDetector(
-          child: Text(
-            nextPageText,
-            style: titleTextStyle(color: PrimaryColor),
-          ),
-          onTap: () {},
         ),
       ],
     ),

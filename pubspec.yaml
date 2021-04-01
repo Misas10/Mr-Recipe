@@ -40,6 +40,8 @@ dependencies:
   google_sign_in: ^5.0.1
   form_field_validator: ^1.1.0
   share: ^2.0.1
+  flutter_form_builder: ^6.0.0-nullsafety.1
+  sliding_up_panel: ^1.0.2
 
 dev_dependencies:
   flutter_test:

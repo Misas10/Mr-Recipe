@@ -26,7 +26,6 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
     super.initState();
     setState(() {
       user = FirebaseAuth.instance.currentUser;
-      // if (user == null) user = "null";
     });
     debugPrint("App user: $user");
   }

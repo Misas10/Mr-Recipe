@@ -142,15 +142,16 @@ class _HomePageState extends State<HomePage>
                           type: PageTransitionType.rightToLeft));
                 },
                 child: Container(
-                  padding:
-                      EdgeInsets.only(bottom: 10, top: 5, right: 5, left: 5),
+                  padding: const EdgeInsets.only(
+                      bottom: 10, top: 5, right: 5, left: 5),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey,
-                        spreadRadius: 2,
+                        spreadRadius: 1,
+                        blurRadius: 2
                       ),
                     ],
                   ),
@@ -172,8 +173,12 @@ class _HomePageState extends State<HomePage>
                           ),
                         ),
                         SizedBox(height: 8),
-                        Text("${recipes[index]['nome_receita']}",
-                            style: simpleTextStyle(fontWeight: FontWeight.bold))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text("${recipes[index]['nome_receita']}",
+                              style: simpleTextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18)),
+                        )
                       ],
                     ),
                   ),

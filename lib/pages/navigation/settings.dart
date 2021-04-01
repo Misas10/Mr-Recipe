@@ -73,7 +73,7 @@ class _SettingsState extends State<Settings>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 6),
-        Center(child: Text("Definições", style: titleTextStyle(fontSize: 30))),
+        Center(child: Text("Perfil", style: titleTextStyle(fontSize: 30))),
         SizedBox(height: 60),
         Container(
           child: Column(

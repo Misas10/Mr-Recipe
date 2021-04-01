@@ -51,7 +51,7 @@ class _RegistarState extends State<Registar> {
           child: SingleChildScrollView(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              buildAppBar(context, "Registar-se", "Login"),
+              buildAppBar(context, "Registar-se"),
               Container(
                 alignment: Alignment.bottomCenter,
                 child: Container(
@@ -89,7 +89,7 @@ class _RegistarState extends State<Registar> {
                               ),
                             ),
 
-                            FormError(errors: errors),
+                            // FormError(errors: errors),
 
                             const SizedBox(height: 30),
 
