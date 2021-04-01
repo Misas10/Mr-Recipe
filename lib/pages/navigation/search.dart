@@ -42,7 +42,6 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
               },
               selected: filterChip.isSelected,
               selectedColor: filterChip.color.withOpacity(.25),
-              
             ),
           )
           .toList());
@@ -50,32 +49,32 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
 
-    return SafeArea(
-      child: GestureDetector(
-        child: Container(
-          color: BgColor,
-          padding: appHorizontalPadding(),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 15.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  searchInput(),
-                  const SizedBox(height: 10),
-                  GestureDetector(
-                    child: buildFilterChips(),
-                  )
-                ],
-              ),
+    return GestureDetector(
+      child: Container(
+        color: BgColor,
+        padding: appHorizontalPadding(),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 15.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 30,),
+                searchInput(),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  child: buildFilterChips(),
+                )
+              ],
             ),
           ),
         ),
-        // TIRA O FOCO DO INPUT 'Pesquisar'
-        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       ),
+
+      // TIRA O FOCO DO INPUT 'Pesquisar'
+      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
     );
   }
 

@@ -37,12 +37,10 @@ class _SettingsState extends State<Settings>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return SafeArea(
-      child: Container(
-        color: BgColor,
-        padding: appHorizontalPadding(),
-        child: widget.user == null ? noUserLogged() : buildUserInfo(context),
-      ),
+    return Container(
+      color: BgColor,
+      padding: appHorizontalPadding(),
+      child: widget.user == null ? noUserLogged() : buildUserInfo(context),
     );
   }
 
@@ -72,7 +70,7 @@ class _SettingsState extends State<Settings>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 6),
+        SizedBox(height: 30),
         Center(child: Text("Perfil", style: titleTextStyle(fontSize: 30))),
         SizedBox(height: 60),
         Container(
