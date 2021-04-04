@@ -7,34 +7,28 @@ EdgeInsets appHorizontalPadding() {
 
 InputDecoration inputTextDecoration(String labelText) {
   return InputDecoration(
-    fillColor: Colors.grey.shade100,
-    filled: true,
+    border: OutlineInputBorder(),
     labelText: labelText,
-    labelStyle: TextStyle(color: Colors.black54, fontSize: 17),
-    focusedBorder: outlineInputBorder(),
-    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-    enabledBorder: outlineInputBorder(),
   );
 }
 
-
-  TextFormField emailFormField(TextEditingController controller) {
-    return TextFormField(
-      keyboardType: TextInputType.emailAddress,
-      validator: MultiValidator(
-        [
-          RequiredValidator(errorText: "Campo Obrigatório *"),
-          EmailValidator(errorText: "Insira um email válido"),
-        ],
-      ),
-      controller: controller,
-      style: simpleTextStyle(color: Colors.black, fontSize: 17),
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: "Email",
-      ),
-    );
-  }
+TextFormField emailFormField(TextEditingController controller) {
+  return TextFormField(
+    keyboardType: TextInputType.emailAddress,
+    validator: MultiValidator(
+      [
+        RequiredValidator(errorText: "Campo Obrigatório *"),
+        EmailValidator(errorText: "Insira um email válido"),
+      ],
+    ),
+    controller: controller,
+    style: simpleTextStyle(color: Colors.black, fontSize: 17),
+    decoration: InputDecoration(
+      border: OutlineInputBorder(),
+      labelText: "Email",
+    ),
+  );
+}
 
 OutlineInputBorder outlineInputBorderError() => OutlineInputBorder(
     borderRadius: BorderRadius.circular(8),
