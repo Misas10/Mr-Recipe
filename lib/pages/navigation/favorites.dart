@@ -38,12 +38,12 @@ class _FavoritesState extends State<Favorites>
     // debugPrint("---- Favorites ----\n UserId: ${widget.user.uid}");
     if (widget.user != null) {
       recipesRef
-          .where("utilizadores_que_deram_likes", arrayContains: widget.user.uid)
+          .where("utilizadores_que_deram_like", arrayContains: widget.user.uid)
           .get()
           .then((QuerySnapshot querySnapshot) => {
                 querySnapshot.docs.forEach((doc) {
                   setState(() {
-                    recipeUids = doc["utilizadores_que_deram_likes"];
+                    recipeUids = doc["utilizadores_que_deram_like"];
                   });
                 })
               });
@@ -55,7 +55,7 @@ class _FavoritesState extends State<Favorites>
         author: "Mr. Recipe",
         time: 30,
         name: "Teste1",
-        quantity: 6,
+        portion: 6,
         ingredients: ingredients,
         imgUrl: "assets/images/vegetais.jpg",
         calories: 600);
@@ -109,7 +109,7 @@ class _FavoritesState extends State<Favorites>
   StreamBuilder streamBuilder() {
     return StreamBuilder<QuerySnapshot>(
         stream: recipesRef
-            .where("utilizadores_que_deram_likes",
+            .where("utilizadores_que_deram_like",
                 arrayContains: widget.user.uid)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -128,7 +128,7 @@ class _FavoritesState extends State<Favorites>
                 const Divider(height: 30, thickness: 1),
             itemBuilder: (context, index) {
               var recipes = snapshot.data.docs;
-              List usersLiked = recipes[index]['utilizadores_que_deram_likes'];
+              List usersLiked = recipes[index]['utilizadores_que_deram_like'];
               debugPrint("\n\n ---- ListView ----\n receitasUids: $usersLiked");
 
               return createCard(recipes[index]['id'],
@@ -151,7 +151,7 @@ class _FavoritesState extends State<Favorites>
         setState(() {
           recipesRef
               .doc(id)
-              .update({"utilizadores_que_deram_likes": usersLiked});
+              .update({"utilizadores_que_deram_like": usersLiked});
         });
         ScaffoldMessenger.of(context).showSnackBar(_removedSnackBar);
       },
@@ -176,7 +176,7 @@ class _FavoritesState extends State<Favorites>
                       calories: recipes[index]['calorias'],
                       id: recipes[index]['id'],
                       recipeUids: recipes[index]
-                          ['utilizadores_que_deram_likes'],
+                          ['utilizadores_que_deram_like'],
                       user: widget.user,
                     ),
                     type: PageTransitionType.rightToLeft));

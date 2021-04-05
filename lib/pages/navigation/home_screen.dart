@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage>
                             calories: recipes[index]['calorias'],
                             id: recipes[index]['id'],
                             recipeUids: recipes[index]
-                                ['utilizadores_que_deram_likes'],
+                                ['utilizadores_que_deram_like'],
                             user: widget.user,
                           ),
                           type: PageTransitionType.rightToLeft));

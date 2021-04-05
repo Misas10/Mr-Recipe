@@ -77,7 +77,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       });
 
       // Atualiza os dados na BD
-      recipesRef.doc(id).update({"utilizadores_que_deram_likes": recipeUids});
+      recipesRef.doc(id).update({"utilizadores_que_deram_like": recipeUids});
     } else {
       debugPrint("Não existe");
 
@@ -87,7 +87,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       debugPrint(recipeUids.toString());
 
       // Atualiza os dados na BD
-      recipesRef.doc(id).update({"utilizadores_que_deram_likes": recipeUids});
+      recipesRef.doc(id).update({"utilizadores_que_deram_like": recipeUids});
     }
   }
 
@@ -131,274 +131,101 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
-        backgroundColor: Colors.white,
-        // appBar: AppBar(
-        //   backgroundColor: Colors.white,
-        //   title: Row(
-        //     children: [
-        //       Text(widget.recipeName, style: simpleTextStyle()),
-        //       Spacer(),
-        //       IconButton(
-        //           icon: widget.user == null
-        //               ? Icon(Icons.favorite_border_outlined,
-        //                   color: Colors.black, size: 30)
-        //               : heartIcon(),
-        // onPressed: () {
-        //   if (widget.user != null) {
-        //     likeRecipe();
-        //     if (recipeUids.contains(widget.user.uid))
-        //       ScaffoldMessenger.of(context)
-        //           .showSnackBar(_insertedSnackBar);
-        //     else
-        //       ScaffoldMessenger.of(context)
-        //           .showSnackBar(_removedSnackBar);
-        //   }
-        // }),
-        // IconButton(
-        //     icon: Icon(Icons.share),
-        //     onPressed: () {
-        //       // formata a lista dos ingredientes
-        //       var ingredients = widget.ingredientes
-        //           .map((value) => "\t - ${value.toString().trim()}")
-        //           .join('\n');
-        //       // formata a lista da preração
-        //       var preparation;
-        //       // Partilha a receita formata
-        //       Share.share("${widget.recipeName}\n\n" +
-        //           "Ingredientes: \n" +
-        //           "$ingredients \n\n" +
-        //           "Preparação: \n");
-        //     })
-        //     ],
-        //   ),
-        //   elevation: 0,
-        // ),
-        // A parte principal do widget
-        // Onde mostra todas as informações da receita para o utilizador
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              title: SABT(
-                child: Text(
-                  widget.recipeName,
-                  style:
-                      titleTextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                ),
-              ),
-              primary: true,
-              backgroundColor: Colors.white,
-              expandedHeight: height / 2.5,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(widget.image),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [
-                            Colors.white.withOpacity(.6),
-                            Colors.white.withOpacity(.05),
-                            Colors.white.withOpacity(.0),
-                            Colors.white.withOpacity(.0),
-                            Colors.white.withOpacity(.0),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter),
-                    ),
-                  ),
-                ),
-                title: Text(
-                  "",
-                  // widget.recipeName,
-                  style: titleTextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-              actions: [
-                IconButton(
-                    icon: widget.user == null
-                        ? Icon(Icons.favorite_border_outlined,
-                            color: Colors.black, size: 30)
-                        : heartIcon(),
-                    onPressed: () {
-                      if (widget.user != null) {
-                        likeRecipe();
-                        if (recipeUids.contains(widget.user.uid))
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(_insertedSnackBar);
-                        else
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(_removedSnackBar);
-                      }
-                    }),
-                IconButton(
-                    icon: Icon(Icons.share),
-                    onPressed: () {
-                      // formata a lista dos ingredientes
-                      var ingredients = widget.ingredientes
-                          .map((value) => "\t - ${value.toString().trim()}")
-                          .join('\n');
-                      // formata a lista da preração
-                      var preparation;
-                      // Partilha a receita formata
-                      Share.share("${widget.recipeName}\n\n" +
-                          "Ingredientes: \n" +
-                          "$ingredients \n\n" +
-                          "Preparação: \n");
-                    })
-              ],
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ),
-                onPressed: () => Navigator.pop(context),
+      backgroundColor: Colors.white,
+
+      // A parte principal do widget
+      // Onde mostra todas as informações da receita para o utilizador
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            title: SABT(
+              child: Text(
+                widget.recipeName,
+                style:
+                    titleTextStyle(fontWeight: FontWeight.bold, fontSize: 22),
               ),
             ),
-            buildRecipeInfo()
-          ],
-        )
-        // SlidingUpPanel(
-        //   padding: EdgeInsets.symmetric(horizontal: 25),
-        //   // header: Text("hello world"),
-        //   maxHeight: height,
-        //   minHeight: height / 1.8,
-        //   body: Container(
-        //     alignment: Alignment.topCenter,
-        //     child: Stack(
-        //       children: [
-        //         Image.asset(
-        //           widget.image,
-        //           fit: BoxFit.cover,
-        //           height: height / 2.5,
-        //           width: width,
-        //         ),
-        //         Positioned(
-        //             top: 20,
-        //             left: 8,
-        //             child: IconButton(
-        //               iconSize: 30,
-        //               color: Colors.white,
-        //               icon: Icon(Icons.arrow_back),
-        //               onPressed: () => Navigator.pop(context),
-        //             ))
-        //       ],
-        //     ),
-        //   ),
-        //   borderRadius: BorderRadius.only(
-        //       topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-        //   panel: Container(
-        //     height: height / 2.5,
-        //     child:
-        // Column(
-        //       crossAxisAlignment: CrossAxisAlignment.start,
-        //       children: [
-        //         const SizedBox(height: 20),
-        //         Text(widget.recipeName,
-        //             style: titleTextStyle(
-        //                 fontWeight: FontWeight.bold, fontSize: 28)),
-        //         const SizedBox(height: 20),
-        //         Text(
-        //           "Ingredientes",
-        //           style: simpleTextStyle(
-        //             fontSize: 20,
-        //             fontWeight: FontWeight.bold,
-        //           ),
-        //         ),
-        //         const SizedBox(height: 8),
-        //         Text("Para até 4 pessoas", style: simpleTextStyle(fontSize: 16)),
-        //         const SizedBox(height: 20),
-        //         Container(
-        //           child: ListView.separated(
-        //             separatorBuilder: (BuildContext context, int index) =>
-        //                 const Divider(
-        //               height: 30,
-        //               thickness: 1,
-        //             ),
-        //             physics: const NeverScrollableScrollPhysics(),
-        //             shrinkWrap: true,
-        //             itemCount: widget.ingredientes.length,
-        //             itemBuilder: (context, index) {
-        //               return BuildItemRow(
-        //                 name: "${widget.ingredientes[index]}",
-        //               );
-        //             },
-        //           ),
-        //         ),
-        //         const SizedBox(height: 20),
-        //         Container(
-        //           child: Text(
-        //             "Preparação",
-        //             style: simpleTextStyle(
-        //                 fontSize: 20, fontWeight: FontWeight.bold),
-        //           ),
-        //         ),
-        //         SizedBox(height: 15)
-        //       ],
-        //     ),
-        //   ),
-        // ),
-        );
+            primary: true,
+            backgroundColor: Colors.white,
+            expandedHeight: height / 2.5,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(widget.image),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [
+                      Colors.white.withOpacity(.6),
+                      Colors.white.withOpacity(.05),
+                      Colors.white.withOpacity(.0),
+                      Colors.white.withOpacity(.0),
+                      Colors.white.withOpacity(.0),
+                    ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+                  ),
+                ),
+              ),
+              title: Text(
+                "",
+                // widget.recipeName,
+                style: titleTextStyle(
+                    color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ),
+            actions: [
+              IconButton(
+                  icon: widget.user == null
+                      ? Icon(Icons.favorite_border_outlined,
+                          color: Colors.black, size: 30)
+                      : heartIcon(),
+                  onPressed: () {
+                    if (widget.user != null) {
+                      likeRecipe();
+                      if (recipeUids.contains(widget.user.uid))
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(_insertedSnackBar);
+                      else
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(_removedSnackBar);
+                    }
+                  }),
+              IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {
+                    int index = 0;
+                    // formata a lista dos ingredientes
+                    var ingredients = widget.ingredientes
+                        .map((value) => "\t - ${value.toString().trim()}")
+                        .join('\n');
+                    // formata a lista da preração
+                    var preparation = widget.ingredientes
+                        .map((value) =>
+                            "${index + 1}. ${value.toString().trim()}")
+                        .join('\n');
+                    // Partilha a receita formata
+                    Share.share("${widget.recipeName}\n\n" +
+                        "Ingredientes: \n" +
+                        "$ingredients \n\n" +
+                        "Preparação: \n");
+                  })
+            ],
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          buildRecipeInfo()
+        ],
+      ),
+    );
   }
-
-  // StreamBuilder streamBuilder() {
-  //   return StreamBuilder<QuerySnapshot>(
-  //       stream: recipesRef.snapshots(),
-  //       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-  //         if (snapshot.hasError) {
-  //           return Text("Ouve um erro");
-  //         }
-
-  //         if (snapshot.connectionState == ConnectionState.waiting) {
-  //           return CircularProgressIndicator();
-  //         }
-
-  //         return new Column(children: [
-  //           Container(
-  //             height: MediaQuery.of(context).size.height * .4,
-  //             child: Image.asset(
-  //               widget.image,
-  //               fit: BoxFit.cover,
-  //             ),
-  //           ),
-  //           Container(
-  //             padding: appHorizontalPadding(),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 const SizedBox(height: 15),
-  //                 Text(
-  //                   "Ingredientes",
-  //                   style: simpleTextStyle(
-  //                     fontSize: 20,
-  //                     fontWeight: FontWeight.bold,
-  //                   ),
-  //                 ),
-  //                 const SizedBox(height: 2),
-  //                 Text("Para até 4 pessoas",
-  //                     style: simpleTextStyle(fontSize: 16)),
-  //                 const SizedBox(height: 20),
-
-  //                 const SizedBox(height: 20),
-  //                 Container(
-  //                   child: Text(
-  //                     "Preparação",
-  //                     style: simpleTextStyle(
-  //                         fontSize: 20, fontWeight: FontWeight.bold),
-  //                   ),
-  //                 ),
-  //                 SizedBox(height: 15)
-  //               ],
-  //             ),
-  //           ),
-  //         ]);
-  //       });
-  // }
 
   Widget buildRecipeInfo() => SliverToBoxAdapter(
         child: Container(
@@ -414,63 +241,110 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                   style: titleTextStyle(
                       fontWeight: FontWeight.bold, fontSize: 28)),
               const SizedBox(height: 20),
-              Text(
-                "Ingredientes",
-                style: simpleTextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Center(
+                child: Text(
+                  "Ingredientes",
+                  style: simpleTextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 120, vertical: 2),
+                child: Container(height: 1.5, color: Colors.green),
               ),
               const SizedBox(height: 8),
               Text("Para até 4 pessoas", style: simpleTextStyle(fontSize: 16)),
               const SizedBox(height: 20),
               Container(
-                child: ListView.separated(
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(
-                    height: 300,
-                    thickness: 1,
-                  ),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: widget.ingredientes.length,
-                  itemBuilder: (context, index) {
-                    return BuildItemRow(
-                      name: "${widget.ingredientes[index]}",
-                    );
-                  },
-                ),
+                child: buildRecipeIngredients(),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 35),
+              Text(
+                "Preparação",
+                style:
+                    simpleTextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               Container(
-                child: Text(
-                  "Preparação",
-                  style: simpleTextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+                child: buildRecipePreparation(),
               ),
               SizedBox(height: 15)
             ],
           ),
         ),
       );
+
+  ListView buildRecipePreparation() {
+    return ListView.separated(
+      separatorBuilder: (BuildContext context, int index) => const Divider(
+        height: 30,
+        color: Colors.transparent,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: widget.ingredientes.length,
+      itemBuilder: (context, index) {
+        return BuildItemRow(
+          name: "${widget.ingredientes[index]}",
+          steps: index + 1,
+        );
+      },
+    );
+  }
+
+  ListView buildRecipeIngredients() {
+    return ListView.separated(
+      separatorBuilder: (BuildContext context, int index) => const Divider(
+        height: 30,
+        thickness: 1,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: widget.ingredientes.length,
+      itemBuilder: (context, index) {
+        return Row(
+          children: [
+            BuildItemRow(
+              name: "${widget.ingredientes[index]}",
+            ),
+            Spacer(),
+            Text(
+              "quantidade",
+              style: simpleTextStyle(),
+            )
+          ],
+        );
+      },
+    );
+  }
 }
 
-// 'AppBar' onde está o títulos e botões
 class BuildItemRow extends StatelessWidget {
   final String name;
+  final int steps;
 
   const BuildItemRow({
     this.name,
+    this.steps,
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Row(
-          children: [
+          children: <Widget>[
+            steps == null
+                ? Container()
+                : Container(
+                    child: Text(
+                      "\t$steps\t\t",
+                      style: TextStyle(fontSize: 25, color: Colors.grey),
+                    ),
+                  ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -480,11 +354,6 @@ class BuildItemRow extends StatelessWidget {
                     )),
               ],
             ),
-            Spacer(),
-            Text(
-              "quantidade",
-              style: simpleTextStyle(),
-            )
           ],
         ),
       ],

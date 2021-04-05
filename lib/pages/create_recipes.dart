@@ -94,7 +94,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
                   onTap: () => _showChoiceDialog(context),
                 ),
                 const SizedBox(height: 10),
-                simpleCreateRecipeText("Tipo de porção"),
+                simpleCreateRecipeText("Porção"),
                 const SizedBox(height: 10),
                 simpleCreateRecipeText("Dificuldade"),
                 const SizedBox(height: 10),
@@ -102,7 +102,13 @@ class _CreateRecipeState extends State<CreateRecipe> {
                 const SizedBox(height: 10),
                 simpleCreateRecipeText("Ingredientes"),
                 const SizedBox(height: 10),
-                simpleCreateRecipeText("Passos de preparação")
+                simpleCreateRecipeText("Passos de preparação"),
+                const SizedBox(height: 10),
+                simpleCreateRecipeText("Tipo de prato"),
+                const SizedBox(height: 10), 
+                simpleCreateRecipeText("Cozinha"),
+                const SizedBox(height: 10),
+                simpleCreateRecipeText("Notas do Chef")
               ],
             ),
           ),

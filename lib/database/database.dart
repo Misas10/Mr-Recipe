@@ -6,35 +6,35 @@ final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // adiciona receitas novas a base de dados
 Future<void> addRecipe(
-    {String name,
-    String author,
-    int calories,
-    String imgUrl,
-    int quantity,
-    List ingredients,
-    int time,
-    List usersFavorites}) {
+    {@required String name,
+    @required String author,
+    @required int calories,
+    @required String imgUrl,
+    @required int portion,
+    @required List ingredients,
+    @required int time,
+    List preparation}) {
   var id = firestore.collection("Recipes").doc().id;
   final docRef = FirebaseFirestore.instance
       .collection('Recipes')
       .doc(id)
       .set({
         "id": id,
-        "nome_receita": name,
         "autor": author,
+        "nome_receita": name,
+        "tempo_total": time,
         "calorias": calories,
         "img_url": imgUrl,
-        "quantidade": quantity,
+        "porção": portion,
         "ingredientes": ingredients,
-        "tempo_total": time,
-        "utilizadores_que_deram_likes": [],
+        "utilizadores_que_deram_like": [],
+        "preparação": preparation,
       })
       .then((value) => debugPrint("Receita adicionada id: $id"))
       .catchError((error) => "Falha ao adicionar a Receita: $error");
 
   return docRef;
 }
-
 
 // adiciona clientes novos a base de dados
 Future<void> addUsers(String name, String email, String pass) async {

@@ -15,7 +15,7 @@ class Recipe {
   Recipe(
       {@required this.author,
       @required this.name,
-      @required this.calories,
+      // @required this.calories,
       @required this.quantity,
       @required this.ingredients,
       @required this.time,
