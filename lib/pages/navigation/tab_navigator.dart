@@ -1,7 +1,6 @@
 import 'package:MrRecipe/pages/create_recipes.dart';
 import 'package:MrRecipe/pages/navigation/favorites.dart';
 import 'package:MrRecipe/pages/navigation/home_screen.dart';
-import 'package:MrRecipe/pages/navigation/search.dart';
 import 'package:MrRecipe/pages/navigation/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +24,9 @@ class _TabNavigatorState extends State<TabNavigator> {
     if (widget.tabItem == "Page1")
       child = HomePage(user: widget.user);
     else if (widget.tabItem == "Page2")
-      child = Search(user: widget.user);
-    else if (widget.tabItem == "Page3")
       child = CreateRecipe();
+    else if (widget.tabItem == "Page3")
+      child = Favorites(user: widget.user);
     else if (widget.tabItem == "Page4") child = Settings(user: widget.user);
 
     return Navigator(

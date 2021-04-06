@@ -77,8 +77,8 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Pesquisa',
+              icon: Icon(Icons.add_circle_outline),
+              label: 'criar',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
