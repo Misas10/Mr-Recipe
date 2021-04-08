@@ -1,20 +1,19 @@
 import 'package:MrRecipe/models/filter_chip_model.dart';
-import 'package:MrRecipe/pages/navigation/favorites.dart';
 import 'package:MrRecipe/widgets/filter_chips.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_form_builder/flutter_form_builder.dart';
 
-class Search extends StatefulWidget {
+class Searchs extends StatefulWidget {
   final User user;
 
-  const Search({Key key, this.user});
+  const Searchs({Key key, this.user});
   @override
-  _SearchState createState() => _SearchState();
+  _SearchsState createState() => _SearchsState();
 }
 
-class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin {
+class _SearchsState extends State<Searchs> with AutomaticKeepAliveClientMixin {
   final _formKey = GlobalKey<FormState>();
   // bool _selected = false;
   List<FilterChipData> filterChips = FilterChips.all;

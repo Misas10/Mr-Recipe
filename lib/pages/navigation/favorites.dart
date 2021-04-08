@@ -58,7 +58,14 @@ class _FavoritesState extends State<Favorites>
         portion: 6,
         ingredients: ingredients,
         imgUrl: "assets/images/vegetais.jpg",
-        calories: 600);
+        calories: 600,
+        categories: [
+          "Carne"
+        ],
+        preparation: [
+          "Reservar algo para mais tarde",
+          "Fazer este segundo passo e finalizar a receita"
+        ]);
   }
 
   deleteRecipe() {
@@ -121,19 +128,26 @@ class _FavoritesState extends State<Favorites>
             return CircularProgressIndicator();
           }
 
-          return new ListView.separated(
-            shrinkWrap: true,
-            itemCount: snapshot.data.docs.length,
-            separatorBuilder: (BuildContext context, int index) =>
-                const Divider(height: 30, thickness: 1),
-            itemBuilder: (context, index) {
-              var recipes = snapshot.data.docs;
-              List usersLiked = recipes[index]['utilizadores_que_deram_like'];
-              debugPrint("\n\n ---- ListView ----\n receitasUids: $usersLiked");
+          return Column(
+            children: [
+              new ListView.separated(
+                shrinkWrap: true,
+                itemCount: snapshot.data.docs.length,
+                separatorBuilder: (BuildContext context, int index) =>
+                    const Divider(height: 30, thickness: 1),
+                itemBuilder: (context, index) {
+                  var recipes = snapshot.data.docs;
+                  List usersLiked =
+                      recipes[index]['utilizadores_que_deram_like'];
+                  debugPrint(
+                      "\n\n ---- ListView ----\n receitasUids: $usersLiked");
 
-              return createCard(recipes[index]['id'],
-                  usersLiked.reversed.toList(), index, context, recipes);
-            },
+                  return createCard(recipes[index]['id'],
+                      usersLiked.reversed.toList(), index, context, recipes);
+                },
+              ),
+              TextButton(onPressed: newRecipe, child: Text("Criar Receita"))
+            ],
           );
         });
   }
@@ -175,9 +189,10 @@ class _FavoritesState extends State<Favorites>
                       image: recipes[index]['img_url'],
                       calories: recipes[index]['calorias'],
                       id: recipes[index]['id'],
-                      recipeUids: recipes[index]
-                          ['utilizadores_que_deram_like'],
+                      recipeUids: recipes[index]['utilizadores_que_deram_like'],
                       user: widget.user,
+                      categories: recipes[index]["categorias"],
+                      preparation: recipes[index]["preparação"],
                     ),
                     type: PageTransitionType.rightToLeft));
           }),

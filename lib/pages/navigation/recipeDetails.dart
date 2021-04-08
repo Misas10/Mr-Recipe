@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class RecipeDetails extends StatefulWidget {
   final String recipeName;
@@ -14,6 +13,8 @@ class RecipeDetails extends StatefulWidget {
   final int calories;
   final List recipeUids;
   final User user;
+  final List preparation;
+  final List categories;
 
   RecipeDetails(
       {@required this.recipeName,
@@ -22,7 +23,9 @@ class RecipeDetails extends StatefulWidget {
       @required this.id,
       @required this.calories,
       @required this.recipeUids,
-      @required this.user});
+      @required this.user,
+      @required this.preparation,
+      @required this.categories});
 
   @override
   _RecipeDetailsState createState() => _RecipeDetailsState();
@@ -122,7 +125,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       );
     } else {
       return Icon(Icons.favorite_border_outlined,
-          color: Colors.black, size: 30);
+          color: Colors.white, size: 30);
     }
   }
 
@@ -146,7 +149,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               ),
             ),
             primary: true,
-            backgroundColor: Colors.white,
+            backgroundColor: PrimaryColor,
             expandedHeight: height / 2.5,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
@@ -160,11 +163,11 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      Colors.white.withOpacity(.6),
-                      Colors.white.withOpacity(.05),
-                      Colors.white.withOpacity(.0),
-                      Colors.white.withOpacity(.0),
-                      Colors.white.withOpacity(.0),
+                      Colors.black.withOpacity(.4),
+                      Colors.black.withOpacity(.01),
+                      Colors.black.withOpacity(.0),
+                      Colors.black.withOpacity(.0),
+                      Colors.black.withOpacity(.0),
                     ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
                   ),
                 ),
@@ -173,14 +176,14 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                 "",
                 // widget.recipeName,
                 style: titleTextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold),
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
             actions: [
               IconButton(
                   icon: widget.user == null
                       ? Icon(Icons.favorite_border_outlined,
-                          color: Colors.black, size: 30)
+                          color: Colors.white, size: 30)
                       : heartIcon(),
                   onPressed: () {
                     if (widget.user != null) {
@@ -202,7 +205,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                         .map((value) => "\t - ${value.toString().trim()}")
                         .join('\n');
                     // formata a lista da preração
-                    var preparation = widget.ingredientes
+                    var preparation = widget.preparation
                         .map((value) =>
                             "${index + 1}. ${value.toString().trim()}")
                         .join('\n');
@@ -210,13 +213,13 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                     Share.share("${widget.recipeName}\n\n" +
                         "Ingredientes: \n" +
                         "$ingredients \n\n" +
-                        "Preparação: \n");
+                        "Preparação: $preparation\n");
                   })
             ],
             leading: IconButton(
               icon: Icon(
                 Icons.arrow_back,
-                color: Colors.black,
+                color: Colors.white,
               ),
               onPressed: () => Navigator.pop(context),
             ),
@@ -266,6 +269,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                 style:
                     simpleTextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
+              SizedBox(height: 15),
               Container(
                 child: buildRecipePreparation(),
               ),
@@ -283,11 +287,25 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       ),
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: widget.ingredientes.length,
+      itemCount: widget.preparation.length,
       itemBuilder: (context, index) {
-        return BuildItemRow(
-          name: "${widget.ingredientes[index]}",
-          steps: index + 1,
+        return Row(
+          children: [
+            Container(
+              child: Text(
+                "\t${index + 1}\t\t",
+                style: TextStyle(fontSize: 25, color: Colors.grey),
+              ),
+            ),
+            Expanded(
+              child: Text(
+                widget.preparation[index],
+                style: simpleTextStyle(
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -305,9 +323,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       itemBuilder: (context, index) {
         return Row(
           children: [
-            BuildItemRow(
-              name: "${widget.ingredientes[index]}",
-            ),
+            Text("${widget.ingredientes[index]}"),
             Spacer(),
             Text(
               "quantidade",
@@ -332,27 +348,26 @@ class BuildItemRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      // mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            steps == null
-                ? Container()
-                : Container(
-                    child: Text(
-                      "\t$steps\t\t",
-                      style: TextStyle(fontSize: 25, color: Colors.grey),
-                    ),
-                  ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name,
-                    style: simpleTextStyle(
-                      fontSize: 18,
-                    )),
-              ],
+        steps == null
+            ? Container()
+            : Container(
+                child: Text(
+                  "\t$steps\t\t",
+                  style: TextStyle(fontSize: 25, color: Colors.grey),
+                ),
+              ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              name,
+              style: simpleTextStyle(
+                fontSize: 18,
+              ),
             ),
           ],
         ),

@@ -23,7 +23,8 @@ class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   CollectionReference recipes =
       FirebaseFirestore.instance.collection('Recipes');
-  List<FoodCategory> _categories = categories;
+  List<FoodCategory> _categoriesCard = categoriesCard;
+  List _allCategories = allCategories;
 
   @override
   void initState() {
@@ -38,48 +39,66 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Container(
-      padding: appHorizontalPadding(),
-      color: BgColor,
-      child: ListView(physics: BouncingScrollPhysics(), children: [
-        const SizedBox(height: 30),
-        Container(
-          child: Text(
-            "O que vai desejar hoje?",
-            style: titleTextStyle(
-              fontSize: 30,
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: PrimaryColor,
+        // toolbarHeight: 40,
+        title: Text(
+          "Mr. Recipe",
+          style: titleTextStyle(fontSize: 25),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+              icon: Icon(Icons.search),
+              iconSize: 28,
+              onPressed: () => showSearch(context: context, delegate: Search()))
+        ],
+      ),
+      body: Container(
+        padding: appHorizontalPadding(),
+        color: BgColor,
+        child: ListView(physics: BouncingScrollPhysics(), children: [
+          const SizedBox(height: 30),
+          Container(
+            child: Text(
+              "O que vai desejar hoje?",
+              style: titleTextStyle(
+                fontSize: 30,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 22),
-        Text("Categorias", style: titleTextStyle(fontSize: 20)),
-        const SizedBox(height: 10),
-        Container(
-          height: 80,
-          // color: Colors.black,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: _categories.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return FoodCard(
-                categoryName: _categories[index].categoryName,
-                categoryIcon: _categories[index].categoryIcon,
-              );
-            },
+          const SizedBox(height: 22),
+          Text("Categorias", style: titleTextStyle(fontSize: 20)),
+          const SizedBox(height: 10),
+          Container(
+            height: 80,
+            // color: Colors.black,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _categoriesCard.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return FoodCard(
+                  categoryName: _categoriesCard[index].categoryName,
+                  categoryIcon: _categoriesCard[index].categoryIcon,
+                );
+              },
+            ),
           ),
-        ),
-        const SizedBox(height: 22),
-        Text("Receitas em destaque", style: titleTextStyle(fontSize: 25)),
-        const SizedBox(height: 12),
-        Container(
-            // mostra os dados de uma certa collection
-            // neste caso a 'Recipes'
-            // height: 100,
-            width: 100,
-            child: buildRecipes()),
-        SizedBox(height: 10)
-      ]),
+          const SizedBox(height: 22),
+          Text("Receitas em destaque", style: titleTextStyle(fontSize: 25)),
+          const SizedBox(height: 12),
+          Container(
+              // mostra os dados de uma certa collection
+              // neste caso a 'Recipes'
+              // height: 100,
+              width: 100,
+              child: buildRecipes()),
+          SizedBox(height: 10)
+        ]),
+      ),
     );
   }
 
@@ -136,6 +155,8 @@ class _HomePageState extends State<HomePage>
                             recipeUids: recipes[index]
                                 ['utilizadores_que_deram_like'],
                             user: widget.user,
+                            categories: recipes[index]["categorias"],
+                            preparation: recipes[index]["preparação"],
                           ),
                           type: PageTransitionType.rightToLeft));
                 },
@@ -182,6 +203,61 @@ class _HomePageState extends State<HomePage>
             },
           );
         },
+      ),
+    );
+  }
+}
+
+// barra de pesquisa
+class Search extends SearchDelegate<String> {
+  final recentCategoriesSearch = ["Peixe", "Carne"];
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: AnimatedIcon(
+        icon: AnimatedIcons.menu_arrow,
+        progress: transitionAnimation,
+      ),
+      onPressed: () => close(context, null),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // TODO: implement buildResults
+    return Container();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestionList = query.isEmpty
+        ? recentCategoriesSearch
+        : allCategories
+            .where((element) =>
+                element.toLowerCase().startsWith(query.toLowerCase()))
+            .toList();
+
+    return ListView.builder(
+      itemCount: suggestionList.length,
+      itemBuilder: (context, index) => ListTile(
+        onTap: () {
+          query = suggestionList[index];
+          showResults(context);
+        },
+        title: Text(suggestionList[index]),
       ),
     );
   }

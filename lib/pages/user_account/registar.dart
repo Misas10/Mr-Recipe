@@ -66,137 +66,134 @@ class _RegistarState extends State<Registar> {
     return GestureDetector(
       child: Scaffold(
         backgroundColor: BgColor,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              buildAppBar(context, "Registar-se"),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: appHorizontalPadding(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Form(
-                        key: _formKey,
-                        autovalidateMode: AutovalidateMode.always,
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 30),
-                            TextFormField(
-                              controller: nameController,
-                              decoration: inputTextDecoration("Nome"),
-                              validator: MultiValidator([
-                                RequiredValidator(
-                                    errorText: "Campo Obrigatório")
-                              ]),
+        body: SingleChildScrollView(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            buildAppBar(context, "Registar-se"),
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: appHorizontalPadding(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Form(
+                      key: _formKey,
+                      autovalidateMode: AutovalidateMode.always,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 30),
+                          TextFormField(
+                            controller: nameController,
+                            decoration: inputTextDecoration("Nome"),
+                            validator: MultiValidator([
+                              RequiredValidator(errorText: "Campo Obrigatório")
+                            ]),
+                          ),
+                          const SizedBox(height: 10),
+                          emailFormField(),
+
+                          const SizedBox(height: 10),
+                          passwordFormField("Password", passwordController),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          confirmPasswordFormField(
+                              "Confirme a Password", confirmPasswordController),
+                          const SizedBox(height: 20),
+
+                          Container(
+                            padding: EdgeInsets.only(left: 20, right: 10),
+                            child: Text(
+                              "Ao criar uma conta automaticamente aceita os nossos termos",
+                              style: simpleTextStyle(
+                                  color: Color.fromRGBO(102, 102, 102, 1)),
                             ),
-                            const SizedBox(height: 10),
-                            emailFormField(),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                              child: userExists
+                                  ? FormError(
+                                      errorLabel: "Esta conta já existe")
+                                  : Container()),
 
-                            const SizedBox(height: 10),
-                            passwordFormField("Password", passwordController),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            confirmPasswordFormField("Confirme a Password",
-                                confirmPasswordController),
-                            const SizedBox(height: 20),
+                          const SizedBox(height: 30),
 
-                            Container(
-                              padding: EdgeInsets.only(left: 20, right: 10),
-                              child: Text(
-                                "Ao criar uma conta automaticamente aceita os nossos termos",
-                                style: simpleTextStyle(
-                                    color: Color.fromRGBO(102, 102, 102, 1)),
-                              ),
-                            ),
-                            const SizedBox(height: 20,),
-                            Container(
-                                child: userExists
-                                    ? FormError(
-                                        errorLabel: "Esta conta já existe")
-                                    : Container()),
-
-                            const SizedBox(height: 30),
-
-                            // BOTÃO
-                            Container(
-                              width: MediaQuery.of(context).size.width / 1.2,
-                              height: 50,
-                              child: MaterialButton(
-                                  color: PrimaryColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30)),
-                                  child: Text("Registar",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 17)),
-                                  onPressed: () {
-                                    if (_formKey.currentState.validate()) {
-                                      _formKey.currentState.save();
-                                      if (userData
-                                          .containsKey(emailController.text)) {
-                                        debugPrint("Utilizador existe");
-                                        setState(() {
-                                          userExists = true;
-                                        });
-                                      } else {
-                                        context
-                                            .read<AuthService>()
-                                            .register(
-                                                email:
-                                                    emailController.text.trim(),
-                                                password: passwordController
-                                                    .text
-                                                    .trim())
-                                            .whenComplete(() => addUsers(
-                                                        nameController.text,
-                                                        emailController.text,
-                                                        passwordController.text)
-                                                    .whenComplete(
-                                                  () =>
-                                                      Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            App()),
-                                                  ),
-                                                ));
-                                      }
+                          // BOTÃO
+                          Container(
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: 50,
+                            child: MaterialButton(
+                                color: PrimaryColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: Text("Registar",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 17)),
+                                onPressed: () {
+                                  if (_formKey.currentState.validate()) {
+                                    _formKey.currentState.save();
+                                    if (userData
+                                        .containsKey(emailController.text)) {
+                                      debugPrint("Utilizador existe");
+                                      setState(() {
+                                        userExists = true;
+                                      });
+                                    } else {
+                                      context
+                                          .read<AuthService>()
+                                          .register(
+                                              email:
+                                                  emailController.text.trim(),
+                                              password: passwordController.text
+                                                  .trim())
+                                          .whenComplete(() => addUsers(
+                                                      nameController.text,
+                                                      emailController.text,
+                                                      passwordController.text)
+                                                  .whenComplete(
+                                                () => Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          App()),
+                                                ),
+                                              ));
                                     }
-                                  }),
-                            ),
-                            SizedBox(
-                              height: 30,
-                            )
-                          ],
-                        ),
+                                  }
+                                }),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          )
+                        ],
                       ),
-                      // SizedBox(height: 20),
-                      // Center(
-                      //   child: RichText(
-                      //     text: TextSpan(
-                      //       text: "Já tem uma conta? ",
-                      //       style: simpleTextStyle(
-                      //           color: Colors.black, fontSize: 12),
-                      //       children: [
-                      //         TextSpan(
-                      //             text: "Faça Login",
-                      //             style: TextStyle(
-                      //                 fontWeight: FontWeight.bold,
-                      //                 decoration: TextDecoration.underline),
-                      //             recognizer: _gestureRecognizer),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
-                  ),
+                    ),
+                    // SizedBox(height: 20),
+                    // Center(
+                    //   child: RichText(
+                    //     text: TextSpan(
+                    //       text: "Já tem uma conta? ",
+                    //       style: simpleTextStyle(
+                    //           color: Colors.black, fontSize: 12),
+                    //       children: [
+                    //         TextSpan(
+                    //             text: "Faça Login",
+                    //             style: TextStyle(
+                    //                 fontWeight: FontWeight.bold,
+                    //                 decoration: TextDecoration.underline),
+                    //             recognizer: _gestureRecognizer),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
-            ]),
-          ),
+            ),
+          ]),
         ),
       ),
       onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),

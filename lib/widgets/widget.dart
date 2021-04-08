@@ -102,7 +102,7 @@ buildButton(var context, String texto, String routeName) {
 
 // Colors
 const Color BgColor = Colors.white;
-const Color PrimaryColor = Color.fromRGBO(255, 102, 196, 1);
+const Color PrimaryColor = Color.fromRGBO(43, 137, 139, 1);
 
 // LOGIN/REGISTAR VALIDATION
 final RegExp emailValidatorRegExp = RegExp(

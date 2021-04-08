@@ -67,25 +67,26 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
         ),
         bottomNavigationBar: BottomNavigationBar(
           selectedItemColor: PrimaryColor,
-          unselectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black87,
           backgroundColor: Colors.white,
           currentIndex: currentIndex,
           onTap: (int index) => _selectTab(pageKeys[index], index),
           items: [
             BottomNavigationBarItem(
+              backgroundColor: Colors.red,
               icon: Icon(Icons.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle_outline),
-              label: 'criar',
+              icon: Icon(Icons.add_circle),
+              label: 'Criar',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
               label: 'Favoritos',
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.account_circle_outlined), label: 'Conta')
+                icon: Icon(Icons.person), label: 'Conta')
           ],
           type: BottomNavigationBarType.fixed,
         ),

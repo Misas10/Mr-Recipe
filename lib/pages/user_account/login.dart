@@ -66,139 +66,123 @@ class _LoginState extends State<Login> {
       backgroundColor: BgColor,
       appBar: buildAppBar(context, "Login"),
       body: GestureDetector(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(children: [
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(height: 30),
-              Container(
-                // height: MediaQuery.of(context).size.height - 350,
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: appHorizontalPadding(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Form(
-                        autovalidateMode: AutovalidateMode.always,
-                        key: _formKey,
-                        child: Column(
+        child: SingleChildScrollView(
+          child: Column(children: [
+            SizedBox(
+              height: 10,
+            ),
+            SizedBox(height: 30),
+            Container(
+              // height: MediaQuery.of(context).size.height - 350,
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: appHorizontalPadding(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Form(
+                      autovalidateMode: AutovalidateMode.always,
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          emailFormField(emailController),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          passwordFormField(
+                            passwordController,
+                            "Password",
+                          ),
+                          const SizedBox(height: 20),
+                          Container(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "Esqueceu-se da palavra-passe?",
+                              style: TextStyle(
+                                  // color: Colors.white,
+                                  fontSize: 15,
+                                  decoration: TextDecoration.underline),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Container(
+                            child: userExists
+                                ? Container()
+                                : FormError(
+                                    errorLabel:
+                                        "O email ou password estão incorretos"),
+                          ),
+                          const SizedBox(height: 20),
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 40,
+                            child: MaterialButton(
+                                color: PrimaryColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: Text("Login",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 17)),
+                                onPressed: () {
+                                  debugPrint(emailController.text +
+                                      passwordController.text);
+                                  if (_formKey.currentState.validate()) {
+                                    _formKey.currentState.save();
+                                    if (userData[emailController.text] !=
+                                        passwordController.text) {
+                                      debugPrint("O utilizador não existe");
+                                      setState(() {
+                                        userExists = false;
+                                      });
+                                    } else {
+                                      debugPrint("O utilizador existe");
+                                      context
+                                          .read<AuthService>()
+                                          .logIn(
+                                              email:
+                                                  emailController.text.trim(),
+                                              password: passwordController.text
+                                                  .trim())
+                                          .whenComplete(
+                                            () => Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => App(),
+                                              ),
+                                            ),
+                                          );
+                                    }
+                                  }
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: RichText(
+                        text: TextSpan(
+                          text: "Não tem conta? ",
+                          style: simpleTextStyle(
+                              color: Colors.black, fontSize: 12),
                           children: [
-                            emailFormField(emailController),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            passwordFormField(
-                              passwordController,
-                              "Password",
-                            ),
-                            const SizedBox(height: 20),
-                            Container(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                "Esqueceu-se da palavra-passe?",
+                            TextSpan(
+                                text: "Registe-se",
                                 style: TextStyle(
-                                    // color: Colors.white,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
                                     fontSize: 15,
                                     decoration: TextDecoration.underline),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Container(
-                              child: userExists
-                                  ? Container()
-                                  : FormError(
-                                      errorLabel:
-                                          "O email ou password estão incorretos"),
-                            ),
-                            const SizedBox(height: 20),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: 40,
-                              child: MaterialButton(
-                                  color: PrimaryColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30)),
-                                  child: Text("Login",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 17)),
-                                  onPressed: () {
-                                    debugPrint(emailController.text +
-                                        passwordController.text);
-                                    if (_formKey.currentState.validate()) {
-                                      _formKey.currentState.save();
-                                      if (userData[emailController.text] !=
-                                          passwordController.text) {
-                                        debugPrint("O utilizador não existe");
-                                        setState(() {
-                                          userExists = false;
-                                        });
-                                      } else {
-                                        debugPrint("O utilizador existe");
-                                        context
-                                            .read<AuthService>()
-                                            .logIn(
-                                                email:
-                                                    emailController.text.trim(),
-                                                password: passwordController
-                                                    .text
-                                                    .trim())
-                                            .whenComplete(
-                                              () => Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => App(),
-                                                ),
-                                              ),
-                                            );
-                                      }
-                                      // debugPrint("$email");
-                                      // if (users == null) {
-                                      //   debugPrint(
-                                      //       "A senha ou o email estão incorretos");
-                                      // } else {
-                                      //   debugPrint(
-                                      //       "A senha ou o email estão corretos");
-                                      // try {
-
-                                      // } on Exception catch (e) {
-                                      //   debugPrint("$e");
-                                      // }
-                                      // }
-                                    }
-                                  }),
-                            ),
+                                recognizer: _gestureRecognizer),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: RichText(
-                          text: TextSpan(
-                            text: "Não tem conta? ",
-                            style: simpleTextStyle(
-                                color: Colors.black, fontSize: 12),
-                            children: [
-                              TextSpan(
-                                  text: "Registe-se",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      decoration: TextDecoration.underline),
-                                  recognizer: _gestureRecognizer),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ]),
-          ),
+            ),
+          ]),
         ),
         onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       ),

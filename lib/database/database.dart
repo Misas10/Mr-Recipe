@@ -5,15 +5,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // adiciona receitas novas a base de dados
-Future<void> addRecipe(
-    {@required String name,
-    @required String author,
-    @required int calories,
-    @required String imgUrl,
-    @required int portion,
-    @required List ingredients,
-    @required int time,
-    List preparation}) {
+Future<void> addRecipe({
+  @required String name,
+  @required String author,
+  @required int calories,
+  @required String imgUrl,
+  @required int portion,
+  @required List ingredients,
+  @required int time,
+  @required List<String> preparation,
+  @required List<String> categories,
+}) {
   var id = firestore.collection("Recipes").doc().id;
   final docRef = FirebaseFirestore.instance
       .collection('Recipes')
@@ -27,8 +29,9 @@ Future<void> addRecipe(
         "img_url": imgUrl,
         "porção": portion,
         "ingredientes": ingredients,
-        "utilizadores_que_deram_like": [],
+        "categorias": categories,
         "preparação": preparation,
+        "utilizadores_que_deram_like": [],
       })
       .then((value) => debugPrint("Receita adicionada id: $id"))
       .catchError((error) => "Falha ao adicionar a Receita: $error");
