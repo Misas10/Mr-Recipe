@@ -112,3 +112,4 @@ const String InvalidEmailError = "Insira um email válido";
 const String PassNullError = "Insira a sua password";
 const ShortPassError = "A password é curta demais (min. 6 caractéres)";
 const String MatchPassError = "As passwords não são iguais";
+bool isAppBarVisible = true;

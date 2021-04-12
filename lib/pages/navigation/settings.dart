@@ -1,5 +1,6 @@
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
+import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,10 +38,28 @@ class _SettingsState extends State<Settings>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Container(
-      color: BgColor,
-      padding: appHorizontalPadding(),
-      child: widget.user == null ? noUserLogged() : buildUserInfo(context),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: PrimaryColor,
+        title: Text("Conta"),
+        centerTitle: true,
+      ),
+      backgroundColor: BgColor,
+      body: Container(
+        padding: appHorizontalPadding(),
+        child: Column(
+          children: [
+            widget.user == null ? Container() : _buildUserProfile(context),
+            _buildItemSetting("Definições", Icons.settings),
+            widget.user != null
+                ? _buildItemSetting("Logout", Icons.logout, isLoggedOut: true)
+                : Container(),
+            // _buildItemSettings(),
+            // _buildItemSettings(),
+            // _buildItemSettings(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -66,7 +85,7 @@ class _SettingsState extends State<Settings>
     ));
   }
 
-  Column buildUserInfo(BuildContext context) {
+  Column _buildUserProfile(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,9 +127,42 @@ class _SettingsState extends State<Settings>
                   style: TextStyle(color: Colors.white, fontSize: 17)),
               onPressed: () {
                 context.read<AuthService>().signOut();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (builder) => AuthWrapper()));
               }),
         ),
       ],
+    );
+  }
+
+  _buildItemSetting(String label, IconData iconData,
+      {bool isLoggedOut = false}) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      child: GestureDetector(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+          child: Row(
+            children: [
+              isLoggedOut ? Icon(iconData, color: Colors.red) : Icon(iconData),
+              SizedBox(width: 10),
+              isLoggedOut
+                  ? Text(label,
+                      style: TextStyle(fontSize: 20, color: Colors.red))
+                  : Text(label, style: TextStyle(fontSize: 20)),
+              Spacer(),
+              isLoggedOut ? Container() : Icon(Icons.arrow_forward),
+            ],
+          ),
+        ),
+        onTap: () {
+          isLoggedOut
+              ? context.read<AuthService>().signOut().then((value) =>
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (builder) => AuthWrapper())))
+              : debugPrint(label);
+        },
+      ),
     );
   }
 }

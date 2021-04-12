@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:MrRecipe/pages/app.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
+import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:connectivity/connectivity.dart';
@@ -86,7 +87,7 @@ class _MyAppState extends State<MyApp> {
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primaryColor: PrimaryColor, accentColor: Colors.white),
-        home: App(),
+        home: AuthWrapper(),
       ),
     );
   }

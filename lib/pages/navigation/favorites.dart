@@ -4,6 +4,7 @@ import 'package:MrRecipe/pages/user_account/registar.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import '../../database/database.dart';
@@ -50,6 +51,50 @@ class _FavoritesState extends State<Favorites>
     }
   }
 
+  ///
+  /// Teste
+  ///
+  bool switchvalue = false;
+  double sliderValue = 0.0;
+  int selected_item = 0;
+
+  List<String> items = [
+    "Aberor",
+    "Jesse",
+    "Hey ",
+    " You",
+    "How",
+    "Are ",
+    "Yours",
+    "Doing",
+    "Today",
+    "Now"
+  ];
+
+  Widget _buildItemPicker() {
+    debugPrint("Item picker");
+    return CupertinoPicker(
+      itemExtent: 60.0,
+      backgroundColor: CupertinoColors.white,
+      onSelectedItemChanged: (index) {
+        setState(() {
+          selected_item = index;
+        });
+        print(index);
+      },
+      children: new List<Widget>.generate(items.length, (index) {
+        return new Center(
+          child: Text(
+            items[index],
+            style: TextStyle(fontSize: 22.0),
+          ),
+        );
+      }),
+    );
+  }
+
+  /// Fim
+
   void newRecipe() {
     addRecipe(
         author: "Mr. Recipe",
@@ -60,7 +105,7 @@ class _FavoritesState extends State<Favorites>
         imgUrl: "assets/images/vegetais.jpg",
         calories: 600,
         categories: [
-          "Carne"
+          "Peixe"
         ],
         preparation: [
           "Reservar algo para mais tarde",
@@ -106,7 +151,16 @@ class _FavoritesState extends State<Favorites>
               onPressed: () => Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Registar())),
               child: Text("Registar")),
-          TextButton(onPressed: () {}, child: Text("Google"))
+          TextButton(
+              onPressed: () async {
+                newRecipe();
+                // await showModalBottomSheet<int>(
+                //     context: context,
+                //     builder: (BuildContext context) {
+                //       return _buildItemPicker();
+                //     });
+              },
+              child: Text("Google"))
         ],
       ),
     );

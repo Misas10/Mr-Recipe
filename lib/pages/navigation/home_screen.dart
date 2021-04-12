@@ -1,3 +1,4 @@
+import 'package:MrRecipe/database/database.dart';
 import 'package:MrRecipe/models/category_model.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,10 +81,17 @@ class _HomePageState extends State<HomePage>
               itemCount: _categoriesCard.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) {
-                return FoodCard(
-                  categoryName: _categoriesCard[index].categoryName,
-                  categoryIcon: _categoriesCard[index].categoryIcon,
-                );
+                return GestureDetector(
+                    child: FoodCard(
+                      categoryName: _categoriesCard[index].categoryName,
+                      categoryIcon: _categoriesCard[index].categoryIcon,
+                    ),
+                    onTap: () {
+                      var name = _categoriesCard[index].categoryName;
+                      debugPrint(name);
+                      showSearch(
+                          context: context, delegate: Search(), query: name);
+                    });
               },
             ),
           ),
@@ -95,15 +103,15 @@ class _HomePageState extends State<HomePage>
               // neste caso a 'Recipes'
               // height: 100,
               width: 100,
-              child: buildRecipes()),
-          SizedBox(height: 10)
+              child: buildRecipesStream(widget.user)),
+          const SizedBox(height: 20)
         ]),
       ),
     );
   }
 
-//Mostra as receitas em perquenos quadrados
-  buildRecipes() {
+// Mostra as receitas em perquenos quadrados
+  buildRecipesStream(User user) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 2),
       child: StreamBuilder<QuerySnapshot>(
@@ -117,12 +125,15 @@ class _HomePageState extends State<HomePage>
             return Center(
               child: Container(
                 padding: EdgeInsets.only(top: 15),
-                child: CircularProgressIndicator(backgroundColor: PrimaryColor),
+                child: CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(PrimaryColor),
+                ),
               ),
             );
           }
 
-          if (!snapshot.hasData) {
+          if (snapshot.data.size == 0) {
+            debugPrint("Não há dados");
             return Center(
               child: Text(
                 'Sem dados',
@@ -131,79 +142,82 @@ class _HomePageState extends State<HomePage>
             );
           }
 
-          return new ListView.separated(
-            separatorBuilder: (BuildContext context, int index) => Divider(
-              color: Colors.transparent,
-            ),
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: snapshot.data.docs.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              var recipes = snapshot.data.docs;
-
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      PageTransition(
-                          child: RecipeDetails(
-                            recipeName: recipes[index]['nome_receita'],
-                            ingredientes: recipes[index]['ingredientes'],
-                            image: recipes[index]['img_url'],
-                            calories: recipes[index]['calorias'],
-                            id: recipes[index]['id'],
-                            recipeUids: recipes[index]
-                                ['utilizadores_que_deram_like'],
-                            user: widget.user,
-                            categories: recipes[index]["categorias"],
-                            preparation: recipes[index]["preparação"],
-                          ),
-                          type: PageTransitionType.rightToLeft));
-                },
-                child: Container(
-                  padding: const EdgeInsets.only(
-                      bottom: 10, top: 5, right: 5, left: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey, spreadRadius: 1, blurRadius: 2),
-                    ],
-                  ),
-                  child: AspectRatio(
-                    aspectRatio: 1.2 / 1, // width : ecrã
-
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            child: ClipRRect(
-                              child: Image.asset(
-                                recipes[index]['img_url'],
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: Text("${recipes[index]['nome_receita']}",
-                              style: simpleTextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18)),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
+          return buildRecipes(snapshot, user: user);
         },
       ),
+    );
+  }
+
+  static ListView buildRecipes(AsyncSnapshot<QuerySnapshot> snapshot,
+      {User user}) {
+    return new ListView.separated(
+      separatorBuilder: (BuildContext context, int index) => Divider(
+        color: Colors.transparent,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: snapshot.data.docs.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        var recipes = snapshot.data.docs;
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                PageTransition(
+                    child: RecipeDetails(
+                      recipeName: recipes[index]['nome_receita'],
+                      ingredientes: recipes[index]['ingredientes'],
+                      image: recipes[index]['img_url'],
+                      calories: recipes[index]['calorias'],
+                      id: recipes[index]['id'],
+                      recipeUids: recipes[index]['utilizadores_que_deram_like'],
+                      user: user,
+                      categories: recipes[index]["categorias"],
+                      preparation: recipes[index]["preparação"],
+                    ),
+                    type: PageTransitionType.rightToLeft));
+          },
+          child: Container(
+            padding:
+                const EdgeInsets.only(bottom: 10, top: 5, right: 5, left: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(color: Colors.grey, spreadRadius: 1, blurRadius: 2),
+              ],
+            ),
+            child: AspectRatio(
+              aspectRatio: 1.2 / 1, // width : ecrã
+
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      child: ClipRRect(
+                        child: Image.asset(
+                          recipes[index]['img_url'],
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Text("${recipes[index]['nome_receita']}",
+                        style: simpleTextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18)),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -236,29 +250,82 @@ class Search extends SearchDelegate<String> {
   }
 
   @override
-  Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    return Container();
+  Widget buildResults(BuildContext context, {String categorie}) {
+    var recipes = FirebaseFirestore.instance
+        .collection("Recipes")
+        .where("categorias", arrayContains: query);
+
+    return StreamBuilder<QuerySnapshot>(
+        stream: recipes.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+
+          if (snapshot.data.size == 0 && query != '') {
+            debugPrint("Não tem Data");
+            return Center(
+                child: Text("Não foi possível encotrar o que procura"));
+          }
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: ListView(
+              children: [
+                SizedBox(height: 20),
+                _HomePageState.buildRecipes(snapshot),
+                SizedBox(height: 20),
+              ],
+            ),
+          );
+        });
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     final suggestionList = query.isEmpty
-        ? recentCategoriesSearch
+        ? []
         : allCategories
             .where((element) =>
                 element.toLowerCase().startsWith(query.toLowerCase()))
             .toList();
 
-    return ListView.builder(
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) => ListTile(
-        onTap: () {
-          query = suggestionList[index];
-          showResults(context);
-        },
-        title: Text(suggestionList[index]),
-      ),
+    return Container(
+      child: query.isEmpty == false
+          ? ListView.builder(
+              itemCount: suggestionList.length,
+              itemBuilder: (context, index) => ListTile(
+                onTap: () {
+                  query = suggestionList[index];
+                  showResults(context);
+                },
+                title: Text(suggestionList[index]),
+              ),
+            )
+          : Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    "Histórico",
+                    style: simpleTextStyle(
+                        fontSize: 17, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ListView.separated(
+                    separatorBuilder: (context, index) => Divider(
+                      color: Colors.transparent,
+                      // height: 5,
+                    ),
+                    shrinkWrap: true,
+                    itemCount: recentCategoriesSearch.length,
+                    itemBuilder: (context, index) {
+                      return Center(child: Text(recentCategoriesSearch[index]));
+                    },
+                  )
+                ],
+              ),
+            ),
     );
   }
 }

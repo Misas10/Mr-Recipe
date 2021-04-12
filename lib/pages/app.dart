@@ -5,12 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class App extends StatefulWidget {
+  final User user;
+
+  const App({Key key, this.user}) : super(key: key);
   @override
   _AppState createState() => _AppState();
 }
 
-class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
-  var user;
+class _AppState extends State<App> {
   int currentIndex = 0;
   String currentPage = "Page1";
   List<String> pageKeys = ["Page1", "Page2", "Page3", "Page4"];
@@ -20,14 +22,10 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
     "Page3": GlobalKey<NavigatorState>(),
     "Page4": GlobalKey<NavigatorState>(),
   };
-  bool get wantKeepAlive => true;
+  // bool get wantKeepAlive => true;
 
   void initState() {
     super.initState();
-    setState(() {
-      user = FirebaseAuth.instance.currentUser;
-    });
-    debugPrint("App user: $user");
   }
 
   void _selectTab(String tabItem, int index) {
@@ -43,9 +41,10 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {});
     // context.watch<AuthService>().signOut();
 
-    super.build(context);
+    // super.build(context);
     return WillPopScope(
       onWillPop: () async {
         final isFirstRoutInCurrentTab =
@@ -65,30 +64,32 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
             _buildOffstageNavigator("Page4"),
           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: PrimaryColor,
-          unselectedItemColor: Colors.black87,
-          backgroundColor: Colors.white,
-          currentIndex: currentIndex,
-          onTap: (int index) => _selectTab(pageKeys[index], index),
-          items: [
-            BottomNavigationBarItem(
-              backgroundColor: Colors.red,
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle),
-              label: 'Criar',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Favoritos',
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person), label: 'Conta')
-          ],
-          type: BottomNavigationBarType.fixed,
+        bottomNavigationBar: Visibility(
+          visible: true,
+          child: BottomNavigationBar(
+            selectedItemColor: PrimaryColor,
+            unselectedItemColor: Colors.black87,
+            backgroundColor: Colors.white,
+            currentIndex: currentIndex,
+            onTap: (int index) => _selectTab(pageKeys[index], index),
+            items: [
+              BottomNavigationBarItem(
+                backgroundColor: Colors.red,
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.add_circle),
+                label: 'Criar',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.favorite),
+                label: 'Favoritos',
+              ),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Conta')
+            ],
+            type: BottomNavigationBarType.fixed,
+          ),
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -101,7 +102,7 @@ class _AppState extends State<App> with AutomaticKeepAliveClientMixin {
       child: TabNavigator(
         navigatorKey: _navigatorKeys[tabItem],
         tabItem: tabItem,
-        user: user,
+        user: widget.user,
       ),
     );
   }

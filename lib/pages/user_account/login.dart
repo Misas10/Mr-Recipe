@@ -1,4 +1,5 @@
 import 'package:MrRecipe/pages/app.dart';
+import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/widgets/form_errors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'registar.dart';
@@ -40,6 +41,8 @@ class _LoginState extends State<Login> {
                 userData.addAll(map);
               }),
             });
+    isAppBarVisible = false;
+
     setState(() {});
     debugPrint("userData: ${userData.toString()}");
   }
@@ -147,7 +150,8 @@ class _LoginState extends State<Login> {
                                             () => Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) => App(),
+                                                builder: (context) =>
+                                                    AuthWrapper(),
                                               ),
                                             ),
                                           );

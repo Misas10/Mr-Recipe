@@ -3,6 +3,7 @@ import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 class RecipeDetails extends StatefulWidget {
@@ -199,7 +200,6 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               IconButton(
                   icon: Icon(Icons.share),
                   onPressed: () {
-                    int index = 0;
                     // formata a lista dos ingredientes
                     var ingredients = widget.ingredientes
                         .map((value) => "\t - ${value.toString().trim()}")
@@ -207,13 +207,13 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                     // formata a lista da preração
                     var preparation = widget.preparation
                         .map((value) =>
-                            "${index + 1}. ${value.toString().trim()}")
+                            "${widget.preparation.indexOf(value.toString()) + 1} . \t${value.toString().trim()}.")
                         .join('\n');
                     // Partilha a receita formata
                     Share.share("${widget.recipeName}\n\n" +
                         "Ingredientes: \n" +
                         "$ingredients \n\n" +
-                        "Preparação: $preparation\n");
+                        "Preparação: \n\n$preparation\n");
                   })
             ],
             leading: IconButton(
@@ -244,39 +244,46 @@ class _RecipeDetailsState extends State<RecipeDetails> {
                   style: titleTextStyle(
                       fontWeight: FontWeight.bold, fontSize: 28)),
               const SizedBox(height: 20),
+
+              // INGREDIENTES
               Center(
-                child: Text(
-                  "Ingredientes",
-                  style: simpleTextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                child: buildRecipeDetailsText("Ingredientes"),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 120, vertical: 2),
                 child: Container(height: 1.5, color: Colors.green),
               ),
               const SizedBox(height: 8),
-              Text("Para até 4 pessoas", style: simpleTextStyle(fontSize: 16)),
-              const SizedBox(height: 20),
+
+              Text("Para até 4 pessoas", style: simpleTextStyle(fontSize: 17)),
+              // const SizedBox(height: 20),
               Container(
                 child: buildRecipeIngredients(),
               ),
               const SizedBox(height: 35),
-              Text(
-                "Preparação",
-                style:
-                    simpleTextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 15),
+
+              // PREPARAÇÃO
+              buildRecipeDetailsText("Preparação"),
+              // const SizedBox(height: 15),
               Container(
                 child: buildRecipePreparation(),
               ),
-              SizedBox(height: 15)
+              const SizedBox(height: 35),
+
+              // CATEGORIAS
+              buildRecipeDetailsText("Categorias"),
+              Container(
+                child: buildCategories(),
+              ),
+              const SizedBox(height: 20)
             ],
           ),
         ),
+      );
+
+  Text buildRecipeDetailsText(String text) => Text(
+        text,
+        style: simpleTextStyle(fontWeight: FontWeight.bold, fontSize: 20),
       );
 
   ListView buildRecipePreparation() {
@@ -323,16 +330,46 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       itemBuilder: (context, index) {
         return Row(
           children: [
-            Text("${widget.ingredientes[index]}"),
+            Text(
+              "${widget.ingredientes[index]}",
+              style: simpleTextStyle(fontSize: 17),
+            ),
             Spacer(),
             Text(
               "quantidade",
-              style: simpleTextStyle(),
+              style: simpleTextStyle(fontSize: 17),
             )
           ],
         );
       },
     );
+  }
+
+  buildCategories() {
+    return ListView.builder(
+        padding: EdgeInsets.only(top: 8),
+        shrinkWrap: true,
+        // scrollDirection: Axis.horizontal,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: widget.categories.length,
+        itemBuilder: (context, index) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                new Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      widget.categories[index],
+                      style: simpleTextStyle(fontSize: 17),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }
 
