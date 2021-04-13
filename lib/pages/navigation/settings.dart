@@ -50,6 +50,7 @@ class _SettingsState extends State<Settings>
         child: Column(
           children: [
             widget.user == null ? Container() : _buildUserProfile(context),
+            _buildItemSetting("Políticas e privacidade", Icons.privacy_tip),
             _buildItemSetting("Definições", Icons.settings),
             widget.user != null
                 ? _buildItemSetting("Logout", Icons.logout, isLoggedOut: true)
