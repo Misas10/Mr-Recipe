@@ -262,11 +262,11 @@ class Search extends SearchDelegate<String> {
             return CircularProgressIndicator();
           }
 
-          if (snapshot.data.size == 0 && query != '') {
-            debugPrint("Não tem Data");
-            return Center(
-                child: Text("Não foi possível encotrar o que procura"));
-          }
+          // if (snapshot.data.size == 0) {
+          //   debugPrint("Não tem Data");
+          //   return Center(
+          //       child: Text("Não foi possível encotrar o que procura"));
+          // }
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: ListView(
@@ -320,7 +320,14 @@ class Search extends SearchDelegate<String> {
                     shrinkWrap: true,
                     itemCount: recentCategoriesSearch.length,
                     itemBuilder: (context, index) {
-                      return Center(child: Text(recentCategoriesSearch[index]));
+                      return Center(
+                          child: GestureDetector(
+                        child: Text(recentCategoriesSearch[index]),
+                        onTap: () {
+                          query = recentCategoriesSearch[index];
+                          showResults(context);
+                        },
+                      ));
                     },
                   )
                 ],

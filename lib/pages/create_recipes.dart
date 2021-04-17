@@ -72,11 +72,28 @@ class _CreateRecipeState extends State<CreateRecipe> {
                       const SizedBox(height: 10),
                       simpleCreateRecipeText("Porção"),
                       const SizedBox(height: 10),
-                      simpleCreateRecipeText("Dificuldade"),
+                      simpleCreateRecipeText("Dificuldade", isRequired: true),
+                      FormBuilderChoiceChip(
+                        alignment: WrapAlignment.spaceEvenly,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        name: "choice_chip",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                        options: [
+                          FormBuilderFieldOption(
+                            value: "Fácil",
+                          ),
+                          FormBuilderFieldOption(
+                            value: "Médio",
+                          ),
+                          FormBuilderFieldOption(
+                            value: "Difícil",
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 10),
                       simpleCreateRecipeText("Tempo de Preparação"),
                       const SizedBox(height: 10),
-                      simpleCreateRecipeText("Ingredientes"),
+                      simpleCreateRecipeText("Ingredientes", isRequired: true),
                       const SizedBox(height: 10),
                       simpleCreateRecipeText("Passos de preparação"),
                       const SizedBox(height: 10),
@@ -160,7 +177,8 @@ class _CreateRecipeState extends State<CreateRecipe> {
   }
 
   _openGallery(BuildContext context) async {
-    var picture = await picker.getImage(source: ImageSource.gallery);
+    var picture = await picker.getImage(
+        source: ImageSource.gallery);
     setState(() {
       imageFile = File(picture.path);
     });
@@ -195,10 +213,19 @@ class _CreateRecipeState extends State<CreateRecipe> {
         });
   }
 
-  Text simpleCreateRecipeText(String text) {
-    return Text(
-      text,
-      style: simpleTextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+  simpleCreateRecipeText(String text, {bool isRequired = false}) {
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: text,
+            style: simpleTextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+          ),
+          isRequired
+              ? TextSpan(text: " *", style: TextStyle(color: Colors.red))
+              : TextSpan(text: ""),
+        ],
+      ),
     );
   }
 
