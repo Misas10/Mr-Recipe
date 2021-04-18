@@ -3,7 +3,6 @@ import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 class RecipeDetails extends StatefulWidget {
@@ -132,7 +131,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    // double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,

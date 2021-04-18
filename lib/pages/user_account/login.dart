@@ -1,4 +1,3 @@
-import 'package:MrRecipe/pages/app.dart';
 import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/widgets/form_errors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,9 +28,6 @@ class _LoginState extends State<Login> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
-
     FirebaseFirestore.instance
         .collection("Users")
         .get()
@@ -45,6 +41,8 @@ class _LoginState extends State<Login> {
 
     setState(() {});
     debugPrint("userData: ${userData.toString()}");
+
+    super.initState();
   }
 
   @override

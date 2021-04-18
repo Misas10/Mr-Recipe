@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'package:MrRecipe/pages/onboarding_screen.dart';
 import 'package:MrRecipe/pages/app.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
-import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:connectivity/connectivity.dart';
@@ -11,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,10 +23,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool isFirstTime = true;
   StreamSubscription<ConnectivityResult> subscription;
 
   @override
   void initState() {
+    getIsFirstTime();
     super.initState();
 
     // Verifica a conexão à internet do smartphone
@@ -68,6 +69,14 @@ class _MyAppState extends State<MyApp> {
     subscription.cancel();
   }
 
+  getIsFirstTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isFirstTimeValue = prefs.getBool("isFirstTime") ?? true;
+    setState(() {
+      isFirstTime = isFirstTimeValue;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     precacheImage(AssetImage("assets/images/starter-image.jpg"), context);
@@ -89,7 +98,7 @@ class _MyAppState extends State<MyApp> {
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primaryColor: PrimaryColor, accentColor: Colors.white),
-        home: SplashScreen(),
+        home: App(),
       ),
     );
   }

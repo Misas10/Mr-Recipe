@@ -231,7 +231,6 @@ class _CreateRecipeState extends State<CreateRecipe> {
 
   Future uploadImage() async {
     int i = 1;
-    List data = [];
     setState(() {
       val = i / imageFile.toString().length;
     });

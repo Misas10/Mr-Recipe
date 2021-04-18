@@ -12,11 +12,17 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   int currentIndex = 0;
   PageController _pageViewoController;
+  Image image1;
+  Image image2;
+  Image image3;
 
   @override
   void initState() {
     _pageViewoController = PageController(initialPage: 0);
     setValue();
+    image1 = Image.asset(onboardingModels[0].image);
+    image2 = Image.asset(onboardingModels[1].image);
+    image3 = Image.asset(onboardingModels[2].image);
     super.initState();
   }
 
@@ -24,6 +30,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void dispose() {
     _pageViewoController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    precacheImage(image1.image, context);
+    super.didChangeDependencies();
   }
 
   void setValue() async {
@@ -55,15 +67,13 @@ class _SplashScreenState extends State<SplashScreen> {
                 },
                 itemBuilder: (_, i) {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                    padding:
+                        const EdgeInsets.only(top: 20, left: 10, right: 10),
                     child: Column(
                       // mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      // crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image.asset(
-                          onboardingModels[i].image,
-                          height: 220,
-                        ),
+                        image2,
                         Text(
                           onboardingModels[i].title,
                           style: titleTextStyle(fontSize: 35),
@@ -74,8 +84,8 @@ class _SplashScreenState extends State<SplashScreen> {
                           width: MediaQuery.of(context).size.width / 1.2,
                           child: Text(
                             onboardingModels[i].body,
-                            style:
-                                simpleTextStyle(fontSize: 18, color: Colors.grey),
+                            style: simpleTextStyle(
+                                fontSize: 18, color: Colors.grey),
                             textAlign: TextAlign.justify,
                           ),
                         )
@@ -96,7 +106,8 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             Container(
               height: 60,
-              margin: const EdgeInsets.only(left: 40, right: 40, top: 30, bottom: 30),
+              margin: const EdgeInsets.only(
+                  left: 40, right: 40, top: 30, bottom: 30),
               width: double.infinity,
               child: TextButton(
                 child: Text(

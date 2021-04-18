@@ -1,9 +1,9 @@
-import 'package:MrRecipe/database/database.dart';
 import 'package:MrRecipe/models/category_model.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/Category_food_card.dart';
 import 'package:MrRecipe/pages/navigation/recipeDetails.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,19 +22,41 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  CollectionReference recipes =
-      FirebaseFirestore.instance.collection('Recipes');
+  CollectionReference recipes;
   List<FoodCategory> _categoriesCard = categoriesCard;
-  List _allCategories = allCategories;
+  // List _allCategories = allCategories;
+  ScrollController _scrollController = new ScrollController();
 
   @override
   void initState() {
+    _isFirstTime();
+    getRecipes();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {}
+    });
     super.initState();
 
     debugPrint("homePage");
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  _isFirstTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool("isFirstTime", false);
+  }
+
   bool get wantKeepAlive => true;
+
+  Future<void> getRecipes() async {
+    recipes = FirebaseFirestore.instance.collection('Recipes');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,52 +82,57 @@ class _HomePageState extends State<HomePage>
       body: Container(
         padding: appHorizontalPadding(),
         color: BgColor,
-        child: ListView(physics: BouncingScrollPhysics(), children: [
-          const SizedBox(height: 30),
-          Container(
-            child: Text(
-              "O que vai desejar hoje?",
-              style: titleTextStyle(
-                fontSize: 30,
+        child: ListView(
+            // controller: _scrollController,
+            physics: BouncingScrollPhysics(),
+            children: [
+              const SizedBox(height: 30),
+              Container(
+                child: Text(
+                  "O que vai desejar hoje?",
+                  style: titleTextStyle(
+                    fontSize: 30,
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 22),
-          Text("Categorias", style: titleTextStyle(fontSize: 20)),
-          const SizedBox(height: 10),
-          Container(
-            height: 80,
-            // color: Colors.black,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: _categoriesCard.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                    child: FoodCard(
-                      categoryName: _categoriesCard[index].categoryName,
-                      categoryIcon: _categoriesCard[index].categoryIcon,
-                    ),
-                    onTap: () {
-                      var name = _categoriesCard[index].categoryName;
-                      debugPrint(name);
-                      showSearch(
-                          context: context, delegate: Search(), query: name);
-                    });
-              },
-            ),
-          ),
-          const SizedBox(height: 22),
-          Text("Receitas em destaque", style: titleTextStyle(fontSize: 25)),
-          const SizedBox(height: 12),
-          Container(
-              // mostra os dados de uma certa collection
-              // neste caso a 'Recipes'
-              // height: 100,
-              width: 100,
-              child: buildRecipesStream(widget.user)),
-          const SizedBox(height: 20)
-        ]),
+              const SizedBox(height: 22),
+              Text("Categorias", style: titleTextStyle(fontSize: 20)),
+              const SizedBox(height: 10),
+              Container(
+                height: 80,
+                // color: Colors.black,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _categoriesCard.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                        child: FoodCard(
+                          categoryName: _categoriesCard[index].categoryName,
+                          categoryIcon: _categoriesCard[index].categoryIcon,
+                        ),
+                        onTap: () {
+                          var name = _categoriesCard[index].categoryName;
+                          debugPrint(name);
+                          showSearch(
+                              context: context,
+                              delegate: Search(),
+                              query: name);
+                        });
+                  },
+                ),
+              ),
+              const SizedBox(height: 22),
+              Text("Receitas em destaque", style: titleTextStyle(fontSize: 25)),
+              const SizedBox(height: 12),
+              Container(
+                  // mostra os dados de uma certa collection
+                  // neste caso a 'Recipes'
+                  // height: 100,
+                  width: 100,
+                  child: buildRecipesStream(widget.user)),
+              const SizedBox(height: 20)
+            ]),
       ),
     );
   }
@@ -130,19 +157,9 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
             );
+          } else {
+            return buildRecipes(snapshot, user: user);
           }
-
-          if (snapshot.data.size == 0) {
-            debugPrint("Não há dados");
-            return Center(
-              child: Text(
-                'Sem dados',
-                style: titleTextStyle(color: Colors.red, fontSize: 25),
-              ),
-            );
-          }
-
-          return buildRecipes(snapshot, user: user);
         },
       ),
     );

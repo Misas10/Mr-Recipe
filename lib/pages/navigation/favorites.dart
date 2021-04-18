@@ -30,6 +30,8 @@ class _FavoritesState extends State<Favorites>
     "beterraba"
   ];
   List recipeUids;
+  double windowWidth = 0;
+  double windowHeight = 0;
 
   bool get wantKeepAlive => true;
 
@@ -50,50 +52,6 @@ class _FavoritesState extends State<Favorites>
               });
     }
   }
-
-  ///
-  /// Teste
-  ///
-  bool switchvalue = false;
-  double sliderValue = 0.0;
-  int selected_item = 0;
-
-  List<String> items = [
-    "Aberor",
-    "Jesse",
-    "Hey ",
-    " You",
-    "How",
-    "Are ",
-    "Yours",
-    "Doing",
-    "Today",
-    "Now"
-  ];
-
-  Widget _buildItemPicker() {
-    debugPrint("Item picker");
-    return CupertinoPicker(
-      itemExtent: 60.0,
-      backgroundColor: CupertinoColors.white,
-      onSelectedItemChanged: (index) {
-        setState(() {
-          selected_item = index;
-        });
-        print(index);
-      },
-      children: new List<Widget>.generate(items.length, (index) {
-        return new Center(
-          child: Text(
-            items[index],
-            style: TextStyle(fontSize: 22.0),
-          ),
-        );
-      }),
-    );
-  }
-
-  /// Fim
 
   void newRecipe() {
     addRecipe(
@@ -125,44 +83,44 @@ class _FavoritesState extends State<Favorites>
 
   @override
   Widget build(BuildContext context) {
+    windowWidth = MediaQuery.of(context).size.width; 
+    windowHeight = MediaQuery.of(context).size.height; 
     super.build(context);
 
-    return SafeArea(
-      child: Container(
-          color: BgColor,
-          child: widget.user == null ? container() : streamBuilder()),
+    return Scaffold(
+      backgroundColor: PrimaryColor,
+      body: Container(
+        child: widget.user == null ? noUserLoggedScreen() : streamBuilder(),
+      ),
     );
   }
 
-  Container container() {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Não nenhum utilizador logado",
-            style: titleTextStyle(fontSize: 20),
-          ),
-          TextButton(
-              onPressed: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Login())),
-              child: Text("Login")),
-          TextButton(
-              onPressed: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Registar())),
-              child: Text("Registar")),
-          TextButton(
-              onPressed: () async {
-                newRecipe();
-                // await showModalBottomSheet<int>(
-                //     context: context,
-                //     builder: (BuildContext context) {
-                //       return _buildItemPicker();
-                //     });
-              },
-              child: Text("Google"))
-        ],
-      ),
+  noUserLoggedScreen() {
+    return Stack(
+      children: [
+        Text(
+          "Não nenhum utilizador logado",
+          style: titleTextStyle(fontSize: 20),
+        ),
+        TextButton(
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Login())),
+            child: Text("Login")),
+        TextButton(
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Registar())),
+            child: Text("Registar")),
+        TextButton(
+            onPressed: () async {
+              newRecipe();
+              // await showModalBottomSheet<int>(
+              //     context: context,
+              //     builder: (BuildContext context) {
+              //       return _buildItemPicker();
+              //     });
+            },
+            child: Text("Google")),
+      ],
     );
   }
 

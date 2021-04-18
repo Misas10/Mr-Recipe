@@ -1,8 +1,6 @@
 import 'package:MrRecipe/database/database.dart';
 import 'package:MrRecipe/widgets/form_errors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:email_validator/email_validator.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +30,6 @@ class _RegistarState extends State<Registar> {
   Map map = {};
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     FirebaseFirestore.instance
         .collection("Users")
@@ -58,10 +55,10 @@ class _RegistarState extends State<Registar> {
 
   @override
   Widget build(BuildContext context) {
-    final TapGestureRecognizer _gestureRecognizer = TapGestureRecognizer()
-      ..onTap = () {
-        Navigator.pop(context);
-      };
+    // final TapGestureRecognizer _gestureRecognizer = TapGestureRecognizer()
+    //   ..onTap = () {
+    //     Navigator.pop(context);
+    //   };
 
     return GestureDetector(
       child: Scaffold(
