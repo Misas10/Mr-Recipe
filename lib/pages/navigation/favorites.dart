@@ -1,3 +1,4 @@
+import 'package:MrRecipe/pages/navigation/login_and_register.dart';
 import 'package:MrRecipe/pages/navigation/recipeDetails.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
@@ -83,28 +84,30 @@ class _FavoritesState extends State<Favorites>
 
   @override
   Widget build(BuildContext context) {
-    windowWidth = MediaQuery.of(context).size.width; 
-    windowHeight = MediaQuery.of(context).size.height; 
+    windowWidth = MediaQuery.of(context).size.width;
+    windowHeight = MediaQuery.of(context).size.height;
     super.build(context);
 
     return Scaffold(
-      backgroundColor: PrimaryColor,
-      body: Container(
-        child: widget.user == null ? noUserLoggedScreen() : streamBuilder(),
-      ),
-    );
+        backgroundColor: BgColor,
+        body: Container(
+          width: double.infinity,
+            child:
+                widget.user == null ? noUserLoggedScreen() : streamBuilder()));
   }
 
   noUserLoggedScreen() {
-    return Stack(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           "Não nenhum utilizador logado",
           style: titleTextStyle(fontSize: 20),
         ),
         TextButton(
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Login())),
+            onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => LoginAndRegister())),
             child: Text("Login")),
         TextButton(
             onPressed: () => Navigator.push(
