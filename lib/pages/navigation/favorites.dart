@@ -1,7 +1,5 @@
 import 'package:MrRecipe/pages/navigation/login_and_register.dart';
 import 'package:MrRecipe/pages/navigation/recipeDetails.dart';
-import 'package:MrRecipe/pages/user_account/login.dart';
-import 'package:MrRecipe/pages/user_account/registar.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -91,7 +89,7 @@ class _FavoritesState extends State<Favorites>
     return Scaffold(
         backgroundColor: BgColor,
         body: Container(
-          width: double.infinity,
+            width: double.infinity,
             child:
                 widget.user == null ? noUserLoggedScreen() : streamBuilder()));
   }
@@ -106,13 +104,27 @@ class _FavoritesState extends State<Favorites>
           style: titleTextStyle(fontSize: 20),
         ),
         TextButton(
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => LoginAndRegister())),
-            child: Text("Login")),
+          onPressed: () => Navigator.push(
+            context,
+            PageTransition(
+              child: LoginAndRegister(pageState: 0),
+              type: PageTransitionType.bottomToTop,
+              duration: Duration(milliseconds: 400),
+            ),
+          ),
+          child: Text("Login"),
+        ),
         TextButton(
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Registar())),
-            child: Text("Registar")),
+          onPressed: () => Navigator.push(
+            context,
+            PageTransition(
+              child: LoginAndRegister(pageState: 1),
+              type: PageTransitionType.bottomToTop,
+              duration: Duration(milliseconds: 400),
+            ),
+          ),
+          child: Text("Registar"),
+        ),
         TextButton(
             onPressed: () async {
               newRecipe();

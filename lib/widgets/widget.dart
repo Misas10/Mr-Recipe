@@ -12,24 +12,6 @@ InputDecoration inputTextDecoration(String labelText) {
   );
 }
 
-TextFormField emailFormField(TextEditingController controller) {
-  return TextFormField(
-    keyboardType: TextInputType.emailAddress,
-    validator: MultiValidator(
-      [
-        RequiredValidator(errorText: "Campo Obrigatório *"),
-        EmailValidator(errorText: "Insira um email válido"),
-      ],
-    ),
-    controller: controller,
-    style: simpleTextStyle(color: Colors.black, fontSize: 17),
-    decoration: InputDecoration(
-      border: OutlineInputBorder(),
-      labelText: "Email",
-    ),
-  );
-}
-
 OutlineInputBorder outlineInputBorderError() => OutlineInputBorder(
     borderRadius: BorderRadius.circular(8),
     gapPadding: 10,

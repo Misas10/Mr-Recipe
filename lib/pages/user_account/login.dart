@@ -86,7 +86,7 @@ class _LoginState extends State<Login> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          emailFormField(emailController),
+                          // emailFormField(emailController),
                           SizedBox(
                             height: 10,
                           ),
