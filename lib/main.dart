@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> {
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primaryColor: PrimaryColor, accentColor: Colors.white),
-        home: isFirstTime ? SplashScreen() : App(),
+        home: isFirstTime ? OnboardingScreen() : App(),
       ),
     );
   }

@@ -4,12 +4,12 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import '../models/onboarding_screen_model.dart';
 
-class SplashScreen extends StatefulWidget {
+class OnboardingScreen extends StatefulWidget {
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  _OnboardingScreenState createState() => _OnboardingScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen> {
   int currentIndex = 0;
   PageController _pageViewoController;
   Image image1;
