@@ -1,3 +1,4 @@
+import 'package:MrRecipe/pages/app.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
 import 'package:MrRecipe/pages/wrapper.dart';
@@ -92,7 +93,7 @@ class _SettingsState extends State<Settings>
       children: [
         SizedBox(height: 30),
         Center(child: Text("Perfil", style: titleTextStyle(fontSize: 30))),
-        SizedBox(height: 60),
+        SizedBox(height: 30),
         Container(
           child: Column(
             children: [
@@ -113,25 +114,11 @@ class _SettingsState extends State<Settings>
             ],
           ),
         ),
-        SizedBox(height: 80),
+        SizedBox(height: 40),
         Text("Email: ${widget.user.email}",
             style: simpleTextStyle(fontSize: 18)),
-        SizedBox(height: 60),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: 40,
-          child: MaterialButton(
-              color: PrimaryColor,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              child: Text("Logout",
-                  style: TextStyle(color: Colors.white, fontSize: 17)),
-              onPressed: () {
-                context.read<AuthService>().signOut();
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (builder) => AuthWrapper()));
-              }),
-        ),
+        SizedBox(height: 30),
+
       ],
     );
   }
@@ -158,9 +145,12 @@ class _SettingsState extends State<Settings>
         ),
         onTap: () {
           isLoggedOut
-              ? context.read<AuthService>().signOut().then((value) =>
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (builder) => AuthWrapper())))
+              ? context.read<AuthService>().signOut().then(
+                    (value) => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (builder) => App()),
+                    ),
+                  )
               : debugPrint(label);
         },
       ),

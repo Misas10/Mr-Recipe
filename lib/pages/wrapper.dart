@@ -40,9 +40,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
     final firebaseUser = context.watch<User>();
 
     debugPrint(newUser.toString());
-    
-      return App(user: firebaseUser);
 
+    return App(user: firebaseUser);
   }
 
   wrapperLoginRegister() {
@@ -103,8 +102,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   horizontal: MediaQuery.of(context).size.width * .03),
               child: OutlinedButton(
                 onPressed: () {
-                  context.read<AuthService>().signInWithGoogle().then((value) =>
-                      {
+                  AuthService.signInWithGoogle(context: context).then((value) => {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => App()))
                       });

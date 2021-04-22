@@ -1,5 +1,6 @@
 import 'package:MrRecipe/pages/navigation/login_and_register.dart';
 import 'package:MrRecipe/pages/navigation/recipeDetails.dart';
+import 'package:MrRecipe/widgets/google_sign_in_button.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -125,16 +126,7 @@ class _FavoritesState extends State<Favorites>
           ),
           child: Text("Registar"),
         ),
-        TextButton(
-            onPressed: () async {
-              newRecipe();
-              // await showModalBottomSheet<int>(
-              //     context: context,
-              //     builder: (BuildContext context) {
-              //       return _buildItemPicker();
-              //     });
-            },
-            child: Text("Google")),
+        GoogleSignInButton(),
       ],
     );
   }

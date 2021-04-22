@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    precacheImage(AssetImage("assets/images/starter-image.jpg"), context);
+    // precacheImage(AssetImage("assets/images/starter-image.jpg"), context);
 
     return MultiProvider(
       providers: [

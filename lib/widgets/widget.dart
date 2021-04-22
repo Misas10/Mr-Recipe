@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:form_field_validator/form_field_validator.dart';
+
+String accountType = "";
 
 EdgeInsets appHorizontalPadding() {
   return EdgeInsets.symmetric(horizontal: 10);
@@ -7,7 +8,7 @@ EdgeInsets appHorizontalPadding() {
 
 InputDecoration inputTextDecoration(String labelText) {
   return InputDecoration(
-    border: OutlineInputBorder(),
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
     labelText: labelText,
   );
 }

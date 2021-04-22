@@ -241,7 +241,26 @@ class _HomePageState extends State<HomePage>
 
 // barra de pesquisa
 class Search extends SearchDelegate<String> {
-  final recentCategoriesSearch = ["Peixe", "Carne"];
+  final recentCategoriesSearch = ["peixe", "carne"];
+
+  _buildHistory() {
+    final suggestionList = query.isEmpty
+        ? recentCategoriesSearch
+        : allCategories
+            .where((element) => element.toLowerCase().startsWith(query))
+            .toList();
+
+    ListView.builder(
+      itemCount: suggestionList.length,
+      itemBuilder: (context, index) => ListTile(
+        onTap: () {
+          query = suggestionList[index];
+          showResults(context);
+        },
+        title: Text(suggestionList[index]),
+      ),
+    );
+  }
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -270,7 +289,7 @@ class Search extends SearchDelegate<String> {
   Widget buildResults(BuildContext context, {String categorie}) {
     var recipes = FirebaseFirestore.instance
         .collection("Recipes")
-        .where("categorias", arrayContains: query);
+        .where("categorias", arrayContains: query.toLowerCase());
 
     return StreamBuilder<QuerySnapshot>(
         stream: recipes.snapshots(),
@@ -279,11 +298,15 @@ class Search extends SearchDelegate<String> {
             return CircularProgressIndicator();
           }
 
-          // if (snapshot.data.size == 0) {
-          //   debugPrint("Não tem Data");
-          //   return Center(
-          //       child: Text("Não foi possível encotrar o que procura"));
-          // }
+          if (snapshot.data.size == 0) {
+            debugPrint("Não tem dados");
+            if (query.isNotEmpty) {
+              return Center(
+                  child: Text("Não foi possível encontrar o que procura"));
+            } else {
+              return Container();
+            }
+          }
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: ListView(
@@ -299,25 +322,9 @@ class Search extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
-        ? []
-        : allCategories
-            .where((element) =>
-                element.toLowerCase().startsWith(query.toLowerCase()))
-            .toList();
-
     return Container(
-      child: query.isEmpty == false
-          ? ListView.builder(
-              itemCount: suggestionList.length,
-              itemBuilder: (context, index) => ListTile(
-                onTap: () {
-                  query = suggestionList[index];
-                  showResults(context);
-                },
-                title: Text(suggestionList[index]),
-              ),
-            )
+      child: query.isNotEmpty
+          ? _buildHistory()
           : Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
