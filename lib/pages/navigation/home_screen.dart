@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage>
         stream: recipes.snapshots(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasError) {
-            return Text('Erro');
+            return const Text('Erro');
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -202,7 +202,8 @@ class _HomePageState extends State<HomePage>
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
-                BoxShadow(color: Colors.grey, spreadRadius: 1, blurRadius: 2),
+                const BoxShadow(
+                    color: Colors.grey, spreadRadius: 1, blurRadius: 2),
               ],
             ),
             child: AspectRatio(
@@ -222,7 +223,7 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.only(top: 5),
                     child: Text("${recipes[index]['nome_receita']}",
@@ -241,7 +242,42 @@ class _HomePageState extends State<HomePage>
 
 // barra de pesquisa
 class Search extends SearchDelegate<String> {
-  final recentCategoriesSearch = ["peixe", "carne"];
+  int maxHistory = 6;
+  List<String> recentCategoriesSearch = [];
+
+  _addHistory({String value}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.clear();
+    if (prefs.getStringList("recentSearch") == null) {
+      prefs.setStringList("recentSearch", recentCategoriesSearch);
+    }
+
+    List<String> savedSearch = prefs.getStringList("recentSearch");
+
+    if (value != null) {
+      if (savedSearch.length >= maxHistory) {
+        savedSearch.removeLast();
+      }
+      if (!savedSearch.contains(value)) savedSearch.insert(0, value);
+
+      prefs.setStringList("recentSearch", savedSearch);
+    }
+
+    recentCategoriesSearch = prefs.getStringList("recentSearch");
+
+    debugPrint(savedSearch.toString());
+  }
+
+
+  _clearSearch(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    List<String> savedList = prefs.getStringList("recentSearch");
+    savedList.remove(value);
+
+    prefs.setStringList("recentSearch", savedList);
+    recentCategoriesSearch = prefs.getStringList("recentSearch");
+  }
 
   _buildHistory() {
     final suggestionList = query.isEmpty
@@ -287,76 +323,95 @@ class Search extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context, {String categorie}) {
-    var recipes = FirebaseFirestore.instance
-        .collection("Recipes")
-        .where("categorias", arrayContains: query.toLowerCase());
+    if (query.isNotEmpty) {
+      _addHistory(value: query);
+      var recipes = FirebaseFirestore.instance
+          .collection("Recipes")
+          .where("categorias", arrayContains: query.toLowerCase());
 
-    return StreamBuilder<QuerySnapshot>(
-        stream: recipes.snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
-
-          if (snapshot.data.size == 0) {
-            debugPrint("Não tem dados");
-            if (query.isNotEmpty) {
-              return Center(
-                  child: Text("Não foi possível encontrar o que procura"));
-            } else {
-              return Container();
+      return StreamBuilder<QuerySnapshot>(
+          stream: recipes.snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
             }
-          }
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: ListView(
-              children: [
-                SizedBox(height: 20),
-                _HomePageState.buildRecipes(snapshot),
-                SizedBox(height: 20),
-              ],
-            ),
-          );
-        });
+
+            if (snapshot.data.size == 0) {
+              debugPrint("Não tem dados");
+              if (query.isNotEmpty) {
+                return const Center(
+                    child: Text("Não foi possível encontrar o que procura"));
+              } else {
+                return Container();
+              }
+            }
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: ListView(
+                children: [
+                  SizedBox(height: 20),
+                  _HomePageState.buildRecipes(snapshot),
+                  SizedBox(height: 20),
+                ],
+              ),
+            );
+          });
+    }
+    return Container();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container(
-      child: query.isNotEmpty
-          ? _buildHistory()
-          : Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 10),
-                  Text(
-                    "Histórico",
-                    style: simpleTextStyle(
-                        fontSize: 17, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  ListView.separated(
-                    separatorBuilder: (context, index) => Divider(
-                      color: Colors.transparent,
-                      // height: 5,
+    _addHistory();
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 30),
+          Text(
+            "Histórico",
+            style: simpleTextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 300,
+            child: ListView.builder(
+              // separatorBuilder: (context, index) => const Divider(
+              //   color: Colors.transparent,
+              //   // height: 5,
+              // ),
+              shrinkWrap: true,
+              itemCount: recentCategoriesSearch.length,
+              itemBuilder: (context, index) {
+                // Items do Histórico
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _clearSearch(recentCategoriesSearch[index]);
+                          });
+                        }),
+                    GestureDetector(
+                      child: Text(
+                        recentCategoriesSearch[index] ?? "",
+                        style: simpleTextStyle(fontSize: 18),
+                      ),
+                      onTap: () {
+                        query = recentCategoriesSearch[index];
+                        showResults(context);
+                      },
                     ),
-                    shrinkWrap: true,
-                    itemCount: recentCategoriesSearch.length,
-                    itemBuilder: (context, index) {
-                      return Center(
-                          child: GestureDetector(
-                        child: Text(recentCategoriesSearch[index]),
-                        onTap: () {
-                          query = recentCategoriesSearch[index];
-                          showResults(context);
-                        },
-                      ));
-                    },
-                  )
-                ],
-              ),
+                  ],
+                );
+              },
             ),
-    );
+          ),
+        ],
+      );
+    });
   }
 }

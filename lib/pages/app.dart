@@ -20,10 +20,10 @@ class _AppState extends State<App> {
   List<Widget> _pages = [];
 
   void initState() {
-    _pages.add(HomePage(user: widget.user));
-    _pages.add(CreateRecipe());
-    _pages.add(Favorites(user: widget.user));
-    _pages.add(Settings(user: widget.user));
+    _pages.add(SafeArea(child: HomePage(user: widget.user)));
+    _pages.add(SafeArea(child: CreateRecipe()));
+    _pages.add(SafeArea(child: Favorites(user: widget.user)));
+    _pages.add(SafeArea(child: Settings(user: widget.user)));
 
     super.initState();
   }
