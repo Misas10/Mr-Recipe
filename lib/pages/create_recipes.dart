@@ -32,13 +32,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          "Crie já a sua receita",
-          style: titleTextStyle(fontSize: 25),
-        ),
-        centerTitle: true,
-      ),
+      appBar: customAppBar("Crie já a sua receita"),
       body: GestureDetector(
         child: Container(
           padding: appHorizontalPadding(),

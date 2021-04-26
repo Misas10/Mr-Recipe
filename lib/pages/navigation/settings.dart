@@ -40,11 +40,7 @@ class _SettingsState extends State<Settings>
     super.build(context);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: PrimaryColor,
-        title: Text("Conta"),
-        centerTitle: true,
-      ),
+      appBar: customAppBar("Conta"),
       backgroundColor: BgColor,
       body: Container(
         padding: appHorizontalPadding(),
@@ -56,9 +52,6 @@ class _SettingsState extends State<Settings>
             widget.user != null
                 ? _buildItemSetting("Logout", Icons.logout, isLoggedOut: true)
                 : Container(),
-            // _buildItemSettings(),
-            // _buildItemSettings(),
-            // _buildItemSettings(),
           ],
         ),
       ),
@@ -118,7 +111,6 @@ class _SettingsState extends State<Settings>
         Text("Email: ${widget.user.email}",
             style: simpleTextStyle(fontSize: 18)),
         SizedBox(height: 30),
-
       ],
     );
   }

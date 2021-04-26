@@ -24,7 +24,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isFirstTime = true;
+  bool isFirstTime;
   StreamSubscription<ConnectivityResult> subscription;
 
   @override
@@ -72,7 +72,9 @@ class _MyAppState extends State<MyApp> {
 
   getIsFirstTime() async {
     final prefs = await SharedPreferences.getInstance();
+    // prefs.clear();
     bool isFirstTimeValue = prefs.getBool("isFirstTime") ?? true;
+    // if (isFirstTimeValue) prefs.setBool("isFirstTime", true);
     setState(() {
       isFirstTime = isFirstTimeValue;
     });
@@ -81,7 +83,15 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     // precacheImage(AssetImage("assets/images/starter-image.jpg"), context);
-
+    if (isFirstTime == null) {
+      return Container(
+        child: Center(
+            child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(PrimaryColor),
+        )),
+        color: Colors.white,
+      );
+    }
     return MultiProvider(
       providers: [
         Provider<AuthService>(
@@ -99,7 +109,9 @@ class _MyAppState extends State<MyApp> {
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primaryColor: PrimaryColor, accentColor: Colors.white),
-        home: isFirstTime ? OnboardingScreen() : App(),
+        home: SafeArea(
+          child: isFirstTime ? OnboardingScreen() : App(fromMain: true),
+        ),
       ),
     );
   }

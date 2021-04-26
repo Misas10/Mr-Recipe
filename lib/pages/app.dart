@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 
 class App extends StatefulWidget {
   final User user;
+  final bool fromMain;
 
-  const App({Key key, this.user}) : super(key: key);
+  const App({Key key, this.user, this.fromMain = false}) : super(key: key);
   @override
   _AppState createState() => _AppState();
 }
@@ -20,10 +21,15 @@ class _AppState extends State<App> {
   List<Widget> _pages = [];
 
   void initState() {
-    _pages.add(SafeArea(child: HomePage(user: widget.user)));
-    _pages.add(SafeArea(child: CreateRecipe()));
-    _pages.add(SafeArea(child: Favorites(user: widget.user)));
-    _pages.add(SafeArea(child: Settings(user: widget.user)));
+    widget.fromMain
+        ? _pages.add(HomePage(
+            user: widget.user,
+            fromMain: true,
+          ))
+        : _pages.add(HomePage(user: widget.user));
+    _pages.add(CreateRecipe());
+    _pages.add(Favorites(user: widget.user));
+    _pages.add(Settings(user: widget.user));
 
     super.initState();
   }

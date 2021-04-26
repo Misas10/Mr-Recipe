@@ -11,6 +11,7 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   int currentIndex = 0;
+  bool isLoading = false;
   PageController _pageViewoController;
   Image image1;
   Image image2;
@@ -104,34 +105,45 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            Container(
-              height: 60,
-              margin: const EdgeInsets.only(
-                  left: 40, right: 40, top: 30, bottom: 30),
-              width: double.infinity,
-              child: TextButton(
-                child: Text(
-                  currentIndex != onboardingModels.length - 1
-                      ? "Continue"
-                      : "Começar",
-                ),
-                onPressed: () {
-                  if (currentIndex == onboardingModels.length - 1) {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => App()));
-                  }
-                  _pageViewoController.nextPage(
-                      duration: Duration(milliseconds: 100),
-                      curve: Curves.bounceIn);
-                },
-                style: TextButton.styleFrom(
-                    primary: Colors.white,
-                    backgroundColor: PrimaryColor,
-                    textStyle: TextStyle(fontSize: 18),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20))),
-              ),
-            )
+            isLoading
+                ? Container(
+                    height: 60,
+                    margin: const EdgeInsets.only(
+                        left: 40, right: 40, top: 30, bottom: 30),
+                    width: double.infinity,
+                    child: TextButton(
+                      child: Text(
+                        currentIndex != onboardingModels.length - 1
+                            ? "Continue"
+                            : "Começar",
+                      ),
+                      onPressed: () {
+                        if (currentIndex == onboardingModels.length - 1) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => App(
+                                        fromMain: true,
+                                      )));
+                        }
+                        _pageViewoController.nextPage(
+                            duration: Duration(milliseconds: 100),
+                            curve: Curves.bounceIn);
+                      },
+                      style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          backgroundColor: PrimaryColor,
+                          textStyle: TextStyle(fontSize: 18),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                    ),
+                  )
+                : CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(PrimaryColor),
+                  )
           ],
         ),
       ),

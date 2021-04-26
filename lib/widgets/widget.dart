@@ -6,6 +6,16 @@ EdgeInsets appHorizontalPadding() {
   return EdgeInsets.symmetric(horizontal: 10);
 }
 
+AppBar customAppBar(String title) {
+  return AppBar(
+    title: Text(
+      title,
+      style: titleTextStyle(fontSize: 24),
+    ),
+    centerTitle: true,
+  );
+}
+
 InputDecoration inputTextDecoration(String labelText) {
   return InputDecoration(
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),

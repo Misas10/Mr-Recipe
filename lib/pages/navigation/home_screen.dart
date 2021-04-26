@@ -13,8 +13,9 @@ import '../../models/category_model.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
+  final bool fromMain;
 
-  HomePage({Key key, this.user}) : super(key: key);
+  HomePage({Key key, this.user, this.fromMain}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -29,7 +30,9 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    _isFirstTime();
+    if (widget.fromMain) {
+      _isFirstTime();
+    }
     getRecipes();
 
     _scrollController.addListener(() {
@@ -267,7 +270,6 @@ class Search extends SearchDelegate<String> {
 
     debugPrint(savedSearch.toString());
   }
-
 
   _clearSearch(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

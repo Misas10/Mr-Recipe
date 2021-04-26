@@ -29,7 +29,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
   int _pageState = 0;
   double screenWidth = 0;
   double screenHeight = 0;
-  String title = "Login";
+  String title = "";
 
   //  LOGIN VARIABLES
   double _loginYOffSet = 0;
@@ -116,6 +116,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
       _loginOpacity = .7;
       title = "Registar";
       _enabledTextField = false;
+      _forgotXOffSet = screenWidth;
       //
     } else {
       title = "Recuperar palavra-passe";
@@ -133,8 +134,20 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
           Positioned(
             top: 20,
             left: 0,
-            child: IconButton(
-              icon: Icon(Icons.close),
+            child: TextButton(
+              child: Row(
+                children: [
+                  Icon(Icons.arrow_back, color: Colors.white),
+                  Text(
+                    "Voltar",
+                    style: TextStyle(
+                      fontSize: 20,
+                      // fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },

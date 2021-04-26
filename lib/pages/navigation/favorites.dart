@@ -32,6 +32,7 @@ class _FavoritesState extends State<Favorites>
   List recipeUids;
   double windowWidth = 0;
   double windowHeight = 0;
+  int pageTrasitionTime = 0;
 
   bool get wantKeepAlive => true;
 
@@ -76,7 +77,7 @@ class _FavoritesState extends State<Favorites>
   }
 
   final _removedSnackBar = SnackBar(
-    content: Text("Receita removida dos favoritos"),
+    content: const Text("Receita removida dos favoritos"),
     backgroundColor: Colors.red,
     duration: const Duration(seconds: 2),
   );
@@ -88,6 +89,7 @@ class _FavoritesState extends State<Favorites>
     super.build(context);
 
     return Scaffold(
+      appBar: customAppBar("Favoritos"),
         backgroundColor: BgColor,
         body: Container(
             width: double.infinity,
@@ -104,30 +106,42 @@ class _FavoritesState extends State<Favorites>
           "Não nenhum utilizador logado",
           style: titleTextStyle(fontSize: 20),
         ),
-        TextButton(
-          onPressed: () => Navigator.push(
-            context,
-            PageTransition(
-              child: LoginAndRegister(pageState: 0),
-              type: PageTransitionType.bottomToTop,
-              duration: Duration(milliseconds: 400),
-            ),
-          ),
-          child: Text("Login"),
-        ),
-        TextButton(
-          onPressed: () => Navigator.push(
-            context,
-            PageTransition(
-              child: LoginAndRegister(pageState: 1),
-              type: PageTransitionType.bottomToTop,
-              duration: Duration(milliseconds: 400),
-            ),
-          ),
-          child: Text("Registar"),
-        ),
+        SizedBox(height: 20),
+        buildButton("Login", 0),
+        buildButton("Registar", 1),
         GoogleSignInButton(),
       ],
+    );
+  }
+
+  Container buildButton(String label, int pageState) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      width: MediaQuery.of(context).size.width / 1.5,
+      child: OutlinedButton(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(40),
+          ),
+        ),
+        onPressed: () => Navigator.push(
+          context,
+          PageTransition(
+            child: LoginAndRegister(pageState: pageState),
+            type: PageTransitionType.bottomToTop,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
