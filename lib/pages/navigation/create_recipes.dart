@@ -68,7 +68,9 @@ class _CreateRecipeState extends State<CreateRecipe> {
   }
 
   // Apaga os dados da receita
-  void removeRecipeFromLocalStorage() {
+  void removeRecipeFromLocalStorage() async {
+    await storage.ready;
+
     debugPrint("Removing from LocalStorage...");
     if (localRecipe != null) storage.deleteItem('localRecipe');
   }

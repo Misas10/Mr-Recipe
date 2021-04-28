@@ -1,4 +1,4 @@
-import 'package:MrRecipe/pages/create_recipes.dart';
+import 'package:MrRecipe/pages/navigation/create_recipes.dart';
 import 'package:MrRecipe/pages/navigation/favorites.dart';
 import 'package:MrRecipe/pages/navigation/home_screen.dart';
 import 'package:MrRecipe/pages/navigation/settings.dart';
