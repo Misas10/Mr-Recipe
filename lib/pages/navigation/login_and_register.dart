@@ -132,14 +132,14 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
         alignment: Alignment.center,
         children: [
           Positioned(
-            top: 20,
+            top: 25,
             left: 0,
             child: TextButton(
               child: Row(
                 children: [
                   Icon(Icons.arrow_back, color: Colors.white),
                   Text(
-                    "Voltar",
+                    " Voltar",
                     style: TextStyle(
                       fontSize: 20,
                       // fontWeight: FontWeight.bold,
@@ -149,6 +149,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                 ],
               ),
               onPressed: () {
+                FocusScope.of(context).unfocus();
                 Navigator.pop(context);
               },
             ),
@@ -237,13 +238,21 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                   "Confirme a Password", enabledTextField),
               const SizedBox(height: 10),
 
-              Container(
-                padding: EdgeInsets.only(left: 20, right: 10),
-                child: Text(
-                  "Ao criar uma conta automaticamente aceita os nossos termos",
-                  style:
-                      simpleTextStyle(color: Color.fromRGBO(102, 102, 102, 1)),
-                ),
+              Row(
+                children: [
+                  Checkbox(
+                    value: true,
+                    onChanged: null,
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(left: 2, right: 10),
+                    child: Text(
+                      "Ao criar uma conta automaticamente \naceita os nossos termos",
+                      style: simpleTextStyle(
+                          color: Color.fromRGBO(102, 102, 102, 1)),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 10,
