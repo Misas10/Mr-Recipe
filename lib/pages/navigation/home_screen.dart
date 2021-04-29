@@ -40,8 +40,6 @@ class _HomePageState extends State<HomePage>
           _scrollController.position.maxScrollExtent) {}
     });
     super.initState();
-
-    debugPrint("homePage");
   }
 
   @override
