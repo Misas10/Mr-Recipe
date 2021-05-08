@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
-    if (widget.fromMain) {
+    if (widget.fromMain != null) {
       _isFirstTime();
     }
     getRecipes();
