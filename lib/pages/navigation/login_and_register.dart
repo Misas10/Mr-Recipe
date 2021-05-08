@@ -128,43 +128,48 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
 
     return Scaffold(
       backgroundColor: PrimaryColor,
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            top: 25,
-            left: 0,
-            child: TextButton(
-              child: Row(
-                children: [
-                  Icon(Icons.arrow_back, color: Colors.white),
-                  Text(
-                    " Voltar",
-                    style: TextStyle(
-                      fontSize: 20,
-                      // fontWeight: FontWeight.bold,
-                      color: Colors.white,
+      body: GestureDetector(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              top: 25,
+              left: 0,
+              child: TextButton(
+                child: Row(
+                  children: [
+                    Icon(Icons.arrow_back, color: Colors.white),
+                    Text(
+                      " Voltar",
+                      style: TextStyle(
+                        fontSize: 20,
+                        // fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                onPressed: () {
+                  FocusScope.of(context).unfocus();
+                  Navigator.pop(context);
+                },
               ),
-              onPressed: () {
-                FocusScope.of(context).unfocus();
-                Navigator.pop(context);
-              },
             ),
-          ),
-          Positioned(
-            top: screenHeight / 10,
-            child: Text(
-              title,
-              style: titleTextStyle(color: Colors.white, fontSize: 30),
+            Positioned(
+              top: screenHeight / 10,
+              child: Text(
+                title,
+                style: titleTextStyle(color: Colors.white, fontSize: 30),
+              ),
             ),
-          ),
-          buildLoginContainer(context),
-          buildRegisterContainer(),
-          buildForgotPassContainer(),
-        ],
+            buildLoginContainer(context),
+            buildRegisterContainer(),
+            buildForgotPassContainer(),
+          ],
+        ),
+        onTap: () {
+          if ("" == null) ;
+        },
       ),
     );
   }
@@ -202,121 +207,126 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20), topRight: Radius.circular(20)),
       ),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Form(
-          key: _registerFormKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: Column(
-            children: [
-              Container(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () {
-                    setState(() {
-                      _pageState = 0;
-                    });
-                  },
-                ),
-              ),
-              // const SizedBox(height: 10),
-              TextFormField(
-                // controller: nameController,
-                decoration: inputTextDecoration("Nome"),
-                validator: MultiValidator(
-                    [RequiredValidator(errorText: "Campo Obrigatório")]),
-              ),
-              const SizedBox(height: 10),
-              emailFormField(_emailRegisterController, enabledTextField),
-
-              const SizedBox(height: 10),
-              passwordFormField(
-                  _passwordRegisterController, "Password", enabledTextField),
-              const SizedBox(height: 10),
-              passwordFormField(_confirmPasswordController,
-                  "Confirme a Password", enabledTextField),
-              const SizedBox(height: 10),
-
-              Row(
+      child: ListView(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+            child: Form(
+              key: _registerFormKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
                 children: [
-                  Checkbox(
-                    value: true,
-                    onChanged: null,
-                  ),
                   Container(
-                    padding: EdgeInsets.only(left: 2, right: 10),
-                    child: Text(
-                      "Ao criar uma conta automaticamente \naceita os nossos termos",
-                      style: simpleTextStyle(
-                          color: Color.fromRGBO(102, 102, 102, 1)),
+                    alignment: Alignment.topLeft,
+                    child: IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        setState(() {
+                          _pageState = 0;
+                        });
+                      },
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    // controller: nameController,
+                    decoration: inputTextDecoration("Nome"),
+                    validator: MultiValidator(
+                        [RequiredValidator(errorText: "Campo Obrigatório")]),
+                  ),
+                  const SizedBox(height: 10),
+                  emailFormField(_emailRegisterController, enabledTextField),
+
+                  const SizedBox(height: 10),
+                  passwordFormField(_passwordRegisterController, "Password",
+                      enabledTextField),
+                  const SizedBox(height: 10),
+                  passwordFormField(_confirmPasswordController,
+                      "Confirme a Password", enabledTextField),
+                  const SizedBox(height: 10),
+
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: true,
+                        onChanged: null,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 2, right: 10),
+                        child: Text(
+                          "Ao criar uma conta automaticamente \naceita os nossos termos",
+                          style: simpleTextStyle(
+                              color: Color.fromRGBO(102, 102, 102, 1)),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  Container(
+                      child: registerUserExits
+                          ? FormError(errorLabel: "Esta conta já existe")
+                          : Container()),
+
+                  const SizedBox(height: 15),
+
+                  // BOTÃO
+                  Container(
+                    width: MediaQuery.of(context).size.width / 1.2,
+                    height: 40,
+                    child: MaterialButton(
+                        color: PrimaryColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Text("Registar",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 19)),
+                        onPressed: () {
+                          if (_registerFormKey.currentState.validate()) {
+                            _registerFormKey.currentState.save();
+                            if (userData
+                                .containsKey(_emailRegisterController.text)) {
+                              debugPrint("Utilizador existe");
+                              setState(() {
+                                registerUserExits = true;
+                              });
+                            } else {
+                              setState(() {
+                                accountType = "email";
+                              });
+                              context
+                                  .read<AuthService>()
+                                  .register(
+                                      email:
+                                          _emailRegisterController.text.trim(),
+                                      password: _passwordRegisterController.text
+                                          .trim())
+                                  .whenComplete(
+                                    () => addUsers(
+                                            _nameController.text,
+                                            _emailRegisterController.text,
+                                            _passwordRegisterController.text)
+                                        .whenComplete(() {
+                                      if (user != null) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                App(user: user),
+                                          ),
+                                        );
+                                      }
+                                    }),
+                                  );
+                            }
+                          }
+                        }),
+                  ),
+                  const SizedBox(height: 200)
                 ],
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                  child: registerUserExits
-                      ? FormError(errorLabel: "Esta conta já existe")
-                      : Container()),
-
-              const SizedBox(height: 30),
-
-              // BOTÃO
-              Container(
-                width: MediaQuery.of(context).size.width / 1.2,
-                height: 50,
-                child: MaterialButton(
-                    color: PrimaryColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    child: Text("Registar",
-                        style: TextStyle(color: Colors.white, fontSize: 19)),
-                    onPressed: () {
-                      if (_registerFormKey.currentState.validate()) {
-                        _registerFormKey.currentState.save();
-                        if (userData
-                            .containsKey(_emailRegisterController.text)) {
-                          debugPrint("Utilizador existe");
-                          setState(() {
-                            registerUserExits = true;
-                          });
-                        } else {
-                          setState(() {
-                            accountType = "email";
-                          });
-                          context
-                              .read<AuthService>()
-                              .register(
-                                  email: _emailRegisterController.text.trim(),
-                                  password:
-                                      _passwordRegisterController.text.trim())
-                              .whenComplete(
-                                () => addUsers(
-                                        _nameController.text,
-                                        _emailRegisterController.text,
-                                        _passwordRegisterController.text)
-                                    .whenComplete(() {
-                                  if (user != null) {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => App(user: user),
-                                      ),
-                                    );
-                                  }
-                                }),
-                              );
-                        }
-                      }
-                    }),
-              ),
-              const SizedBox(height: 30)
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -344,23 +354,23 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
               passwordFormField(
                   _passwordLoginController, "Password", _enabledTextField),
               const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _pageState = 2;
-                  });
-                },
-                child: Container(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "Esqueceu-se da palavra-passe?",
-                    style: TextStyle(
-                        // color: Colors.white,
-                        fontSize: 15,
-                        decoration: TextDecoration.underline),
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () {
+              //     setState(() {
+              //       _pageState = 2;
+              //     });
+              //   },
+              //   child: Container(
+              //     alignment: Alignment.centerRight,
+              //     child: Text(
+              //       "Esqueceu-se da palavra-passe?",
+              //       style: TextStyle(
+              //           // color: Colors.white,
+              //           fontSize: 15,
+              //           decoration: TextDecoration.underline),
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: 20),
               Container(
                 child: loginUserExists
