@@ -1,10 +1,12 @@
 import 'package:MrRecipe/widgets/widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth;
+  final firestore = FirebaseFirestore.instance;
   bool isSigningIn;
 
   AuthService(this._firebaseAuth);
@@ -81,5 +83,19 @@ class AuthService {
       await googleSignIn.disconnect();
     }
     await _firebaseAuth.signOut();
+  }
+
+  Future<void> deleteAccount(String pass) async {
+    final AuthCredential credential = EmailAuthProvider.credential(
+        email: _firebaseAuth.currentUser.email, password: pass);
+
+    var result = await _firebaseAuth.currentUser
+        .reauthenticateWithCredential(credential);
+
+    return firestore
+        .collection("Users")
+        .doc(_firebaseAuth.currentUser.uid)
+        .delete()
+        .then((_) => result.user.delete());
   }
 }

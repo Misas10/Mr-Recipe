@@ -1,9 +1,9 @@
 import 'package:MrRecipe/pages/app.dart';
 import 'package:MrRecipe/pages/user_account/login.dart';
 import 'package:MrRecipe/pages/user_account/registar.dart';
-import 'package:MrRecipe/pages/wrapper.dart';
 import 'package:MrRecipe/services/auth.dart';
 import 'package:MrRecipe/widgets/widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -28,10 +28,21 @@ extension CapExtension on String {
 
 class _SettingsState extends State<Settings>
     with AutomaticKeepAliveClientMixin {
+  String pass;
   bool get wantKeepAlive => true;
 
   @override
   void initState() {
+    if (widget.user != null) {
+      FirebaseFirestore.instance
+          .collection("Users")
+          .doc(widget.user.uid)
+          .get()
+          .then((DocumentSnapshot documentSnapshot) {
+        pass = documentSnapshot.data()['password'];
+      });
+    }
+
     super.initState();
   }
 
@@ -50,7 +61,7 @@ class _SettingsState extends State<Settings>
             _buildItemSetting("Políticas e privacidade", Icons.privacy_tip),
             _buildItemSetting("Definições", Icons.settings),
             widget.user != null
-                ? _buildItemSetting("Logout", Icons.logout, isLoggedOut: true)
+                ? _buildItemSetting("Logout", Icons.logout, isLoggedIn: true)
                 : Container(),
           ],
         ),
@@ -84,8 +95,8 @@ class _SettingsState extends State<Settings>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 30),
-        Center(child: Text("Perfil", style: titleTextStyle(fontSize: 30))),
+        // SizedBox(height: 30),
+        // Center(child: Text("Perfil", style: titleTextStyle(fontSize: 30))),
         SizedBox(height: 30),
         Container(
           child: Column(
@@ -94,13 +105,19 @@ class _SettingsState extends State<Settings>
                 minRadius: 40,
                 backgroundColor: Colors.lightBlue,
                 child: Text(
-                  "${widget.user.displayName[0].inCaps}",
+                  widget.user.displayName == null ||
+                          widget.user.displayName == ""
+                      ? "N"
+                      : "${widget.user.displayName[0].inCaps}",
                   style: TextStyle(color: Colors.black, fontSize: 20),
                 ),
               ),
               SizedBox(height: 8),
               Text(
-                "${widget.user.displayName.inCaps}",
+                widget.user.displayName == null || widget.user.displayName == ""
+                    ? "Nome de Exemplo"
+                    : "${widget.user.displayName.inCaps}",
+                // " ?? ,
                 style:
                     simpleTextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
@@ -116,35 +133,35 @@ class _SettingsState extends State<Settings>
   }
 
   _buildItemSetting(String label, IconData iconData,
-      {bool isLoggedOut = false}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      child: GestureDetector(
+      {bool isLoggedIn = false}) {
+    return GestureDetector(
+      onTap: () {
+        isLoggedIn
+            ? context.read<AuthService>().signOut().then(
+                  (value) => Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (builder) => App()),
+                  ),
+                )
+            : debugPrint(label);
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
           child: Row(
             children: [
-              isLoggedOut ? Icon(iconData, color: Colors.red) : Icon(iconData),
+              isLoggedIn ? Icon(iconData, color: Colors.red) : Icon(iconData),
               SizedBox(width: 10),
-              isLoggedOut
+              isLoggedIn
                   ? Text(label,
                       style: TextStyle(fontSize: 20, color: Colors.red))
                   : Text(label, style: TextStyle(fontSize: 20)),
               Spacer(),
-              isLoggedOut ? Container() : Icon(Icons.arrow_forward),
+              isLoggedIn ? Container() : Icon(Icons.arrow_forward),
             ],
           ),
         ),
-        onTap: () {
-          isLoggedOut
-              ? context.read<AuthService>().signOut().then(
-                    (value) => Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (builder) => App()),
-                    ),
-                  )
-              : debugPrint(label);
-        },
       ),
     );
   }
