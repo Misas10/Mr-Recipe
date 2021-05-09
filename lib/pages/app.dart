@@ -8,10 +8,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class App extends StatefulWidget {
-  final User user;
+  // final User user;
   final bool fromMain;
 
-  const App({Key key, this.user, this.fromMain = false}) : super(key: key);
+  const App({Key key, this.fromMain = false}) : super(key: key);
   @override
   _AppState createState() => _AppState();
 }
@@ -19,17 +19,18 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   int currentIndex = 0;
   List<Widget> _pages = [];
+  final user = FirebaseAuth.instance.currentUser;
 
   void initState() {
     widget.fromMain
         ? _pages.add(HomePage(
-            user: widget.user,
+            user: user,
             fromMain: true,
           ))
-        : _pages.add(HomePage(user: widget.user));
+        : _pages.add(HomePage(user: user));
     _pages.add(CreateRecipe());
-    _pages.add(Favorites(user: widget.user));
-    _pages.add(Settings(user: widget.user));
+    _pages.add(Favorites(user: user));
+    _pages.add(Settings(user: user));
 
     super.initState();
   }
