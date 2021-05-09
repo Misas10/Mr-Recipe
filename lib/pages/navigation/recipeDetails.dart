@@ -52,7 +52,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   }
 
   getRecipe() async {
-    recipesRef
+    await recipesRef
         .where("id", isEqualTo: widget.id)
         .get()
         .then((QuerySnapshot querySnapshot) => {
