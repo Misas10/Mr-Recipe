@@ -37,6 +37,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
   double _loginWidth = 0;
   double _loginOpacity = 1;
   bool loginUserExists = true;
+  AutovalidateMode _loginValidateMode = AutovalidateMode.disabled;
 
   final _loginFormKey = GlobalKey<FormState>();
   final TextEditingController _emailLoginController = TextEditingController();
@@ -46,6 +47,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
   // REGISTER VARIABLES
   double _registerYOffSet = 0;
   bool registerUserExits = false;
+  AutovalidateMode _registerValidateMode = AutovalidateMode.disabled;
 
   final _registerFormKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
@@ -213,7 +215,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
             child: Form(
               key: _registerFormKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
+              autovalidateMode: _registerValidateMode,
               child: Column(
                 children: [
                   Container(
@@ -315,6 +317,11 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                                     ),
                                   );
                             }
+                          } else {
+                            setState(() {
+                              _registerValidateMode =
+                                  AutovalidateMode.onUserInteraction;
+                            });
                           }
                         }),
                   ),
@@ -342,7 +349,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
       child: Container(
         padding: const EdgeInsets.all(20),
         child: Form(
-          autovalidateMode: AutovalidateMode.disabled,
+          autovalidateMode: _loginValidateMode,
           key: _loginFormKey,
           child: Column(
             children: [
@@ -415,6 +422,11 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                                     )),
                               );
                         }
+                      } else {
+                        setState(() {
+                          _loginValidateMode =
+                              AutovalidateMode.onUserInteraction;
+                        });
                       }
                     }),
               ),
@@ -453,7 +465,6 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
   TextFormField emailFormField(
       TextEditingController controller, bool enabledTextField) {
     return TextFormField(
-      // onChanged: ,
       enabled: enabledTextField,
       keyboardType: TextInputType.emailAddress,
       validator: MultiValidator(
@@ -476,8 +487,10 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
     return TextFormField(
       enabled: enabledTextField,
       keyboardType: TextInputType.visiblePassword,
-      validator: MultiValidator(
-          [RequiredValidator(errorText: "Campo Obrigratório *")]),
+      validator: MultiValidator([
+        RequiredValidator(errorText: "Campo Obrigratório *"),
+        MinLengthValidator(6, errorText: "Mínimo 6 caractéres")
+      ]),
       controller: controller,
       decoration: InputDecoration(
         labelText: "Password",
