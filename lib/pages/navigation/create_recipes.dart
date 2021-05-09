@@ -49,10 +49,10 @@ class _CreateRecipeState extends State<CreateRecipe> {
   Duration initialTimer;
   String time;
   String kitchenType = "";
-  String plateType;
-  String chefNotes;
-  String dificulty;
-  String recipeName;
+  String plateType = "";
+  String chefNotes = "";
+  String dificulty = "";
+  String recipeName = "";
 
   // ANIMATED CONTAINER VARIABLES
   double animatedContainerXOffset = 0;
