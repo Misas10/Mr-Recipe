@@ -305,17 +305,14 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                                             _nameController.text,
                                             _emailRegisterController.text,
                                             _passwordRegisterController.text)
-                                        .whenComplete(() {
-                                      if (user != null) {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                App(user: user),
-                                          ),
-                                        );
-                                      }
-                                    }),
+                                        .then(
+                                      (_) => Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => App(),
+                                        ),
+                                      ),
+                                    ),
                                   );
                             }
                           }
@@ -345,7 +342,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
       child: Container(
         padding: const EdgeInsets.all(20),
         child: Form(
-          autovalidateMode: AutovalidateMode.onUserInteraction,
+          autovalidateMode: AutovalidateMode.disabled,
           key: _loginFormKey,
           child: Column(
             children: [
@@ -410,16 +407,13 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                                   email: _emailLoginController.text.trim(),
                                   password:
                                       _passwordLoginController.text.trim())
-                              .whenComplete(() {
-                            if (user != null) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => App(user: user),
-                                ),
+                              .then(
+                                (_) => Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => App(),
+                                    )),
                               );
-                            }
-                          });
                         }
                       }
                     }),
@@ -459,6 +453,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
   TextFormField emailFormField(
       TextEditingController controller, bool enabledTextField) {
     return TextFormField(
+      // onChanged: ,
       enabled: enabledTextField,
       keyboardType: TextInputType.emailAddress,
       validator: MultiValidator(
