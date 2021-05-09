@@ -142,7 +142,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                   children: [
                     Icon(Icons.arrow_back, color: Colors.white),
                     Text(
-                      " Voltar",
+                      " voltar",
                       style: TextStyle(
                         fontSize: 20,
                         // fontWeight: FontWeight.bold,
