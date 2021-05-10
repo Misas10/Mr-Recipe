@@ -7,9 +7,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:page_transition/page_transition.dart';
+import '../../widgets/global_keys.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:localstorage/localstorage.dart';
@@ -41,9 +42,9 @@ class _CreateRecipeState extends State<CreateRecipe> {
 
   // CONTROLLERS AND KEYS VARIABLES
   final TextEditingController controller = TextEditingController();
-  final formKey = GlobalKey<FormBuilderState>();
-  final ingredientsFormKey = GlobalKey<FormBuilderState>();
-  final stepsFormKey = GlobalKey<FormBuilderState>();
+  // final formKey = FGlobalKeys.formKey;
+  // final ingredientsFormKey = FGlobalKeys.ingredientsFormKey;
+  // final stepsFormKey = FGlobalKeys.stepsFormKey;
 
   // CRREATE SCREEN VARIABLES
   Duration initialTimer;
@@ -95,6 +96,12 @@ class _CreateRecipeState extends State<CreateRecipe> {
     super.initState();
     imgRef = FirebaseFirestore.instance.collection("ImageURLs");
     getRecipeFromLocalStorage();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
   }
 
   //
@@ -298,7 +305,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
                     "tipo_de_cozinha": kitchenType,
                     "tipo_de_prato": (plateType + ''),
                   },
-                  key: formKey,
+                  key: FGlobalKeys.formKey,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -438,7 +445,8 @@ class _CreateRecipeState extends State<CreateRecipe> {
                         children: [
                           TextButton(
                               onPressed: () {
-                                if (formKey.currentState.validate()) {
+                                if (FGlobalKeys.formKey.currentState
+                                    .validate()) {
                                   setState(() {
                                     uploading = true;
                                   });
@@ -455,8 +463,9 @@ class _CreateRecipeState extends State<CreateRecipe> {
                           // Spacer(),
                           TextButton(
                               onPressed: () {
-                                formKey.currentState.save();
-                                final formData = formKey.currentState.value;
+                                FGlobalKeys.formKey.currentState.save();
+                                final formData =
+                                    FGlobalKeys.formKey.currentState.value;
                                 debugPrint(formData.toString());
                                 // removeRecipeFromLocalStorage();
                                 addRecipeToLocalStorage(formData);
@@ -633,10 +642,11 @@ class _CreateRecipeState extends State<CreateRecipe> {
                       ),
                       onPressed: () {
                         if (_page == 1) {
-                          if (ingredientsFormKey.currentState.validate()) {
-                            ingredientsFormKey.currentState.save();
-                            final formData =
-                                ingredientsFormKey.currentState.value;
+                          if (FGlobalKeys.ingredientsFormKey.currentState
+                              .validate()) {
+                            FGlobalKeys.ingredientsFormKey.currentState.save();
+                            final formData = FGlobalKeys
+                                .ingredientsFormKey.currentState.value;
                             setState(() {
                               localRecipeIngredients.add(formData);
                               selectedUnit = "";
@@ -647,12 +657,14 @@ class _CreateRecipeState extends State<CreateRecipe> {
                               "ingredientes": localRecipeIngredients
                             };
                             debugPrint(formatedIngredients.toString());
-                            // addRecipeToLocalStorage(formatedIngredients);
+                            addRecipeToLocalStorage(formatedIngredients);
                           }
                         } else if (_page == 2) {
-                          if (stepsFormKey.currentState.validate()) {
-                            stepsFormKey.currentState.save();
-                            final formData = stepsFormKey.currentState.value;
+                          if (FGlobalKeys.stepsFormKey.currentState
+                              .validate()) {
+                            FGlobalKeys.stepsFormKey.currentState.save();
+                            final formData =
+                                FGlobalKeys.stepsFormKey.currentState.value;
                             setState(() {
                               localRecipeSteps.add(formData["preparação"]);
                               stepsTextKey = "";
@@ -666,7 +678,6 @@ class _CreateRecipeState extends State<CreateRecipe> {
                         }
                       },
                     ),
-                    // const SizedBox(width: 8)
                   ],
                 ),
               ),
@@ -691,10 +702,11 @@ class _CreateRecipeState extends State<CreateRecipe> {
         "nome": ingredientTextKey,
         "quantidade": quantityTextKey,
       },
-      key: ingredientsFormKey,
+      key: FGlobalKeys.ingredientsFormKey,
       child: Column(
         children: [
           FormBuilderTextField(
+            validator: RequiredValidator(errorText: "Campo obrigatório *"),
             key: Key(ingredientTextKey),
             name: "nome",
             decoration: _inputTextDecoration("Ingrediente"),
@@ -715,6 +727,8 @@ class _CreateRecipeState extends State<CreateRecipe> {
               Container(
                 width: MediaQuery.of(context).size.width / 3,
                 child: FormBuilderTextField(
+                  validator:
+                      RequiredValidator(errorText: "Campo obrigatório *"),
                   key: Key(selectedUnit),
                   readOnly: true,
                   name: "unidade",
@@ -734,22 +748,26 @@ class _CreateRecipeState extends State<CreateRecipe> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return new Center(
-                      child: Card(
-                        child: Container(
-                          padding: padding,
-                          child: Row(
-                            children: [
-                              Text(
-                                "${localRecipeIngredients[index]['quantidade']} ",
-                                style: textStyle,
-                              ),
-                              Text(
-                                  "${localRecipeIngredients[index]['unidade']}",
-                                  style: textStyle),
-                              const SizedBox(width: 40),
-                              Text("${localRecipeIngredients[index]['nome']}",
-                                  style: textStyle),
-                            ],
+                      child: _customDismissible(
+                        index: index,
+                        key: localRecipeIngredients[index]["nome"],
+                        child: Card(
+                          child: Container(
+                            padding: padding,
+                            child: Row(
+                              children: [
+                                Text(
+                                  "${localRecipeIngredients[index]['quantidade']} ",
+                                  style: textStyle,
+                                ),
+                                Text(
+                                    "${localRecipeIngredients[index]['unidade']}",
+                                    style: textStyle),
+                                const SizedBox(width: 40),
+                                Text("${localRecipeIngredients[index]['nome']}",
+                                    style: textStyle),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -762,10 +780,11 @@ class _CreateRecipeState extends State<CreateRecipe> {
 
   FormBuilder buildAddStepsScreen() {
     return FormBuilder(
-      key: stepsFormKey,
+      key: FGlobalKeys.stepsFormKey,
       child: Column(
         children: [
           FormBuilderTextField(
+            validator: RequiredValidator(errorText: "Campo obrigatório *"),
             key: Key(stepsTextKey),
             name: "preparação",
             decoration: _inputTextDecoration("Passos"),
@@ -776,17 +795,21 @@ class _CreateRecipeState extends State<CreateRecipe> {
               : ListView.builder(
                   shrinkWrap: true,
                   itemCount: localRecipeSteps.length,
-                  itemBuilder: (context, index) => Center(
-                    child: Card(
-                      child: Container(
-                        padding: padding,
-                        child: Row(
-                          children: [
-                            Text(
-                              localRecipeSteps[index],
-                              style: textStyle,
-                            ),
-                          ],
+                  itemBuilder: (context, index) => _customDismissible(
+                    key: localRecipeSteps[index],
+                    index: index,
+                    child: Center(
+                      child: Card(
+                        child: Container(
+                          padding: padding,
+                          child: Row(
+                            children: [
+                              Text(
+                                localRecipeSteps[index],
+                                style: textStyle,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -794,6 +817,60 @@ class _CreateRecipeState extends State<CreateRecipe> {
                 ),
         ],
       ),
+    );
+  }
+
+  Dismissible _customDismissible(
+      {@required String key, @required Widget child, @required int index}) {
+    return Dismissible(
+      key: Key(key),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        padding: const EdgeInsets.only(right: 20),
+        alignment: Alignment.centerRight,
+        color: Colors.red,
+        child: Icon(Icons.delete, color: Colors.white),
+      ),
+      confirmDismiss: (direction) async => await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Confirmar"),
+            content: Text("Tem a certeza que quer apagar o item: $key?"),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text("APAGAR")),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("CANCELAR"),
+              ),
+            ],
+          );
+        },
+      ),
+      onDismissed: (direction) {
+        if (_page == 1) {
+          setState(() {
+            localRecipeIngredients.removeAt(index);
+          });
+          final Map<String, dynamic> formatedMap = {
+            "ingredientes": localRecipeIngredients
+          };
+          addRecipeToLocalStorage(formatedMap);
+          debugPrint(localRecipeIngredients.toString());
+        } else if (_page == 2) {
+          setState(() {
+            localRecipeSteps.removeAt(index);
+          });
+          final Map<String, dynamic> formatedMap = {
+            "preparação": localRecipeSteps
+          };
+          addRecipeToLocalStorage(formatedMap);
+          debugPrint(localRecipeIngredients.toString());
+        }
+      },
+      child: child,
     );
   }
 
