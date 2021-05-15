@@ -23,11 +23,22 @@ class _FavoritesState extends State<Favorites>
   CollectionReference recipesRef =
       FirebaseFirestore.instance.collection("Recipes");
   List<String> ingredients = [
-    "tomate",
-    "cebola",
-    "cenoura",
-    "alface",
-    "beterraba"
+    // "tomate",
+    // "cebola",
+    // "cenoura",
+    // "alface",
+    // "beterraba"
+
+    "400 g de bacalhau desfiado demolhado",
+    "400 g de batata palha",
+    "6 ovos m",
+    "6 fatias de pão de forma",
+    "1 cebola",
+    "2 dentes de alho",
+    "3 colheres (sopa) de azeite",
+    "2 colheres (sopa) de azeitonas pretas",
+    "2 colheres (sopa) de salsa picada",
+    "Sal e pimenta q.b."
   ];
   List recipeUids;
   double windowWidth = 0;
@@ -56,30 +67,40 @@ class _FavoritesState extends State<Favorites>
 
   void newRecipe() {
     addRecipe(
-        author: "Mr. Recipe",
-        time: 30,
-        name: "Teste1",
-        portion: 6,
+        author: "teleculinaria",
+        time: 40,
+        name: "Bacalhau à brás",
+        portion: 2,
         ingredients: ingredients,
-        imgUrl: "assets/images/vegetais.jpg",
+        imgUrl: "assets/images/bacalhau-a-bras.jpg",
         calories: 600,
         categories: [
-          "Peixe"
+          "peixe",
+          "bacalhau"
         ],
         preparation: [
-          "Reservar algo para mais tarde",
-          "Fazer este segundo passo e finalizar a receita"
+          "Descasque a cebola e corte-a em lâminas. Descasque e pique os dentes de alho. Leve ao lume um tacho com o azeite, junte a cebola e o alho e deixe alourar.",
+          "Adicione o bacalhau, tempere com sal e pimenta e envolva bem. Junte 2/3 da batata-palha e envolva novamente.",
+          "Bata ligeiramente os ovos, acrescente-os ao preparado anterior e mexa rapidamente (sem deixar secar).",
+          "Por fim, junte a salsa picada e a restante batata-palha e envolva cuidadosamente. Sirva com as azeitonas pretas."
         ]);
   }
 
-  deleteRecipe() {
-    recipeUids.remove(widget.user.uid);
-  }
+  // deleteRecipe() {
+  //   recipeUids.remove(widget.user.uid);
+  // }
 
   final _removedSnackBar = SnackBar(
     content: const Text("Receita removida dos favoritos"),
     backgroundColor: Colors.red,
     duration: const Duration(seconds: 2),
+    action: SnackBarAction(
+      label: "Desfazer",
+      textColor: Colors.white,
+      onPressed: () {
+        debugPrint("clicou");
+      },
+    ),
   );
 
   @override
@@ -89,7 +110,7 @@ class _FavoritesState extends State<Favorites>
     super.build(context);
 
     return Scaffold(
-      appBar: customAppBar("Favoritos"),
+        appBar: customAppBar("Favoritos"),
         backgroundColor: BgColor,
         body: Container(
             width: double.infinity,
@@ -145,7 +166,7 @@ class _FavoritesState extends State<Favorites>
     );
   }
 
-  // mostra todos os documentes em que o utilizador atual deu like
+  // mostra todos as receitas em que o utilizador atual deu like
   StreamBuilder streamBuilder() {
     return StreamBuilder<QuerySnapshot>(
         stream: recipesRef
@@ -209,6 +230,24 @@ class _FavoritesState extends State<Favorites>
           Icons.delete,
           color: Colors.white,
         ),
+      ),
+      confirmDismiss: (direction) async => await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Confirmar"),
+            content: Text("Tem a certeza que quer apagar este item?"),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text("APAGAR")),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("CANCELAR"),
+              ),
+            ],
+          );
+        },
       ),
       child: new ListTile(
           title: Text('${recipes[index]['nome_receita']}'),
