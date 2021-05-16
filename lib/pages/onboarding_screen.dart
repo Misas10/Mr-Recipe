@@ -1,8 +1,16 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:MrRecipe/pages/app.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import '../models/onboarding_screen_model.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -10,33 +18,26 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  ImageProvider logo =
+      AssetImage("assets/images/splash_screen_images/healthy_recipe-min.jpg");
   int currentIndex = 0;
   bool isLoading = false;
-  PageController _pageViewoController;
+  PageController _pageViewController;
   Image image1;
   Image image2;
   Image image3;
 
   @override
   void initState() {
-    _pageViewoController = PageController(initialPage: 0);
+    _pageViewController = PageController(initialPage: 0);
     setValue();
-    image1 = Image.asset(onboardingModels[0].image);
-    image2 = Image.asset(onboardingModels[1].image);
-    image3 = Image.asset(onboardingModels[2].image);
     super.initState();
   }
 
   @override
   void dispose() {
-    _pageViewoController.dispose();
+    _pageViewController.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    precacheImage(image1.image, context);
-    super.didChangeDependencies();
   }
 
   void setValue() async {
@@ -51,7 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ImageProvider logo = AssetImage("assets/images/starter-image.jpg");
+    debugPrint(onboardingModels[1].image);
     return Scaffold(
       backgroundColor: BgColor,
       body: SafeArea(
@@ -59,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           children: [
             Expanded(
               child: PageView.builder(
-                controller: _pageViewoController,
+                controller: _pageViewController,
                 itemCount: onboardingModels.length,
                 onPageChanged: (int index) {
                   setState(() {
@@ -71,10 +72,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     padding:
                         const EdgeInsets.only(top: 20, left: 10, right: 10),
                     child: Column(
-                      // mainAxisAlignment: MainAxisAlignment.center,
-                      // crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        image2,
+                        image(i),
                         Text(
                           onboardingModels[i].title,
                           style: titleTextStyle(fontSize: 35),
@@ -86,7 +85,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: Text(
                             onboardingModels[i].body,
                             style: simpleTextStyle(
-                                fontSize: 18, color: Colors.grey),
+                              fontSize: 18,
+                              color: Colors.black54,
+                              // fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.justify,
                           ),
                         )
@@ -105,7 +107,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            isLoading
+            !isLoading
                 ? Container(
                     height: 60,
                     margin: const EdgeInsets.only(
@@ -129,9 +131,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                         fromMain: true,
                                       )));
                         }
-                        _pageViewoController.nextPage(
-                            duration: Duration(milliseconds: 100),
-                            curve: Curves.bounceIn);
+                        _pageViewController.nextPage(
+                          duration: Duration(milliseconds: 100),
+                          curve: Curves.bounceIn,
+                        );
                       },
                       style: TextButton.styleFrom(
                           primary: Colors.white,
@@ -160,5 +163,74 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         color: currentIndex == index ? PrimaryColor : Colors.grey,
       ),
     );
+  }
+
+  // loadImage(String imageString) {
+  //   Uint8List image = Base64Decoder().convert(imageString);
+  //   return Container(
+  //     child: Image.memory(
+  //       image,
+  //       fit: BoxFit.cover,
+  //     ),
+  //   );
+  // }
+
+  // Image backgroundImage;
+
+  // Future<void> loadImage(ImageProvider provider) {
+  //   final config = ImageConfiguration(
+  //     bundle: rootBundle,
+  //     devicePixelRatio: 1,
+  //     platform: defaultTargetPlatform,
+  //   );
+  //   final Completer<void> completer = Completer();
+  //   final ImageStream stream = provider.resolve(config);
+
+  //   ImageStreamListener listener;
+
+  //   listener = ImageStreamListener((ImageInfo image, bool sync) {
+  //     debugPrint("Image ${image.debugLabel} finished loading");
+  //     completer.complete();
+  //     stream.removeListener(listener);
+  //   }, onError: (dynamic exception, StackTrace stackTrace) {
+  //     completer.complete();
+  //     stream.removeListener(listener);
+  //     FlutterError.reportError(FlutterErrorDetails(
+  //       context: ErrorDescription('image failed to load'),
+  //       library: 'image resource service',
+  //       exception: exception,
+  //       stack: stackTrace,
+  //       silent: true,
+  //     ));
+  //   });
+
+  //   stream.addListener(listener);
+  //   return completer.future;
+  // }
+
+  Widget image(int i) {
+    final double height = MediaQuery.of(context).size.height / 2.5;
+    switch (i) {
+      case 0:
+        return SvgPicture.asset(
+          onboardingModels[i].image,
+          height: height,
+        );
+        break;
+      case 1:
+        return SvgPicture.asset(
+          onboardingModels[i].image,
+          height: height,
+        );
+        break;
+      case 2:
+        return Image.asset(
+          onboardingModels[i].image,
+          height: height,
+        );
+        break;
+      default:
+        return null;
+    }
   }
 }
