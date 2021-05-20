@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 // adiciona receitas novas a base de dados
-Future<void> addRecipe({
+Future addRecipe({
   @required String name,
   @required String author,
   @required int calories,
@@ -15,13 +15,14 @@ Future<void> addRecipe({
   @required int time,
   @required List<String> preparation,
   @required List<String> categories,
+  var id,
 }) {
-  var id = firestore.collection("Recipes").doc().id;
+  var recipeId = id ?? firestore.collection("Recipes").doc().id;
   final docRef = FirebaseFirestore.instance
       .collection('Recipes')
-      .doc(id)
+      .doc(recipeId)
       .set({
-        "id": id,
+        "id": recipeId,
         "autor": author,
         "nome_receita": name,
         "tempo_total": time,
