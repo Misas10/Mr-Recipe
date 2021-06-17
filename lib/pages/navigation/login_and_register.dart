@@ -169,9 +169,6 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
             buildForgotPassContainer(),
           ],
         ),
-        onTap: () {
-          if ("" == null) ;
-        },
       ),
     );
   }
@@ -231,7 +228,7 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    // controller: nameController,
+                    controller: _nameController,
                     decoration: inputTextDecoration("Nome"),
                     validator: MultiValidator(
                         [RequiredValidator(errorText: "Campo Obrigatório")]),
@@ -302,17 +299,17 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                                           _emailRegisterController.text.trim(),
                                       password: _passwordRegisterController.text
                                           .trim())
-                                  .whenComplete(
-                                    () => addUsers(
+                                  .then(
+                                    (_) => addUsers(
                                             _nameController.text,
                                             _emailRegisterController.text,
                                             _passwordRegisterController.text)
                                         .then(
-                                      (_) => Navigator.pushReplacement(
+                                      (_) => Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => App(),
-                                        ),
+                                            builder: (context) => App()),
+                                        (Route<dynamic> route) => false,
                                       ),
                                     ),
                                   );
@@ -415,11 +412,12 @@ class _LoginAndRegisterState extends State<LoginAndRegister> {
                                   password:
                                       _passwordLoginController.text.trim())
                               .then(
-                                (_) => Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => App(),
-                                    )),
+                                (_) => Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => App()),
+                                  (Route<dynamic> route) => false,
+                                ),
                               );
                         }
                       } else {

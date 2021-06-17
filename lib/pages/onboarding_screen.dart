@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:MrRecipe/pages/app.dart';
@@ -9,7 +7,6 @@ import 'package:flutter/material.dart';
 import '../models/onboarding_screen_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class OnboardingScreen extends StatefulWidget {

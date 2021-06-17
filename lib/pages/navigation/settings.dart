@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -165,10 +164,9 @@ class _SettingsState extends State<Settings>
           if (isConfirmed == true) {
             context.read<AuthService>().signOut().then(
                   (value) => Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (builder) => App()),
-                    (route) => false
-                  ),
+                      context,
+                      MaterialPageRoute(builder: (builder) => App()),
+                      (route) => false),
                 );
           }
         }
@@ -379,14 +377,16 @@ class _SettingsItemState extends State<SettingsItem> {
                           context,
                           PageTransition(
                             child: RecipeDetails(
-                                recipeName: data['nome_receita'],
-                                ingredientes: data['ingredientes'],
-                                image: data['img_url'],
-                                id: data['id'],
-                                calories: data['calorias'],
-                                recipeUids: data['utilizadores_que_deram_like'],
-                                preparation: data['preparação'],
-                                categories: data['categorias']),
+                              recipeName: data['nome_receita'],
+                              ingredientes: data['ingredientes'],
+                              image: data['img_url'],
+                              id: data['id'],
+                              calories: data['calorias'],
+                              recipeUids: data['utilizadores_que_deram_like'],
+                              preparation: data['preparação'],
+                              categories: data['categorias'],
+                              portion: data['porção'],
+                            ),
                             type: PageTransitionType.rightToLeft,
                           ),
                         ),

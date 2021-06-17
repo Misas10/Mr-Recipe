@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart' as uuid; // Serve para criar ids únicos
 
 class Recipe {
-  // String id;
+  String id;
   String imgUrl;
   String author;
   String name;
@@ -13,7 +14,8 @@ class Recipe {
   Set usersFavorites = {};
 
   Recipe(
-      {@required this.author,
+      {@required this.id,
+      @required this.author,
       @required this.name,
       // @required this.calories,
       @required this.quantity,
@@ -38,18 +40,16 @@ class Recipe {
   //   this.id = id;
   // }
 
-  Map<String, dynamic> toJson(String id) {
-    return {
-      "id": id,
-      "nome_receita": this.name,
-      "autor": this.author,
-      "calorias": this.calories,
-      //"servintes": servings,
-      "img_url": this.imgUrl,
-      "quantidade": this.quantity,
-      "ingredientes": this.ingredients,
-      "tempo_total": this.time,
-      "utilizadores_que_deram_likes": this.usersFavorites
-    };
+  factory Recipe.toJson(Map<String, dynamic> json) {
+    return Recipe(
+      id: uuid.Uuid().v4(),
+      name: json['name'] as String,
+      author: json['author'] as String,
+      // calories: ,
+      imgUrl: json['imgUrl'] as String,
+      quantity: json['quantity'] as int,
+      ingredients: json['ingredients'] as List<String>,
+      time: json['time'] as int,
+    );
   }
 }

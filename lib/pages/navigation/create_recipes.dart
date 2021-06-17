@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:MrRecipe/services/firestorage.dart';
+import 'package:MrRecipe/widgets/no_user_buttons.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,11 +13,11 @@ import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import '../../widgets/global_keys.dart';
 import 'package:path/path.dart' as Path;
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:localstorage/localstorage.dart';
 import 'build_list.dart';
+import '../../database/database.dart';
 
 class CreateRecipe extends StatefulWidget {
   @override
@@ -24,6 +27,7 @@ class CreateRecipe extends StatefulWidget {
 class _CreateRecipeState extends State<CreateRecipe> {
   final LocalStorage storage = new LocalStorage("saved_recipe");
   Map<String, dynamic> localRecipe = {};
+  User user = FirebaseAuth.instance.currentUser;
 
   final double itemExtent = 50;
   double bottomSheetHeight;
@@ -40,26 +44,39 @@ class _CreateRecipeState extends State<CreateRecipe> {
   double width;
   double height;
 
-  // CONTROLLERS AND KEYS VARIABLES
-  final TextEditingController controller = TextEditingController();
-  // final formKey = FGlobalKeys.formKey;
-  // final ingredientsFormKey = FGlobalKeys.ingredientsFormKey;
-  // final stepsFormKey = FGlobalKeys.stepsFormKey;
-
   // CRREATE SCREEN VARIABLES
   Duration initialTimer;
   String time;
-  String kitchenType = "";
-  String plateType = "";
-  String chefNotes = "";
-  String dificulty = "";
-  String recipeName = "";
+  String dificultyOption = "";
+
+  // KEYS VARIABLES
+  final formKey = new GlobalKey<FormBuilderState>();
+  final ingredientsFormKey = new GlobalKey<FormBuilderState>();
+  final stepsFormKey = new GlobalKey<FormBuilderState>();
+
+  // CONTROLLERS
+  final TextEditingController controller = TextEditingController();
+  TextEditingController recipeNameController = new TextEditingController();
+  TextEditingController dificultyController = new TextEditingController();
+  TextEditingController chefNotesController = new TextEditingController();
+  TextEditingController kitchenTypeController = new TextEditingController();
+  TextEditingController plateTypeController = new TextEditingController();
+  TextEditingController portionController = new TextEditingController();
 
   // ANIMATED CONTAINER VARIABLES
   double animatedContainerXOffset = 0;
   double animatedContainerYOffset = 0;
   int _page = 0;
-  List localRecipeSteps = [];
+  List localRecipeSteps = [
+    "Separe as gemas das claras.",
+    "Bata as gemas com o açúcar até a mistura ficar esbranquiçada.",
+    "Adicione o queijo Mascarpone e misture bem.",
+    "Bata as claras em castelo e junte-as lentamente ao preparado anterior.",
+    "Misture o café frio e o Marsala numa taça e embeba os palitos de La Reine.",
+    "Coloque metade dos palitos no fundo de uma taça (do tipo que se usa para gratinar), cubra-os com metade do preparado feito com os ovos, coloque o resto dos palitos e cubra tudo com o que sobra do preparado.",
+    "Deixe repousar no frigorífico durante pelo menos 3 horas (o ideal é deixar repousar 12 horas).",
+    "Antes de servir, polvilhe o Tiramisu com o cacau em pó usando uma peneira."
+  ];
   String selectedUnit;
   String ingredientTextKey;
   String quantityTextKey;
@@ -72,6 +89,8 @@ class _CreateRecipeState extends State<CreateRecipe> {
     "Sobremesa",
     "Bebida",
     "Petiscos",
+    "Entrada",
+    "Prato principal"
   ];
   List<String> _tipoDeCozinha = [
     "Portuguesa",
@@ -95,6 +114,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
   void initState() {
     super.initState();
     imgRef = FirebaseFirestore.instance.collection("ImageURLs");
+    // removeRecipeFromLocalStorage();
     getRecipeFromLocalStorage();
   }
 
@@ -104,13 +124,37 @@ class _CreateRecipeState extends State<CreateRecipe> {
     controller.dispose();
   }
 
+  // ADICIONA A TABELA LOCAL PARA O FIRESTORE
+  // E DEPOIS ADICIONA O ID PARA O
+  addToFirestore() async {
+    await storage.ready;
+    var id = firestore.collection("Users").doc().id;
+    debugPrint(localRecipe.toString());
+    addRecipe(
+      id: id,
+      name: localRecipe['nome_receita'],
+      author: user.displayName,
+      imgUrl: "assets/images/tiramissu.jpg",
+      portion: localRecipe['porção'],
+      ingredients: localRecipeIngredients,
+      time: 2,
+      preparation: localRecipeSteps,
+      categories: [localRecipe['nome_receita']],
+      dificulty: localRecipe['dificuldade'],
+      chefNotes: localRecipe['notas_do_chef'],
+    ).then((value) {
+      firestore.collection("Users").doc(user.uid).update({
+        "receitas_criadas": FieldValue.arrayUnion([id])
+      });
+    });
+  }
+
   //
   // Salva os dados da receita, não terminada, localmente
   //
   void addRecipeToLocalStorage(Map recipeData) async {
     debugPrint("Adding to LocalStorage...");
     await storage.ready;
-
     localRecipe.addAll(recipeData);
     final recipe = json.encode(localRecipe);
 
@@ -131,30 +175,32 @@ class _CreateRecipeState extends State<CreateRecipe> {
         localRecipe = json.decode(storage.getItem('localRecipe'));
       });
 
+      // ADICIONAR TODOS OS DADOS DA DB PARA AS VARIÁVEIS
+      recipeNameController.text = localRecipe['nome_receita'] ?? '';
+      chefNotesController.text = localRecipe['notas_chef'] ?? '';
+      portionController.text = localRecipe['porção'] ?? '';
+      // bakeTimeController = localRecipe['tempo_cozer/tempo_assar'] ?? '';
+      // stepsController.text = localRecipe[''] ?? '';
+      // imageFile.path;
+
       try {
-        List tipoDeCozinha = localRecipe['tipo_de_cozinha'] ?? '';
-        kitchenType = tipoDeCozinha.join(", ") ?? "";
+        List tipoDeCozinha = localRecipe['tipo_de_cozinha'];
+        kitchenTypeController.text = tipoDeCozinha.join(", ");
       } catch (e) {
+        kitchenTypeController.text = '';
         debugPrint(e.toString());
-        kitchenType = localRecipe['tipo_de_cozinha'];
       }
 
       try {
-        List tipoDePrato = localRecipe["tipo_de_prato"] ?? [];
-        plateType = tipoDePrato.join(", ") ?? "";
+        List tipoDePrato = localRecipe['tipo_de_prato'];
+        plateTypeController.text = tipoDePrato.join(", ");
       } catch (e) {
-        plateType = localRecipe['tipo_de_prato'];
+        plateTypeController.text = '';
+        debugPrint(e.toString());
       }
 
-      localRecipeIngredients = localRecipe["ingredientes"] ?? [];
-      localRecipeSteps = localRecipe['preparação'] ?? [];
-
-      setState(() {
-        time = localRecipe["tempo_de_preparacao"];
-        recipeName = localRecipe["nome_receita"];
-        chefNotes = localRecipe['notas_do_chef'];
-        dificulty = localRecipe['dificuldade'];
-      });
+      localRecipeIngredients = localRecipe['ingredientes'] ?? [];
+      // localRecipeSteps = localRecipe['preparação'] ?? [];
 
       debugPrint(localRecipe.toString());
     }
@@ -172,7 +218,6 @@ class _CreateRecipeState extends State<CreateRecipe> {
 
   Future<String> initialValue(String key) async {
     await storage.ready;
-    // getRecipeFromLocalStorage();
 
     if (localRecipe != null) {
       if (localRecipe.containsKey(key)) {
@@ -188,6 +233,10 @@ class _CreateRecipeState extends State<CreateRecipe> {
   // CRIA UM 'SELECTOR' PARA O TIPO DE PORÇÃO
   //
   portionPicker() {
+    // recebe a quantidade de porção selecionada
+    String nPortion;
+    String nPortionText = "pessoas(s)";
+
     showModalBottomSheet(
         context: context,
         shape: RoundedRectangleBorder(
@@ -200,19 +249,48 @@ class _CreateRecipeState extends State<CreateRecipe> {
                 children: [
                   Expanded(
                     child: CupertinoPicker(
-                        itemExtent: itemExtent,
-                        onSelectedItemChanged: (int index) {},
-                        children: List<Widget>.generate(99, (index) {
-                          return Center(child: Text((++index).toString()));
-                        })),
+                      itemExtent: itemExtent,
+                      onSelectedItemChanged: (int index) {
+                        setState(() {
+                          nPortion = (++index).toString();
+                          portionController.text = "$nPortion $nPortionText";
+                        });
+                      },
+                      children: List<Widget>.generate(99, (index) {
+                        return Center(child: Text((++index).toString()));
+                      }),
+                    ),
                   ),
                   Expanded(
                     child: CupertinoPicker(
                         itemExtent: itemExtent,
-                        onSelectedItemChanged: (int index) {},
+                        onSelectedItemChanged: (int index) {
+                          setState(() {
+                            switch (index) {
+                              case 0:
+                                nPortionText = "pessoa(s)";
+                                portionController.text =
+                                    "$nPortion $nPortionText";
+                                break;
+
+                              case 1:
+                                nPortionText = "pedaço(s)";
+                                portionController.text =
+                                    "$nPortion $nPortionText";
+                                break;
+
+                              case 2:
+                                nPortionText = "fatia(s)";
+                                portionController.text =
+                                    "$nPortion $nPortionText";
+                                break;
+                            }
+                          });
+                        },
                         children: const <Widget>[
                           Center(child: Text("pessoa(s)")),
-                          Center(child: Text("pedaço(s)"))
+                          Center(child: Text("pedaço(s)")),
+                          Center(child: Text("fatia(s)"))
                         ]),
                   ),
                 ],
@@ -225,7 +303,6 @@ class _CreateRecipeState extends State<CreateRecipe> {
   //
   Widget timerPicker() {
     return CupertinoTimerPicker(
-        // initialTimerDuration: Duration(minutes: 1),
         mode: CupertinoTimerPickerMode.hm,
         onTimerDurationChanged: (Duration changedTimer) {
           setState(() {
@@ -276,8 +353,22 @@ class _CreateRecipeState extends State<CreateRecipe> {
     ).then((value) => getRecipeFromLocalStorage());
   }
 
+  // Obtem uma imagem e carrega para o ecrã
+  Future<Widget> _getImage(BuildContext context, String imageName) async {
+    Image image;
+    // Carrega uma imagem
+    await FireStorageService.loadImage(context, imageName).then((value) {
+      // Define algumas propriedades da imagem
+      image = Image.network(value.toString(), fit: BoxFit.cover);
+    });
+    return image;
+  }
+
   @override
   Widget build(BuildContext context) {
+    localRecipe.remove("preparação");
+    addRecipeToLocalStorage(localRecipe);
+
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     bottomSheetHeight = MediaQuery.of(context).size.height / 2.8;
@@ -288,8 +379,19 @@ class _CreateRecipeState extends State<CreateRecipe> {
       animatedContainerYOffset = 0;
     }
 
+    if (user == null) {
+      return Scaffold(
+        appBar: customAppBar("Crie já a sua receita"),
+        backgroundColor: BgColor,
+        body: Container(
+          padding: EdgeInsets.only(top: MediaQuery.of(context).size.width / 2),
+          child: NoUserButtons(),
+        ),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: BgColor,
       appBar: customAppBar("Crie já a sua receita"),
       body: GestureDetector(
         child: Container(
@@ -298,48 +400,70 @@ class _CreateRecipeState extends State<CreateRecipe> {
             children: [
               SingleChildScrollView(
                 child: FormBuilder(
+                  key: formKey,
                   initialValue: {
-                    "nome_receita": recipeName,
-                    "dificuldade": dificulty,
-                    "notas_do_chef": chefNotes,
-                    "tipo_de_cozinha": kitchenType,
-                    "tipo_de_prato": (plateType + ''),
+                    "dificuldade": localRecipe['dificuldade'] ?? '',
                   },
-                  key: FGlobalKeys.formKey,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 25),
                       FormBuilderTextField(
-                        // initialValue: recipeName,
+                        controller: recipeNameController,
                         name: "nome_receita",
                         decoration: _inputTextDecoration("Título da Receita *"),
+                        validator: (_) =>
+                            requiredField(recipeNameController.text),
                       ),
                       const SizedBox(height: 10),
                       simpleCreateRecipeText("Adicione uma foto da receita"),
                       const SizedBox(height: 5),
                       GestureDetector(
                         child: Container(
-                          color: Colors.grey,
-                          height: 200,
-                          width: MediaQuery.of(context).size.width,
-                          child: imageFile == null
-                              ? Center(
-                                  child: Icon(Icons.add),
-                                )
-                              : Image.file(imageFile),
-                        ),
+                            color: localRecipe["imgUrl"] == null
+                                ? Colors.grey
+                                : Colors.white,
+                            height: 200,
+                            width: MediaQuery.of(context).size.width,
+                            child: localRecipe["imgUrl"] == null
+                                ? Center(
+                                    child: Icon(Icons.add),
+                                  )
+                                : Image.asset(
+                                    "assets/images/tiramissu.jpg",
+                                    fit: BoxFit.fitWidth,
+                                  )
+                            // FutureBuilder(
+                            //     future: _getImage(context,
+                            //         "Images/image_picker4722318118759654671.jpg"),
+                            //     builder: (constex, snapshot) {
+                            //       if (snapshot.connectionState ==
+                            //           ConnectionState.done) {
+                            //         return Container(
+                            //           child: snapshot.data,
+                            //         );
+                            //       }
+
+                            //       return Container();
+                            //     },
+                            //   ),
+                            ),
                         onTap: () => _showChoiceDialog(context),
                       ),
                       const SizedBox(height: 10),
                       GestureDetector(
                         child: simpleCreateRecipeText("Porção"),
+                      ),
+                      TextFormField(
+                        readOnly: true,
+                        controller: portionController,
                         onTap: () => portionPicker(),
                       ),
                       const SizedBox(height: 10),
                       simpleCreateRecipeText("Dificuldade", isRequired: true),
                       FormBuilderChoiceChip(
+                        key: Key(localRecipe['dificuldade'] ?? ''),
                         alignment: WrapAlignment.spaceEvenly,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         name: "dificuldade",
@@ -349,7 +473,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
                             value: "Fácil",
                           ),
                           FormBuilderFieldOption(
-                            value: "Médio",
+                            value: "Média",
                           ),
                           FormBuilderFieldOption(
                             value: "Difícil",
@@ -364,6 +488,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
                           Container(
                             width: 100,
                             child: FormBuilderField(
+                              // key: Key(time),
                               initialValue: time,
                               name: "tempo_de_preparacao",
                               builder: (FormFieldState<dynamic> field) {
@@ -407,7 +532,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
                       // TIPO DE PRATO
                       simpleCreateRecipeText("Tipo de prato"),
                       FormBuilderTextField(
-                        key: Key(plateType),
+                        controller: plateTypeController,
                         name: "tipo_de_prato",
                         readOnly: true,
                         decoration: InputDecoration(
@@ -422,7 +547,7 @@ class _CreateRecipeState extends State<CreateRecipe> {
                       simpleCreateRecipeText("Cozinha"),
                       FormBuilderTextField(
                         name: "tipo_de_cozinha",
-                        key: Key(kitchenType),
+                        controller: kitchenTypeController,
                         readOnly: true,
                         decoration: InputDecoration(
                           labelText: "Ex: portuguesa",
@@ -435,9 +560,15 @@ class _CreateRecipeState extends State<CreateRecipe> {
                       simpleCreateRecipeText("Notas do Chef"),
                       const SizedBox(height: 5),
                       FormBuilderTextField(
+                        valueTransformer: (value) => debugPrint(value),
+                        controller: chefNotesController,
+                        maxLength: 500,
+                        minLines: 3,
+                        maxLines: 5,
                         name: "notas_do_chef",
-                        decoration:
-                            InputDecoration(border: OutlineInputBorder()),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -445,12 +576,20 @@ class _CreateRecipeState extends State<CreateRecipe> {
                         children: [
                           TextButton(
                               onPressed: () {
-                                if (FGlobalKeys.formKey.currentState
-                                    .validate()) {
+                                if (formKey.currentState.validate()) {
+                                  formKey.currentState.save();
                                   setState(() {
                                     uploading = true;
+                                    localRecipe = {
+                                      "nome_receita": recipeNameController.text,
+                                      "notas_do_chef": chefNotesController.text,
+                                      "porção": portionController.text,
+                                      'dificuldade': formKey
+                                          .currentState.value["dificuldade"],
+                                    };
                                   });
-                                  uploadImage();
+                                  uploadImage()
+                                      .then((value) => addToFirestore());
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: PrimaryColor,
@@ -463,12 +602,20 @@ class _CreateRecipeState extends State<CreateRecipe> {
                           // Spacer(),
                           TextButton(
                               onPressed: () {
-                                FGlobalKeys.formKey.currentState.save();
-                                final formData =
-                                    FGlobalKeys.formKey.currentState.value;
-                                debugPrint(formData.toString());
-                                // removeRecipeFromLocalStorage();
-                                addRecipeToLocalStorage(formData);
+                                setState(() {
+                                  formKey.currentState.save();
+                                  debugPrint(
+                                      formKey.currentState.value.toString());
+                                  localRecipe.addAll({
+                                    "nome_receita": recipeNameController.text,
+                                    "notas_do_chef": chefNotesController.text,
+                                    "porção": portionController.text,
+                                    'dificuldade': formKey
+                                        .currentState.value["dificuldade"],
+                                    "imgUrl": localRecipe['imgUrl'] ?? '',
+                                  });
+                                });
+                                addRecipeToLocalStorage(localRecipe);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     backgroundColor: PrimaryColor,
@@ -513,26 +660,33 @@ class _CreateRecipeState extends State<CreateRecipe> {
   buildTextField(
       var context, TextEditingController controller, String labelText) {
     return TextFormField(
-      // keyboardType: TextInputType,
       style: simpleTextStyle(fontWeight: FontWeight.bold),
       controller: controller,
       decoration: InputDecoration(labelText: labelText),
     );
   }
 
+  final double maxHeight = 1024, maxWidht = 1024;
+
   _openGallery(BuildContext context) async {
     var picture = await picker.getImage(source: ImageSource.gallery);
     setState(() {
       imageFile = File(picture.path);
+      localRecipe["imgUrl"] = "assets/images/tiramissu.jpg";
     });
+    addRecipeToLocalStorage(localRecipe);
     Navigator.of(context, rootNavigator: true).pop();
   }
 
   _openCamera() async {
-    var picture = await picker.getImage(source: ImageSource.camera);
+    var picture = await picker.getImage(
+        source: ImageSource.camera, maxHeight: 700, maxWidth: 1024);
     setState(() {
       imageFile = File(picture.path);
+
+      localRecipe["imgUrl"] = "assets/images/tiramissu.jpg";
     });
+    addRecipeToLocalStorage(localRecipe);
     Navigator.of(context, rootNavigator: true).pop();
   }
 
@@ -577,9 +731,16 @@ class _CreateRecipeState extends State<CreateRecipe> {
     setState(() {
       val = i / imageFile.toString().length;
     });
-    ref = firebase_storage.FirebaseStorage.instance
-        .ref()
-        .child("Images/${Path.basename(imageFile.path)}");
+    try {
+      ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child("Images/${Path.basename(imageFile.path)}");
+      setState(() {
+        localRecipe["imgUrl"] = "assets/images/tiramissu.jpg";
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+    }
 
     // imgRef
     //     .where("url", isEqualTo: ref.getDownloadURL().toString())
@@ -590,13 +751,6 @@ class _CreateRecipeState extends State<CreateRecipe> {
     //   });
     // });
     // debugdebugPrint("${data.toString()}");
-
-    await ref.putFile(imageFile).whenComplete(() async {
-      await ref.getDownloadURL().then((value) {
-        imgRef.add({"url": value});
-        i++;
-      });
-    });
   }
 
   final textStyle = const TextStyle(fontSize: 18);
@@ -608,7 +762,10 @@ class _CreateRecipeState extends State<CreateRecipe> {
         color: BgColor,
         duration: Duration(milliseconds: 400),
         transform: Matrix4.translationValues(
-            animatedContainerXOffset, animatedContainerYOffset, 1),
+          animatedContainerXOffset,
+          animatedContainerYOffset,
+          1,
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -616,15 +773,15 @@ class _CreateRecipeState extends State<CreateRecipe> {
                 height: 50,
                 child: Row(
                   children: [
-                    // const SizedBox(width: 8),
                     TextButton(
-                        child: const Text(
-                          "Cancelar",
-                          style: TextStyle(fontSize: 17, color: Colors.black),
-                        ),
-                        onPressed: () => setState(() {
-                              _page = 0;
-                            })),
+                      child: const Text(
+                        "sair",
+                        style: TextStyle(fontSize: 17, color: Colors.black),
+                      ),
+                      onPressed: () => setState(() {
+                        _page = 0;
+                      }),
+                    ),
                     const Spacer(),
                     Text(
                       _page == 1 ? "Ingredientes" : "Preparação",
@@ -635,49 +792,48 @@ class _CreateRecipeState extends State<CreateRecipe> {
                     ),
                     const Spacer(),
                     TextButton(
-                      style: TextButton.styleFrom(),
-                      child: const Text(
-                        "Salvar",
-                        style: TextStyle(fontSize: 17, color: PrimaryColor),
-                      ),
-                      onPressed: () {
-                        if (_page == 1) {
-                          if (FGlobalKeys.ingredientsFormKey.currentState
-                              .validate()) {
-                            FGlobalKeys.ingredientsFormKey.currentState.save();
-                            final formData = FGlobalKeys
-                                .ingredientsFormKey.currentState.value;
-                            setState(() {
-                              localRecipeIngredients.add(formData);
-                              selectedUnit = "";
-                              quantityTextKey = "";
-                              ingredientTextKey = "";
-                            });
-                            final Map<String, dynamic> formatedIngredients = {
-                              "ingredientes": localRecipeIngredients
-                            };
-                            debugPrint(formatedIngredients.toString());
-                            addRecipeToLocalStorage(formatedIngredients);
+                        style: TextButton.styleFrom(),
+                        child: const Text(
+                          "Salvar",
+                          style: TextStyle(fontSize: 17, color: PrimaryColor),
+                        ),
+                        onPressed: () {
+                          if (_page == 1) {
+                            ingredientsFormKey.currentState.save();
+                            var value = ingredientsFormKey.currentState.value;
+                            String nome = value['nome'];
+                            String quantidade = value['quantidade'];
+                            String unidade = value['unidade'];
+                            debugPrint(value.toString());
+                            if (nome.isNotEmpty || unidade.isEmpty) {
+                              setState(() {
+                                localRecipeIngredients
+                                    .add("$quantidade$unidade $nome");
+                                localRecipe["ingredientes"] =
+                                    localRecipeIngredients;
+                              });
+                              debugPrint(localRecipeIngredients.toString());
+                              addRecipeToLocalStorage(localRecipe);
+                            }
+                            // addRecipeToLocalStorage(localRecipe);
+                            debugPrint(value.toString());
+                          } else if (_page == 2) {
+                            stepsFormKey.currentState.save();
+                            var value =
+                                stepsFormKey.currentState.value["preparação"];
+                            if (value.toString().isNotEmpty) {
+                              setState(() {
+                                localRecipeSteps.add(value);
+                                // debugPrint(localRecipeSteps.toString());
+                                localRecipe['preparação'] = localRecipeSteps;
+                              });
+                              addRecipeToLocalStorage(localRecipe);
+                            }
+                            debugPrint(
+                              stepsFormKey.currentState.value.toString(),
+                            );
                           }
-                        } else if (_page == 2) {
-                          if (FGlobalKeys.stepsFormKey.currentState
-                              .validate()) {
-                            FGlobalKeys.stepsFormKey.currentState.save();
-                            final formData =
-                                FGlobalKeys.stepsFormKey.currentState.value;
-                            setState(() {
-                              localRecipeSteps.add(formData["preparação"]);
-                              stepsTextKey = "";
-                            });
-                            final Map<String, dynamic> formatedSteps = {
-                              "preparação": localRecipeSteps,
-                            };
-                            addRecipeToLocalStorage(formatedSteps);
-                            debugPrint(formatedSteps.toString());
-                          }
-                        }
-                      },
-                    ),
+                        }),
                   ],
                 ),
               ),
@@ -702,12 +858,11 @@ class _CreateRecipeState extends State<CreateRecipe> {
         "nome": ingredientTextKey,
         "quantidade": quantityTextKey,
       },
-      key: FGlobalKeys.ingredientsFormKey,
+      key: ingredientsFormKey,
       child: Column(
         children: [
           FormBuilderTextField(
             validator: RequiredValidator(errorText: "Campo obrigatório *"),
-            key: Key(ingredientTextKey),
             name: "nome",
             decoration: _inputTextDecoration("Ingrediente"),
           ),
@@ -717,7 +872,6 @@ class _CreateRecipeState extends State<CreateRecipe> {
               Container(
                 width: MediaQuery.of(context).size.width / 3,
                 child: FormBuilderTextField(
-                  key: Key(quantityTextKey),
                   keyboardType: TextInputType.number,
                   name: "quantidade",
                   decoration: _inputTextDecoration("Quantidade"),
@@ -727,9 +881,9 @@ class _CreateRecipeState extends State<CreateRecipe> {
               Container(
                 width: MediaQuery.of(context).size.width / 3,
                 child: FormBuilderTextField(
+                  key: Key(selectedUnit),
                   validator:
                       RequiredValidator(errorText: "Campo obrigatório *"),
-                  key: Key(selectedUnit),
                   readOnly: true,
                   name: "unidade",
                   decoration: _inputTextDecoration("Unidade"),
@@ -738,7 +892,6 @@ class _CreateRecipeState extends State<CreateRecipe> {
               )
             ],
           ),
-          // const SizedBox(height: 20),
           const Divider(height: 60),
           localRecipeIngredients == null
               ? Container()
@@ -746,27 +899,17 @@ class _CreateRecipeState extends State<CreateRecipe> {
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: localRecipeIngredients.length,
                   shrinkWrap: true,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (context, int index) {
                     return new Center(
                       child: _customDismissible(
                         index: index,
-                        key: localRecipeIngredients[index]["nome"],
                         child: Card(
                           child: Container(
+                            width: double.infinity,
                             padding: padding,
-                            child: Row(
-                              children: [
-                                Text(
-                                  "${localRecipeIngredients[index]['quantidade']} ",
-                                  style: textStyle,
-                                ),
-                                Text(
-                                    "${localRecipeIngredients[index]['unidade']}",
-                                    style: textStyle),
-                                const SizedBox(width: 40),
-                                Text("${localRecipeIngredients[index]['nome']}",
-                                    style: textStyle),
-                              ],
+                            child: Text(
+                              "${localRecipeIngredients[index]}",
+                              style: textStyle,
                             ),
                           ),
                         ),
@@ -780,50 +923,46 @@ class _CreateRecipeState extends State<CreateRecipe> {
 
   FormBuilder buildAddStepsScreen() {
     return FormBuilder(
-      key: FGlobalKeys.stepsFormKey,
-      child: Column(
-        children: [
-          FormBuilderTextField(
-            validator: RequiredValidator(errorText: "Campo obrigatório *"),
-            key: Key(stepsTextKey),
-            name: "preparação",
-            decoration: _inputTextDecoration("Passos"),
-          ),
-          const Divider(height: 60),
-          localRecipeSteps.isEmpty
-              ? Container()
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: localRecipeSteps.length,
-                  itemBuilder: (context, index) => _customDismissible(
-                    key: localRecipeSteps[index],
-                    index: index,
-                    child: Center(
+      key: stepsFormKey,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            FormBuilderTextField(
+              validator: RequiredValidator(errorText: "Campo obrigatório *"),
+              name: "preparação",
+              decoration: _inputTextDecoration("Passos"),
+            ),
+            const Divider(height: 60),
+            localRecipeSteps.isEmpty
+                ? Container()
+                : ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: localRecipeSteps.length,
+                    itemBuilder: (context, index) => _customDismissible(
+                      index: index,
                       child: Card(
                         child: Container(
                           padding: padding,
-                          child: Row(
-                            children: [
-                              Text(
-                                localRecipeSteps[index],
-                                style: textStyle,
-                              ),
-                            ],
+                          width: double.infinity,
+                          child: Text(
+                            localRecipeSteps[index],
+                            style: textStyle,
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Dismissible _customDismissible(
-      {@required String key, @required Widget child, @required int index}) {
+      {@required Widget child, @required int index}) {
     return Dismissible(
-      key: Key(key),
+      key: UniqueKey(),
       direction: DismissDirection.endToStart,
       background: Container(
         padding: const EdgeInsets.only(right: 20),
@@ -836,11 +975,13 @@ class _CreateRecipeState extends State<CreateRecipe> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text("Confirmar"),
-            content: Text("Tem a certeza que quer apagar o item: $key?"),
+            content: Text("Tem a certeza que quer apagar o item?"),
             actions: <Widget>[
               TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text("APAGAR")),
+                onPressed: () => Navigator.of(context).pop(true),
+                child:
+                    const Text("APAGAR", style: TextStyle(color: Colors.red)),
+              ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
                 child: const Text("CANCELAR"),
@@ -896,5 +1037,11 @@ class _CreateRecipeState extends State<CreateRecipe> {
         (index) => Center(child: Text(_listaDeUnidade[index])),
       ),
     );
+  }
+
+  // TRATAMENTO DE ERROS
+  String requiredField(String value) {
+    if (value.isEmpty || value == null) return "Campo obrigatório";
+    return null;
   }
 }

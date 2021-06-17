@@ -4,20 +4,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-// adiciona receitas novas a base de dados
+// Adiciona receitas novas a base de dados
 Future addRecipe({
   @required String name,
   @required String author,
-  @required int calories,
   @required String imgUrl,
-  @required int portion,
+  @required String portion,
   @required List ingredients,
   @required int time,
-  @required List<String> preparation,
-  @required List<String> categories,
+  @required List<dynamic> preparation,
+  @required List<dynamic> categories,
+  @required String dificulty,
+  String chefNotes,
   var id,
 }) {
+  // recebe ou cria um id
   var recipeId = id ?? firestore.collection("Recipes").doc().id;
+  // Adiciona todos os dados recebidos á base de dados
   final docRef = FirebaseFirestore.instance
       .collection('Recipes')
       .doc(recipeId)
@@ -25,22 +28,25 @@ Future addRecipe({
         "id": recipeId,
         "autor": author,
         "nome_receita": name,
+        "dificuldade": dificulty,
         "tempo_total": time,
-        "calorias": calories,
         "img_url": imgUrl,
         "porção": portion,
         "ingredientes": ingredients,
         "categorias": categories,
         "preparação": preparation,
         "utilizadores_que_deram_like": [],
+        "notas_chef": chefNotes ?? ''
       })
+      // Caso os dados sejam inseridos com sucesso
       .then((value) => debugPrint("Receita adicionada id: $id"))
+      // Caso haja algum erro durante a inserção dos dados
       .catchError((error) => "Falha ao adicionar a Receita: $error");
 
   return docRef;
 }
 
-// adiciona clientes novos a base de dados
+// Adiciona novos utilizadores a base de dados
 Future<void> addUsers(String name, String email, String pass) async {
   var user = FirebaseAuth.instance.currentUser;
   user.updateProfile(displayName: name);

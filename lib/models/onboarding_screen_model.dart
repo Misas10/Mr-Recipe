@@ -22,7 +22,7 @@ List<OnboardingScreenModel> onboardingModels = [
   ),
   //
   OnboardingScreenModel(
-    title: "Guarde as suas favoritas",
+    title: "Guarde as receitas suas favoritas",
     body: "Salve as suas receitas favoritas e compartilhe com os seus amigos.",
     image: "assets/images/splash_screen_images/share.jpg",
   ),

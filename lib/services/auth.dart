@@ -18,14 +18,17 @@ class AuthService {
     return _firebaseAuth.currentUser;
   }
 
-  // Sign in with email and password
+  // logIn com email e password
   Future<String> logIn({String email, String password}) async {
     try {
+      // O firebase authentication faz login, com um dado email e password
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+      // Escrever na consola caso o login foi um sucesso
       debugPrint("Logged Succefully");
-      return "Logado";
+      return "Logged";
     } on FirebaseAuthException catch (e) {
+      // Escrever na consola se ouver um erro ao realizar o login
       debugPrint(e.message);
       return e.message;
     }

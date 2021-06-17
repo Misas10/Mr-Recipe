@@ -1,6 +1,5 @@
-import 'package:MrRecipe/pages/navigation/login_and_register.dart';
 import 'package:MrRecipe/pages/navigation/recipeDetails.dart';
-import 'package:MrRecipe/widgets/google_sign_in_button.dart';
+import 'package:MrRecipe/widgets/no_user_buttons.dart';
 import 'package:MrRecipe/widgets/widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -66,24 +65,45 @@ class _FavoritesState extends State<Favorites>
   }
 
   void newRecipe() {
+    var id = firestore.collection("Users").doc().id;
+    debugPrint(id.toString());
     addRecipe(
-        author: "teleculinaria",
-        time: 40,
-        name: "Bacalhau à brás",
-        portion: 2,
-        ingredients: ingredients,
-        imgUrl: "assets/images/bacalhau-a-bras.jpg",
-        calories: 600,
-        categories: [
-          "peixe",
-          "bacalhau"
-        ],
-        preparation: [
-          "Descasque a cebola e corte-a em lâminas. Descasque e pique os dentes de alho. Leve ao lume um tacho com o azeite, junte a cebola e o alho e deixe alourar.",
-          "Adicione o bacalhau, tempere com sal e pimenta e envolva bem. Junte 2/3 da batata-palha e envolva novamente.",
-          "Bata ligeiramente os ovos, acrescente-os ao preparado anterior e mexa rapidamente (sem deixar secar).",
-          "Por fim, junte a salsa picada e a restante batata-palha e envolva cuidadosamente. Sirva com as azeitonas pretas."
-        ]);
+            id: id,
+            author: "Mr. Recipe",
+            time: 25,
+            name: "Salada russa",
+            portion: "14 unidades",
+            ingredients: [
+              "5 batatas médias (500 g)",
+              "3-4 cenouras (300 g)"
+              "2 ovos M",
+              "300 g ervilhas congeladas",
+              "4 colheres de maionese",
+              "Sal e pimenta qb",
+              "Cebolinho ou salsa para decorar",
+            ],
+            imgUrl: "assets/images/salada-arabe.jpg",
+            categories: [
+              "salada",
+              "salada russa"
+            ],
+            preparation: [
+              "Corte as batatas e as cenouras em cubos de um centímetro. Corte o feijão-verde e retire as ervilhas do congelador. Coza os ovos 10 minutos em água fervente com uma colher de chá de sal.",
+              "Use dois tachos com água fervente e tempere com sal de forma moderada. Deixe as cenouras ferver por alguns minutos e adicione as batatas. No outro tacho ferva as ervilhas e o feijão-verde. Deixe cozer durante 10 minutos",
+              "Escorra os vegetais e deixe arrefecer. Corte os ovos em pedaços pequenos e reserve uma metade para decorar. Numa taça larga misture os ingredientes e adicione a maionese.",
+              "Envolva lentamente, tempere com sal e pimenta com moderação.",
+              "Sirva polvilhados com mais salsa picada e as sementes de papoila.",
+              "Coloque película aderente e reserve no frigorífico.",
+              "Depois de tirar do frigorífico aguarde alguns minutos antes de servir. Decore com cebolinho e ovo",
+            ],
+            dificulty: 'Fácil',
+            chefNotes:
+                "")
+        .then((value) {
+      firestore.collection("Users").doc(widget.user.uid).update({
+        "receitas_criadas": FieldValue.arrayUnion([id])
+      });
+    });
   }
 
   // deleteRecipe() {
@@ -110,12 +130,12 @@ class _FavoritesState extends State<Favorites>
     super.build(context);
 
     return Scaffold(
-        appBar: customAppBar("Favoritos"),
-        backgroundColor: BgColor,
-        body: Container(
-            width: double.infinity,
-            child:
-                widget.user == null ? noUserLoggedScreen() : streamBuilder()));
+      appBar: customAppBar("Favoritos"),
+      backgroundColor: BgColor,
+      body: Container(
+          width: double.infinity,
+          child: widget.user == null ? noUserLoggedScreen() : streamBuilder()),
+    );
   }
 
   noUserLoggedScreen() {
@@ -124,45 +144,12 @@ class _FavoritesState extends State<Favorites>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Não nenhum utilizador logado",
+          "Não há nenhum utilizador logado",
           style: titleTextStyle(fontSize: 20),
         ),
         SizedBox(height: 20),
-        buildButton("Login", 0),
-        buildButton("Registar", 1),
-        GoogleSignInButton(),
+        NoUserButtons(),
       ],
-    );
-  }
-
-  Container buildButton(String label, int pageState) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      width: MediaQuery.of(context).size.width / 1.5,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(40),
-          ),
-        ),
-        onPressed: () => Navigator.push(
-          context,
-          PageTransition(
-            child: LoginAndRegister(pageState: pageState),
-            type: PageTransitionType.bottomToTop,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -174,6 +161,8 @@ class _FavoritesState extends State<Favorites>
                 arrayContains: widget.user.uid)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          var recipes = snapshot.data.docs;
+
           if (snapshot.hasError) {
             return Text("Ouve um erro");
           }
@@ -184,13 +173,20 @@ class _FavoritesState extends State<Favorites>
 
           return Column(
             children: [
+              new Text(
+                "\nVocê tem ${recipes.length} receita(s) guardada(s)",
+                style: simpleTextStyle(
+                  fontSize: 15,
+                  color: PrimaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               new ListView.separated(
                 shrinkWrap: true,
                 itemCount: snapshot.data.docs.length,
                 separatorBuilder: (BuildContext context, int index) =>
                     const Divider(height: 30, thickness: 1),
                 itemBuilder: (context, index) {
-                  var recipes = snapshot.data.docs;
                   List usersLiked =
                       recipes[index]['utilizadores_que_deram_like'];
                   debugPrint(
@@ -200,7 +196,7 @@ class _FavoritesState extends State<Favorites>
                       usersLiked.reversed.toList(), index, context, recipes);
                 },
               ),
-              TextButton(onPressed: newRecipe, child: Text("Criar Receita"))
+              TextButton(onPressed: newRecipe, child: Text("Criar receita"))
             ],
           );
         });
@@ -262,9 +258,9 @@ class _FavoritesState extends State<Favorites>
                       calories: recipes[index]['calorias'],
                       id: recipes[index]['id'],
                       recipeUids: recipes[index]['utilizadores_que_deram_like'],
-                      user: widget.user,
                       categories: recipes[index]["categorias"],
                       preparation: recipes[index]["preparação"],
+                      portion: recipes[index]['porção'],
                     ),
                     type: PageTransitionType.rightToLeft));
           }),

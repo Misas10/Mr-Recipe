@@ -12,9 +12,9 @@ class RecipeDetails extends StatefulWidget {
   final String id;
   final int calories;
   final List recipeUids;
-  final User user;
   final List preparation;
   final List categories;
+  final String portion; 
 
   RecipeDetails(
       {@required this.recipeName,
@@ -23,9 +23,9 @@ class RecipeDetails extends StatefulWidget {
       @required this.id,
       @required this.calories,
       @required this.recipeUids,
-      @required this.user,
       @required this.preparation,
-      @required this.categories});
+      @required this.categories,
+      @required this.portion});
 
   @override
   _RecipeDetailsState createState() => _RecipeDetailsState();
@@ -34,6 +34,7 @@ class RecipeDetails extends StatefulWidget {
 class _RecipeDetailsState extends State<RecipeDetails> {
   final CollectionReference recipesRef =
       FirebaseFirestore.instance.collection("Recipes");
+  final user = FirebaseAuth.instance.currentUser;
   Map recipe;
   List recipeUids;
   String id;
@@ -73,10 +74,10 @@ class _RecipeDetailsState extends State<RecipeDetails> {
     debugPrint("${recipeUids.toString()}");
 
     // Adiciona ou retira os utilizadores que deram/retiraram da BD
-    if (recipeUids.contains(widget.user.uid)) {
+    if (recipeUids.contains(user.uid)) {
       debugPrint("Existe");
       setState(() {
-        recipeUids.remove(widget.user.uid);
+        recipeUids.remove(user.uid);
       });
 
       // Atualiza os dados na BD
@@ -85,7 +86,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
       debugPrint("Não existe");
 
       setState(() {
-        recipeUids.add(widget.user.uid);
+        recipeUids.add(user.uid);
       });
       debugPrint(recipeUids.toString());
 
@@ -117,7 +118,7 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   // Caso o utilizador esteja na base de dados/deu like
   // Mostra o coração vermelho, caso contrário, o coração fica vazio
   Icon heartIcon() {
-    if (recipeUids.contains(widget.user.uid)) {
+    if (recipeUids.contains(user.uid)) {
       return Icon(
         Icons.favorite,
         color: Colors.red,
@@ -181,14 +182,14 @@ class _RecipeDetailsState extends State<RecipeDetails> {
             ),
             actions: [
               IconButton(
-                  icon: widget.user == null
+                  icon: user == null
                       ? Icon(Icons.favorite_border_outlined,
                           color: Colors.white, size: 30)
                       : heartIcon(),
                   onPressed: () {
-                    if (widget.user != null) {
+                    if (user != null) {
                       likeRecipe();
-                      if (recipeUids.contains(widget.user.uid))
+                      if (recipeUids.contains(user.uid))
                         ScaffoldMessenger.of(context)
                             .showSnackBar(_insertedSnackBar);
                       else
@@ -245,17 +246,17 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               const SizedBox(height: 20),
 
               // INGREDIENTES
-              Center(
-                child: buildRecipeDetailsText("Ingredientes"),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 120, vertical: 2),
-                child: Container(height: 1.5, color: Colors.green),
-              ),
-              const SizedBox(height: 8),
+              buildRecipeDetailsText("Ingredientes"),
 
-              Text("Para até 4 pessoas", style: simpleTextStyle(fontSize: 17)),
-              // const SizedBox(height: 20),
+              const SizedBox(height: 15),
+
+              Text(
+                "Para até ${widget.portion}",
+                style: simpleTextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               Container(
                 child: buildRecipeIngredients(),
               ),
@@ -263,7 +264,6 @@ class _RecipeDetailsState extends State<RecipeDetails> {
 
               // PREPARAÇÃO
               buildRecipeDetailsText("Preparação"),
-              // const SizedBox(height: 15),
               Container(
                 child: buildRecipePreparation(),
               ),
@@ -280,9 +280,11 @@ class _RecipeDetailsState extends State<RecipeDetails> {
         ),
       );
 
-  Text buildRecipeDetailsText(String text) => Text(
-        text,
-        style: simpleTextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+  Widget buildRecipeDetailsText(String text) => Center(
+        child: Text(
+          text,
+          style: simpleTextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
       );
 
   ListView buildRecipePreparation() {
@@ -300,7 +302,11 @@ class _RecipeDetailsState extends State<RecipeDetails> {
             Container(
               child: Text(
                 "\t${index + 1}\t\t",
-                style: TextStyle(fontSize: 25, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 25,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             Expanded(
@@ -333,11 +339,11 @@ class _RecipeDetailsState extends State<RecipeDetails> {
               "${widget.ingredientes[index]}",
               style: simpleTextStyle(fontSize: 17),
             ),
-            Spacer(),
-            Text(
-              "quantidade",
-              style: simpleTextStyle(fontSize: 17),
-            )
+            // Spacer(),
+            // Text(
+            //   "quantidade",
+            //   style: simpleTextStyle(fontSize: 17),
+            // )
           ],
         );
       },
@@ -345,69 +351,67 @@ class _RecipeDetailsState extends State<RecipeDetails> {
   }
 
   buildCategories() {
-    return ListView.builder(
-        padding: EdgeInsets.only(top: 8),
-        shrinkWrap: true,
-        // scrollDirection: Axis.horizontal,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: widget.categories.length,
-        itemBuilder: (context, index) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                new Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+    return SizedBox(
+      height: 50,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.only(top: 10),
+          shrinkWrap: true,
+          itemCount: widget.categories.length,
+          itemBuilder: (context, index) {
+            return new Container(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Center(
                     child: Text(
                       widget.categories[index],
                       style: simpleTextStyle(fontSize: 17),
                     ),
                   ),
                 ),
-              ],
-            ),
-          );
-        });
-  }
-}
-
-class BuildItemRow extends StatelessWidget {
-  final String name;
-  final int steps;
-
-  const BuildItemRow({
-    this.name,
-    this.steps,
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      // mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        steps == null
-            ? Container()
-            : Container(
-                child: Text(
-                  "\t$steps\t\t",
-                  style: TextStyle(fontSize: 25, color: Colors.grey),
-                ),
               ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              name,
-              style: simpleTextStyle(
-                fontSize: 18,
-              ),
-            ),
-          ],
-        ),
-      ],
+            );
+          }),
     );
   }
 }
+
+// class BuildItemRow extends StatelessWidget {
+//   final String name;
+//   final int steps;
+
+//   const BuildItemRow({
+//     this.name,
+//     this.steps,
+//     Key key,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       children: <Widget>[
+//         steps == null
+//             ? Container()
+//             : Container(
+//                 child: Text(
+//                   "\t$steps\t\t",
+//                   style: TextStyle(fontSize: 25, color: Colors.grey),
+//                 ),
+//               ),
+//         Column(
+//           mainAxisSize: MainAxisSize.min,
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text(
+//               name,
+//               style: simpleTextStyle(
+//                 fontSize: 18,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ],
+//     );
+//   }
+// }

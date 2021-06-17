@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'services/http.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +28,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     getIsFirstTime();
     super.initState();
-
   }
 
   getIsFirstTime() async {
@@ -42,7 +42,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // precacheImage(AssetImage("assets/images/starter-image.jpg"), context);
+    final HttpService httpService = HttpService();
+    debugPrint(httpService.getRecipe().toString());
+
     if (isFirstTime == null) {
       return Container(
         child: Center(
@@ -64,9 +66,7 @@ class _MyAppState extends State<MyApp> {
         initialRoute: "/",
         debugShowCheckedModeBanner: false,
         theme: ThemeData(primaryColor: PrimaryColor, accentColor: Colors.white),
-        home: SafeArea(
-          child: isFirstTime ? OnboardingScreen() : App(fromMain: true),
-        ),
+        home: isFirstTime ? OnboardingScreen() : App(fromMain: true),
       ),
     );
   }

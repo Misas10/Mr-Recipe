@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// FAZ O TITULO DO APPBAR 'DESAPARECER' EM BAIXO
+// E 'APARECER' NO APPBAR EM SI
 class SABT extends StatefulWidget {
   final Widget child;
   const SABT({

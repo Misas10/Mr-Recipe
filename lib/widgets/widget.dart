@@ -53,40 +53,18 @@ TextStyle simpleTextStyle(
       fontWeight: fontWeight);
 }
 
-AppBar buildAppBar(BuildContext context, String text) {
-  return AppBar(
-    backgroundColor: Colors.white,
-    toolbarHeight: 100,
-    elevation: 0,
-    centerTitle: true,
-    title: Row(
-      children: [
-        Container(
-          child: Text(
-            text,
-            style: titleTextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
-    ),
-    leading: IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () => Navigator.pop(context),
-    ),
-  );
-}
-
-buildButton(var context, String texto, String routeName) {
+Container buildButton(var context, String texto, String routeName) {
   return Container(
+    // O width recebe a largura do ecrã todo
     width: MediaQuery.of(context).size.width,
     height: 40,
     child: MaterialButton(
+        // Define a cor para a Primarycolor
         color: PrimaryColor,
-        //alignment: Alignment.center,
-        //width: MediaQuery.of(context).size.width,
-        //padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+        // Define as bordas do botão como redondas
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         child: Text(texto, style: TextStyle(color: Colors.white, fontSize: 17)),
+        // Ao clicar no botão o utilizador é levado para outra página
         onPressed: () {
           Navigator.pushReplacementNamed(context, routeName);
         }),
@@ -105,4 +83,4 @@ const String InvalidEmailError = "Insira um email válido";
 const String PassNullError = "Insira a sua password";
 const ShortPassError = "A password é curta demais (min. 6 caractéres)";
 const String MatchPassError = "As passwords não são iguais";
-bool isAppBarVisible = true;
+
